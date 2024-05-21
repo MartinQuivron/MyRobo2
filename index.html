@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyRobo2</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Welcome to MyRobo2</h1>
+    <button onclick="openPCScene()">PC Scene</button>
+    <button onclick="openMobileScene()">Mobile Scene (XR)</button>
+
+    <script>
+        function openMobileScene() {
+            if (navigator.xr) {
+                navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+                if (supported) {
+                    console.log('AR supported');
+                    window.location.href = 'mobile.html';
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "AR not supported on this device !",
+                    });
+                }
+                });
+            }else {
+                console.log("XR not supported in this browser");
+            }
+        }
+    </script>
+</body>
+</html>
