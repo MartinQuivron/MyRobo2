@@ -1,46 +1,281 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>MyRobo2</title>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<html lang="en">
 
-    <style>
-        html, body {
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>MyRobo</title>
+
+  <!-- Bootstrap and Fontawesome CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+    crossorigin="anonymous">
+    
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/Welcome.css" />
+  <link rel="stylesheet" href="css/WelcomeMobile.css">
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Bootstrap scripts-->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
 </head>
-<body>
-    <h1>Welcome to MyRobo2</h1>
-    <button onclick="openPCScene()">PC Scene</button>
-    <button onclick="openMobileScene()">Mobile Scene (XR)</button>
 
-    <script>
-        function openMobileScene() {
-            if (navigator.xr) {
-                navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-                if (supported) {
-                    console.log('AR supported');
-                    window.location.href = 'mobile.html';
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "AR not supported on this device !",
-                    });
-                }
+<body>
+  <header>
+    <div class="container-fluid p-0">
+      <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="#">
+        <i class="fas fa-vihara fa-2x mx-3"></i>MyRobo</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars text-light"></i>
+          <i class="fas fa-align-right text-light"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="mr-auto"></div>
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="">HOME
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <!--
+            <li class="nav-item dropdown">
+              <div class="dropdown">
+                <a href="#" class="nav-link">Models</a>
+                <div class="dropdown-content">
+                  <a href="#">Vaccum</a>
+                  <a href="#">Mower</a>
+                  <a href="#">Drone</a>
+                </div>
+              </div>
+            </li>
+          -->
+            <li class="nav-item">
+              <a class="nav-link" href="#">KYUTECH</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="container text-center">
+      <div class="row">
+        <div class="col-md-7 col-sm-12  text-white">
+          <h6>AUTHOR: Dr. Masanobu KOGA</h6>
+          <h1>MyRobo</h1>
+          <p>
+            An AR simulation of a robot that can be controlled by a smartphone. The robot can be controlled by a smartphone and can be used for various purposes such as cleaning, mowing, and drone.
+          </p>
+          <H3>Launch</H3>
+          <button onclick="openPCScene()" class="btn btn-light px-5 py-2 primary-btn">
+            <i class="fas fa-laptop fa-2x py-1 px-3"></i>
+          </button>
+          <button onclick="openMobileScene()" class="btn btn-light px-5 py-2 primary-btn">
+            <i class="fab fa-android fa-2x py-1 pl-1"></i>
+            <i class="my-2">|</i>
+            <i class="fab fa-apple fa-2x py-1 pr-1 pl-1"></i>
+          </button>
+        </div>
+        <div class="col-md-5 col-sm-12  h-25">
+          <img src="img/AR.jpg" alt="AR"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="section-1">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col-md-6 col-12">
+            <div class="koga">
+              <img src="img/DrKoga.jpg" alt="DrKoga" class="" />
+            </div>
+          </div>
+          <div class="col-md-6 col-12">
+            <div class="panel text-left">
+              <h1>Dr Masanobu KOGA</h1>
+              <p class="pt-4">
+                Masanobu Koga (S'90–M'93) received the B.S, M. S., and Ph. D. degrees in control engineering
+                from the Tokyo Institute of Technology, Tokyo, Japan, in 1988, 1990, and 1993,
+                respectively.,In 1993, he joined the faculty of the Tokyo Institute of Technology, and in 1994,
+                moved to the Graduate School of Information Science and Engineering, Tokyo Institute of Technology.
+                In 2000, he moved to Kyushu Institute of Technology, Fukuoka, Japan, where he is currently an Associate Professor
+                in the Department of Systems Innovation and Informatics, Faculty of Computer Science and Systems Engineering.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+   
+    <section class="vanish"></section>
+    <section class="section-2 container-fluid p-0">
+      <div class="cover">
+        <div class="overlay"></div>
+        <div class="content text-center">
+          <h1>Some Project Information</h1>
+          <p>
+            Statistics linked to the site and AR models beeing used
+          </p>
+        </div>
+      </div>
+      <div class="container-fluid text-center">
+        <div class="numbers d-flex flex-md-row flex-wrap justify-content-center">
+          <div class="rect">
+            <h1>20</h1>
+            <p>Visitors</p>
+          </div>
+          <div class="rect">
+            <h1>15</h1>
+            <p>AR Simulation launched</p>
+          </div>
+          <div class="rect">
+            <h1>2.0</h1>
+            <p>Project Version</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="Download text-center">
+        <h1>Downloads and Link</h1>
+        <p>
+          Fin here the PDF and the GIT-HUB links to descover our project in details
+        </p>
+        <div class="cards">
+          <div class="d-flex flex-row justify-content-center flex-wrap">
+            <div class="card">
+              <div class="card-body">
+                <div class="title">
+                  <h2 class="card-title">PDF</h2>
+                </div>
+                <p class="card-text">
+                  With French, Japanese and English translation.
+                </p>
+                  <div class="DL">
+                  <a href="#" class="btn btn-dark px-5 py-2 primary-btn mb-5">Download Now</a>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <div class="title">
+                  <h2 class="card-title">GIT</h2>
+                </div>
+                <p class="card-text">
+                  View the full project <br> on GIT
+                </p>
+                <div class="DL">
+                  <a href="#" class="btn btn-dark px-5 py-2 primary-btn mb-5">Clone</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section-3 container-fluid p-0 text-center">
+      <div class="row">
+        <div class="col-md-12 col-sm-12">
+          <h1>Our Models</h1>
+          <p>
+            Here are some of the models that we have created for you to use
+          </p>
+        </div>
+      </div>
+      <div class="platform row">
+        <div class="col-md-6 col-sm-12 text-right">
+          <div class="desktop btn shadow-lg">
+            <div class="d-flex flex-row justify-content-center">
+              <i class="fab fa-android fa-3x py-2 pr-3"></i>
+              <div class="text text-left">
+                <h3 class="pt-1 m-0">Android</h3>
+                <p class="p-0 m-0">On Play Store</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12 text-left">
+          <div class="desktop btn shadow-lg">
+            <div class="d-flex flex-row justify-content-center">
+              <i class="fas fa-mobile-alt fa-3x py-2 pr-3"></i>
+              <div class="text text-left">
+                <h3 class="pt-1 m-0">IOS</h3>
+                <p class="p-0 m-0">On App Store</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+  </main>
+  <footer>
+    <div class="container-fluid p-0">
+      <div class="row text-left">
+        <div class="col-md-5 col-sm-5">
+          <h4 class="text-light">About us</h4>
+          <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum maxime ea similique illum corrupti</p>
+        </div>
+        <div class="col-md-5 col-sm-12">
+          <h4 class="text-light">Newsletter</h4>
+          <p class="text-muted">Stay Updated</p>
+          <form class="form-inline">
+            <div class="col pl-0">
+              <div class="input-group pr-5">
+                <input type="text" class="form-control bg-dark text-white" id="inlineFormInputGroupUsername2" placeholder="Email">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <h4 class="text-light">Follow Us</h4>
+          <p class="text-muted">Let us be social</p>
+          <div class="column text-light">
+            <i href="https://www.facebook.com/kyutech/" class="fab fa-facebook-f"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-youtube"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function openMobileScene() {
+        if (navigator.xr) {
+            navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            if (supported) {
+                console.log('AR supported');
+                window.location.href = 'mobile.html';
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "AR not supported on this device !",
                 });
-            }else {
-                console.log("XR not supported in this browser");
             }
+            });
+        }else {
+            console.log("XR not supported in this browser");
         }
-    </script>
+    }
+  </script>
+  
+  <script src="js/Welcome.js"></script>
 </body>
+
 </html>
