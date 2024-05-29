@@ -1,3 +1,23 @@
+
+//Git hub traffic for the repository
+document.addEventListener("DOMContentLoaded", function() {
+  const token = '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'; //git token for the access to public repositories
+  // to modify generate your token and put yours
+  const repo = 'MartinQuivron/MyRobo2'; // Access to github repository of MyRobo2
+
+  fetch(`https://api.github.com/repos/${repo}/traffic/views`, {
+      headers: {
+          'Authorization': `token ${token}`
+      }
+  })
+  .then(response => response.json())
+  .then(data => {
+      const visitors = data.count; // Total visitors
+      document.querySelector('.rect.visitors h1').innerText = visitors;
+  })
+  .catch(error => console.error('Error:', error));
+});
+
 let nCount = selector => {
   $(selector).each(function () {
     $(this)
@@ -57,3 +77,4 @@ function scrollToTop() {
       behavior: 'smooth'
   });
 }
+
