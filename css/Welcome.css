@@ -16,7 +16,7 @@ section {
   --light-black: #2e2c2caf;
   --bggradient: linear-gradient(to bottom, #9a1673, #ffffff);
   --bggradient2: linear-gradient(to bottom, #ffffff, #2e2c2caf);
-  --bggradient3: linear-gradient(to bottom, #ffffff, #9a1673);
+  --bggradient3: linear-gradient(to bottom, #ffffff, rgba(0, 0, 0, 0.81));
   --bggradient4: linear-gradient(to bottom, #2e2c2caf, #ffffff);
   --light-gray: rgba(255, 255, 255, 0.877);
 }
@@ -25,30 +25,6 @@ header a {
   font-family: var(--Sniglet-font);
   font-size: 0.9em;
   color: whitesmoke;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 2px 15px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
 }
 
 header .nav-item:last-child {
@@ -68,6 +44,12 @@ header .navbar-brand:hover {
 
 header li .nav-link:hover {
   color: white;
+}
+
+/* Hover state for navbar-brand and nav-link when navbar is sticky */
+.sticky .navbar-nav .nav-item .nav-link:hover,
+.sticky .navbar-brand:hover {
+  color: #cd1cb2 !important; /* Use !important to override any other styles */
 }
 
 header li:not(.active) .nav-link:hover {
@@ -268,11 +250,12 @@ header .container .col-md-7 p {
 }
 
 /* Section 3 */
-
 .section-3 {
-  height: 70vmin;
+  min-height: 100vh; /* Ensures the section takes up at least the full viewport height */
   margin-top: 15vmin;
   background: var(--bggradient3);
+  padding: 2em 0;
+  overflow: hidden; /* Prevents scrolling within this section */
 }
 
 .section-3 .col-md-12 > h1 {
@@ -288,26 +271,75 @@ header .container .col-md-7 p {
   font-size: 3vmin;
 }
 
-.section-3 .desktop {
-  background: white;
-  display: inline-block;
-  border-radius: 3em;
-  padding: 2vmin 4.5vmin;
-  margin: 1em;
+.section-3 .card {
+  background: rgba(0, 0, 0, 0.215);
+  border-radius: 1em;
+  margin: 1em 1em;
+  /* Removed fixed height to prevent overflow */
+  flex: 1 1 auto; /* Flex property to distribute space */
 }
 
-.section-3 .desktop h3 {
-  font-size: 4vmin;
+.section-3 .card-body {
+  padding: 1vmin 1vmin 1vmin 1vmin; /* Double the padding */
 }
 
-.section-3 .desktop p {
-  font-size: 2vmin;
+.section-3 .sketchfab-embed-wrapper {
+  position: relative;
+  padding-bottom: 70.25%; /* 16:9 ratio is 56.25% */
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+  background: #f7f7f7;
+  border-radius: 1em;
 }
 
-.section-3 .platform .btn:hover {
-  
-  color: #169c3e;
+.section-3 .sketchfab-embed-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
+
+.section-3 .card-body h3 {
+  font-size: 2.6vmin; /* Increase font size for better readability */
+  font-weight: bold;
+  color: white;
+}
+
+/* Flexbox container to ensure content fits */
+.section-3 .row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.section-3 .col-md-12 {
+  flex: 1 1 100%;
+}
+
+.container2{
+  max-width: 3140px;
+}
+
+header .container2 .col-md-7 {
+  font-family: "Rubik", sans-serif;
+}
+
+header .container2 .col-md-7 h6 {
+  padding: 1vmin;
+  letter-spacing: 4px;
+}
+
+header .container2 .col-md-7 h1 {
+  font-size: 8.5vmin;
+  font-weight: bold;
+  padding: 0.1em 0em;
+}
+
+header .container2 .col-md-7 p {
+  padding: 1vmin 5vmin;
+}
+
 
 /* Footer */
 .border-radius {
@@ -338,14 +370,20 @@ footer .input-group .input-group-text {
   border: none;
 }
 
-footer .column i {
-  color: #dd2476;
+footer h4 {
+  color: rgba(255, 255, 255, 0.877);
 }
 
-/* It is Adjacent sibling combinator */
 
-footer .column i + i {
-  padding: 0 0.5em;
+footer:hover{
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.115);
+  transition: background-color 1s;
+}
+
+footer:hover h4{
+  color: #9a1673;
+  transition: color 1s;
 }
 
 .sticky {
@@ -356,3 +394,4 @@ footer .column i + i {
   z-index: 9999;
   transition: all 1.5s ease;
 }
+
