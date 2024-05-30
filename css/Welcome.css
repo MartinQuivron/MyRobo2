@@ -1,18 +1,22 @@
 @import url("https://fonts.googleapis.com/css?family=Acme|Lobster|Patua+One|Rubik|Sniglet");
+
+/* Ensures that the box model includes padding and border in the element's total width and height */
 * {
   box-sizing: border-box;
 }
 
+/* Hides horizontal overflow for header and section elements */
 header,
 section {
   overflow-x: hidden;
 }
 
+/* Define CSS variables for fonts, colors, and gradients */
 :root {
   --Sniglet-font: "Sniglet", cursive;
   --Rubik: "Rubik", cursive;
   --Patua: "Patua One", cursive;
-  --Lobster: "lobster", cursive;
+  --Lobster: "Lobster", cursive;
   --light-black: #2e2c2caf;
   --bggradient: linear-gradient(to bottom, #9a1673, #ffffff);
   --bggradient2: linear-gradient(to bottom, #ffffff, #2e2c2caf);
@@ -21,27 +25,34 @@ section {
   --light-gray: rgba(255, 255, 255, 0.877);
 }
 
+/* Styles for header links */
 header a {
   font-family: var(--Sniglet-font);
   font-size: 0.9em;
   color: whitesmoke;
 }
 
+/* Padding for the last nav item in the header */
 header .nav-item:last-child {
   padding-right: 10.5em;
 }
 
+/* Padding for all nav items in the header */
 header .nav-item {
   padding: 0.9em;
 }
 
+/* Padding for the navbar brand */
 header .navbar-brand {
   padding-left: 8rem;
 }
+
+/* Change color of navbar brand on hover */
 header .navbar-brand:hover {
   color: black;
 }
 
+/* Change color of nav link on hover */
 header li .nav-link:hover {
   color: white;
 }
@@ -52,71 +63,81 @@ header li .nav-link:hover {
   color: #cd1cb2 !important; /* Use !important to override any other styles */
 }
 
+/* Change color of non-active nav link on hover */
 header li:not(.active) .nav-link:hover {
   color: black;
 }
 
-
+/* Padding for the first column in header row */
 header .row .col-md-7 {
   padding: 22vmin 1vmin;
   padding-bottom: 35vmin;
 }
 
+/* Padding for the second column in header row */
 header .row .col-md-5 {
   padding: 4.2vmin 1vmin;
 }
 
+/* Margin and width for image in second column of header row */
 header .row .col-md-5 img {
   margin-top: 10vh;
   width: 90%;
 }
 
+/* Background gradient for header */
 header {
-  background: #9a1673;
-  /* fallback for old browsers */
+  background: #9a1673; /* Fallback for old browsers */
   background: var(--bggradient);
 }
 
+/* Font family for text in the first column of header */
 header .container .col-md-7 {
   font-family: "Rubik", sans-serif;
 }
 
+/* Padding and letter spacing for h6 in the first column of header */
 header .container .col-md-7 h6 {
   padding: 1vmin;
   letter-spacing: 4px;
 }
 
+/* Font size, weight, and padding for h1 in the first column of header */
 header .container .col-md-7 h1 {
   font-size: 8.5vmin;
   font-weight: bold;
   padding: 0.1em 0em;
 }
 
+/* Padding for paragraph in the first column of header */
 header .container .col-md-7 p {
   padding: 1vmin 5vmin;
 }
 
+/* Styles for primary button */
 .primary-btn {
   border-radius: 30px;
   font-weight: bold;
 }
 
-/********** section 1 **************/
-
+/* Section 1 styles */
 .section-1 {
   padding: 20vmin 0vmin;
 }
 
+/* Opacity, width, and border radius for images in section 1 */
 .section-1 .row .col-md-6 .koga img {
   opacity: 0.8;
   width: 80%;
   border-radius: 0.2em;
 }
 
+/* Position for the last column in section 1 */
 .section-1 .row .col-md-6:last-child {
   position: relative;
 }
 
+/* Styles for the panel in section 1 */
 .section-1 .row .col-md-6 .panel {
   position: absolute;
   top: 7vmin;
@@ -130,23 +151,26 @@ header .container .col-md-7 p {
   z-index: 1;
 }
 
+/* Font weight, padding, and size for h1 in the panel */
 .section-1 .row .col-md-6 .panel h1 {
   font-weight: bold;
   padding: 0.4em 0;
   font-size: 2em;
 }
 
+/* Font size and color for paragraph in the panel */
 .section-1 .row .col-md-6 .panel p {
   font-size: 0.9em;
   color: rgba(0, 0, 0, 0.5);
 }
 
-.vanish{
+/* Styles for vanish class */
+.vanish {
   height: 2vh;
   background: var(--bggradient2);
 }
-/*  Section 2  */
 
+/* Section 2 styles */
 .cover {
   width: 100%;
   height: 55vmin;
@@ -156,6 +180,7 @@ header .container .col-md-7 p {
   position: relative;
 }
 
+/* Styles for overlay in section 2 */
 .cover .overlay {
   position: absolute;
   top: 0;
@@ -165,6 +190,7 @@ header .container .col-md-7 p {
   z-index: 999;
 }
 
+/* Styles for content in section 2 */
 .cover .content {
   width: 100%;
   height: 100%;
@@ -172,18 +198,21 @@ header .container .col-md-7 p {
   padding-top: 19vmin;
 }
 
+/* Font family, size, and color for h1 in section 2 content */
 .cover .content > h1 {
   font-family: var(--Patua);
   font-size: 6vmin;
   color: whitesmoke;
 }
 
+/* Font family, size, and color for paragraph in section 2 content */
 .cover .content > p {
   font-family: var(--Rubik);
   font-size: 2vmin;
   color: #e5e5e5;
 }
 
+/* Styles for rect class in numbers section */
 .numbers .rect {
   position: relative;
   z-index: 1;
@@ -196,41 +225,49 @@ header .container .col-md-7 p {
   box-shadow: 1px 2px 50px 0px #9a1673;
 }
 
+/* Margin for numbers section */
 .numbers {
   margin-top: -15vmin;
 }
 
+/* Font size and color for h1 in rect class */
 .numbers .rect h1 {
   font-size: 5rem;
   color: #9a1673;
 }
 
+/* Font family for paragraph in rect class */
 .numbers .rect > p {
   font-family: var(--Patua);
 }
 
+/* Padding, font family, and size for h1 in Download section */
 .Download > h1 {
   padding-top: 15vmin;
   padding-bottom: 0.1em;
   font-family: var(--Lobster);
 }
 
+/* Color, font size, and padding for paragraph in Download section */
 .Download > p {
   color: var(--light-black);
   font-size: 3vmin;
   padding-bottom: 10vmin;
 }
 
+/* Width and margin for cards in Download section */
 .Download .cards .card {
   width: 22rem;
   margin: 3vmin 3vmin;
 }
 
+/* Padding and margin reset for cards */
 .cards div {
   padding: 0;
   margin: 0;
 }
 
+/* Background, color, padding, and font size for card titles */
 .cards .title {
   background: var(--light-black);
   color: white;
@@ -238,18 +275,19 @@ header .container .col-md-7 p {
   font-size: 2vmin;
 }
 
+/* Padding and color for card text */
 .card .card-text {
   padding: 2.5rem 3rem;
   color: var(--light-black);
 }
 
-
+/* Font size and padding for h2 in card body */
 .card-body .DL > h2 {
   font-size: 10vmin;
   padding: 1em 0.5em;
 }
 
-/* Section 3 */
+/* Section 3 styles */
 .section-3 {
   min-height: 100vh; /* Ensures the section takes up at least the full viewport height */
   margin-top: 15vmin;
@@ -258,12 +296,14 @@ header .container .col-md-7 p {
   overflow: hidden; /* Prevents scrolling within this section */
 }
 
+/* Padding, color, and font size for h1 in section 3 */
 .section-3 .col-md-12 > h1 {
   padding: 2em 0 0.5em 0;
   color: black;
   font-size: 6vmin;
 }
 
+/* Padding, color, and font size for paragraph in section 3 */
 .section-3 .col-md-12 > p {
   padding: 0 4em;
   padding-bottom: 2em;
@@ -271,18 +311,20 @@ header .container .col-md-7 p {
   font-size: 3vmin;
 }
 
+/* Background, border radius, margin, and flex properties for cards in section 3 */
 .section-3 .card {
   background: rgba(0, 0, 0, 0.215);
   border-radius: 1em;
   margin: 1em 1em;
-  /* Removed fixed height to prevent overflow */
   flex: 1 1 auto; /* Flex property to distribute space */
 }
 
+/* Padding for card body in section 3 */
 .section-3 .card-body {
   padding: 1vmin 1vmin 1vmin 1vmin; /* Double the padding */
 }
 
+/* Styles for Sketchfab embed wrapper in section 3 */
 .section-3 .sketchfab-embed-wrapper {
   position: relative;
   padding-bottom: 70.25%; /* 16:9 ratio is 56.25% */
@@ -293,6 +335,7 @@ header .container .col-md-7 p {
   border-radius: 1em;
 }
 
+/* Styles for iframe in Sketchfab embed wrapper */
 .section-3 .sketchfab-embed-wrapper iframe {
   position: absolute;
   top: 0;
@@ -301,91 +344,105 @@ header .container .col-md-7 p {
   height: 100%;
 }
 
+/* Font size, weight, and color for h3 in card body */
 .section-3 .card-body h3 {
   font-size: 2.6vmin; /* Increase font size for better readability */
   font-weight: bold;
   color: white;
 }
 
-/* Flexbox container to ensure content fits */
+/* Flexbox container to ensure content fits in section 3 */
 .section-3 .row {
   display: flex;
   flex-wrap: wrap;
 }
 
+/* Flex properties for column in section 3 */
 .section-3 .col-md-12 {
   flex: 1 1 100%;
 }
 
-.container2{
+/* Max width for container2 class */
+.container2 {
   max-width: 3140px;
 }
 
+/* Font family for text in the first column of container2 */
 header .container2 .col-md-7 {
   font-family: "Rubik", sans-serif;
 }
 
+/* Padding and letter spacing for h6 in the first column of container2 */
 header .container2 .col-md-7 h6 {
   padding: 1vmin;
   letter-spacing: 4px;
 }
 
+/* Font size, weight, and padding for h1 in the first column of container2 */
 header .container2 .col-md-7 h1 {
   font-size: 8.5vmin;
   font-weight: bold;
   padding: 0.1em 0em;
 }
 
+/* Padding for paragraph in the first column of container2 */
 header .container2 .col-md-7 p {
   padding: 1vmin 5vmin;
 }
 
-
-/* Footer */
+/* Footer styles */
 .border-radius {
   border-radius: 340px;
   width: 60%;
 }
 
+/* Background, overflow, and padding for footer */
 footer {
   background: rgba(0, 0, 0, 0.815);
   overflow-x: hidden;
   padding: 5vmin 5vmin;
 }
 
+/* Color for span in footer paragraph */
 footer p > span {
   color: #ff512f;
 }
 
+/* Remove border for footer input */
 footer input {
   border: none !important;
 }
 
+/* Color for placeholder text in footer input */
 footer input::placeholder {
   color: white !important;
 }
 
+/* Background and border styles for footer input group text */
 footer .input-group .input-group-text {
   background: var(--bggradient);
   border: none;
 }
 
+/* Color for h4 in footer */
 footer h4 {
   color: rgba(255, 255, 255, 0.877);
 }
 
-
-footer:hover{
+/* Hover state for footer */
+footer:hover {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.115);
   transition: background-color 1s;
 }
 
-footer:hover h4{
+/* Color change for h4 on footer hover */
+footer:hover h4 {
   color: #9a1673;
   transition: color 1s;
 }
 
+/* Sticky header styles */
 .sticky {
   position: fixed;
   top: 0;
@@ -394,4 +451,3 @@ footer:hover h4{
   z-index: 9999;
   transition: all 1.5s ease;
 }
-
