@@ -1,22 +1,22 @@
 
 // Welcome.js
 document.addEventListener("DOMContentLoaded", function() {
-    const token = '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'; //git token for the access to public repositories
-    // to modify generate your token and put yours
-    const repo = 'MartinQuivron/MyRobo2'; // Access to github repository of MyRobo2
+  const token = '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'; //git token for the access to public repositories
+  // to modify generate your token and put yours
+  const repo = 'MartinQuivron/MyRobo2'; // Access to github repository of MyRobo2
 
-    // Fetch traffic views
-    fetch(`https://api.github.com/repos/${repo}/traffic/views`, {
-        headers: {
-            'Authorization': `token ${token}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const visitors = data.count; // Total visitors of the project
-        document.querySelector('.rect.visitors h1').innerText = visitors;
-    })
-    .catch(error => console.error('Error fetching visitors:', error));
+  // Fetch traffic views
+  fetch(`https://api.github.com/repos/${repo}/traffic/views`, {
+    headers: {
+        'Authorization': `token ${token}`
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+      const uniqueVisitors = data.uniques; // Unique visitors
+      document.querySelector('.rect.visitors h1').innerText = uniqueVisitors;
+  })
+  .catch(error => console.error('Error fetching visitors:', error));
 
     // Fetch repository stars
     fetch(`https://api.github.com/repos/${repo}`, {
