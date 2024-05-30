@@ -1,7 +1,7 @@
 
 // Welcome.js
 document.addEventListener("DOMContentLoaded", function() {
-  const token = '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'; //git token for the access to public repositories
+  const token = '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'; //git token for the access to public repositories
   // to modify generate your token and put yours
   const repo = 'MartinQuivron/MyRobo2'; // Access to github repository of MyRobo2
 
