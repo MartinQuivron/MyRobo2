@@ -2,11 +2,15 @@
 <html>
 <head>
     <title>MyRobo2</title>
+    <!-- Include Babylon.js library -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <!-- Include Babylon.js loaders library -->
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Include SweetAlert2 library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        /* CSS styles for the HTML and body elements */
         html, body {
             overflow: hidden;
             width: 100%;
@@ -19,25 +23,33 @@
 </head>
 <body>
     <h1>Welcome to MyRobo2</h1>
-    <button onclick="openPCScene()">PC Scene</button>
+    <!-- Button to open PC Scene -->
+    <a href="pc.html" class="button">Cliquez ici</a>
+    <button href="pc.html">PC Scene</button>
+    <!-- Button to open Mobile Scene (XR) -->
     <button onclick="openMobileScene()">Mobile Scene (XR)</button>
 
     <script>
+        // Function to open the Mobile Scene
         function openMobileScene() {
+            // Check if XR is supported in the browser
             if (navigator.xr) {
+                // Check if immersive AR session is supported
                 navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-                if (supported) {
-                    console.log('AR supported');
-                    window.location.href = 'mobile.html';
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "AR not supported on this device !",
-                    });
-                }
+                    if (supported) {
+                        console.log('AR supported');
+                        // Redirect to mobile.html if AR is supported
+                        window.location.href = 'mobile.html';
+                    } else {
+                        // Show error message if AR is not supported
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "AR not supported on this device !",
+                        });
+                    }
                 });
-            }else {
+            } else {
                 console.log("XR not supported in this browser");
             }
         }
