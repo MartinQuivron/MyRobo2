@@ -62,11 +62,10 @@ var createScene = async function () {
     // Import meshes from external files
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
-        model.name = "kobuki";
         model.setEnabled(false);
     });
 
-    BABYLON.SceneLoader.ImportMesh("", "./assets/", "arminv.rdtf.glb", scene, function (meshes) {
+    BABYLON.SceneLoader.ImportMesh("", "./assets/", "flag_in_the_wind.glb", scene, function (meshes) {
         model1 = meshes[0];
         model1.setEnabled(false);
     });
@@ -157,7 +156,7 @@ var createScene = async function () {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             model.setEnabled(true);
             model.isVisible = true;
-            clonedMesh = model.clone('clone');
+            clonedMesh = model.clone('robot');
             model.isVisible = false;
             model.setEnabled(false);
             hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
@@ -169,7 +168,7 @@ var createScene = async function () {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             model1.setEnabled(true);
             model1.isVisible = true;
-            clonedMesh = model1.clone('clone');
+            clonedMesh = model1.clone('endPoint');
             model1.isVisible = false;
             model1.setEnabled(false);
             hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
@@ -180,7 +179,7 @@ var createScene = async function () {
     block.onPointerUpObservable.add(function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             model2.isVisible = true;
-            clonedMesh = model2.clone('clone');
+            clonedMesh = model2.clone('block');
             model2.isVisible = false;
             hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
             attachOwnPointerDragBehavior(clonedMesh);
@@ -189,7 +188,64 @@ var createScene = async function () {
 
     move.onPointerUpObservable.add(function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-            model.position = targetPosition;
+            const meshToMove = scene.getMeshByName('robot');
+            const targetMesh = scene.getMeshByName('endPoint');
+            /*
+            alert(targetMeshPosition);
+            alert(meshToMove.position);
+            alert(meshToMove.rotationQuaternion)
+
+
+            const directionVector = targetMesh.position.subtract(meshToMove.position);
+
+            const rotationQuaternion = BABYLON.Quaternion.RotationBetweenVectors(
+                BABYLON.Vector3.Forward(), // Mesh's forward direction (usually [0, 0, 1])
+                directionVector
+              );
+              meshToMove.rotationQuaternion = rotationQuaternion;
+*/
+            if (meshToMove && targetMesh) {
+                //meshToMove.position = targetMesh.position;
+
+                // visualisation
+                // Create a cylinder between meshToMove and targetMesh
+                const cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 0.1, diameterBottom: 0.1}, scene);
+                cylinder.position = meshToMove.position;
+                cylinder.rotationQuaternion = meshToMove.rotationQuaternion;
+                cylinder.lookAt(targetMesh.position);
+                cylinder.isVisible = false;
+
+                /*
+                const updateLookAt = () => {
+                    // Calculate the target position based on the current time
+                    const time = performance.now() / 1000; // Get time in seconds
+                    const targetPosition = targetMesh.position.clone();
+                    targetPosition.y += Math.sin(time) * 2; // Add some vertical movement
+                  
+                    // Update the cylinder's lookAt target
+                    cylinder.lookAt(targetPosition);
+                  
+                    // Request the next frame to continue the animation
+                    requestAnimationFrame(updateLookAt);
+                  };
+                  
+                  // Start the animation loop
+                  updateLookAt();
+                */
+
+                // Create a cylinder between meshToMove and targetMesh
+                // Create a line between meshToMove and targetMesh
+                const tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [meshToMove.position, targetMesh.position], radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
+                //const line = BABYLON.MeshBuilder.CreateLines("line", {points: [meshToMove.position, targetMesh.position]}, scene);
+                tube.color = new BABYLON.Color3(1, 0, 0);
+                tube.isVisible = true;
+               // cylinder.scaling.y = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
+               // cylinder.isVisible = false;
+                
+
+                BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 30, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                BABYLON.MeshBuilder.CreateTube("tube", { path: [meshToMove.position, targetMesh.position], radius: 0.015, instance: tube }, scene);
+            }
         }
     });
 
