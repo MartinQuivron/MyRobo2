@@ -1,0 +1,55 @@
+@media only screen and (max-width: 768px) {
+  /* Adjust padding for the navbar brand to 1rem on small screens */
+  header .navbar-brand {
+    padding-left: 1rem;
+  }
+
+  /* Change the position of the panel in section 1 to 'initial' and reset its width and height */
+  .section-1 .row .col-md-6 .panel {
+    position: initial;
+    width: initial;
+    height: initial;
+  }
+
+  /* Adjust the background position for the cover in section 2 on small screens */
+  .section-2 .cover {
+    background-position: -25vmin -10vmin;
+  }
+
+  /* Reduce the size of the rectangles in the numbers section on small screens */
+  .numbers .rect {
+    width: 10rem;
+    height: 8rem;
+  }
+
+  /* Reduce the font size of the numbers in the rectangles */
+  .numbers .rect h1 {
+    font-size: 2rem;
+  }
+
+  /* Adjust the height and padding for section 3 on small screens */
+  .section-3 {
+    height: inherit;
+    padding: 10vmin !important;
+  }
+
+  /* Adjust the padding for h1 elements in the rows of section 3 */
+  .section-3 .row h1 {
+    padding: 6vmin 4vmin;
+  }
+
+  /* Center-align text in the columns of the platform class in section 3 */
+  .section-3 .platform .col-md-6 {
+    text-align: center !important;
+  }
+
+  /* Increase the font size of icons in the desktop class in section 3 */
+  .section-3 .desktop i {
+    font-size: 8vmin;
+  }
+
+  /* Add top margin to columns in the footer on small screens */
+  footer .row .col-md-2 {
+    margin-top: 8vmin;
+  }
+}
