@@ -70,7 +70,32 @@ var createScene = async function () {
       model1.setEnabled(false);
   });
 
+
+  // Create a GUI rectangle to represent the black block
+    var blackBlock = new BABYLON.GUI.Rectangle("blackBlock");
+    blackBlock.width = "90%";
+    blackBlock.height = "90%";
+    blackBlock.color = "black";
+    blackBlock.thickness = 0;
+    blackBlock.background = "black";
+    blackBlock.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    blackBlock.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+
+    // Add the GUI rectangle to the advanced texture
+    advancedTexture.addControl(blackBlock);
+    
   // Create buttons for user interaction
+  var vaccum = BABYLON.GUI.Button.CreateSimpleButton("vaccum", "Vaccum");
+    vaccum.width = "45%";
+    vaccum.height = "20%";
+    vaccum.color = "white";
+    vaccum.cornerRadius = 20;
+    vaccum.background = "green";
+    vaccum.top = "-25%";
+    vaccum.left = "5%";
+    vaccum.fontSize = "40px";
+    vaccum.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+
   var placeBtn = BABYLON.GUI.Button.CreateSimpleButton("placeBtn", "Place model");
   placeBtn.width = "25%";
   placeBtn.height = "10%";
@@ -98,7 +123,7 @@ var createScene = async function () {
   block.height = "10%";
   block.color = "white";
   block.cornerRadius = 20;
-  block.background = "green";
+  block.background = "red";
   block.top = "35%";
   block.left = "70%";
   block.fontSize = "40px";
@@ -116,6 +141,7 @@ var createScene = async function () {
   move.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
 
   // Add buttons to the advanced texture
+  advancedTexture.addControl(vaccum);
   advancedTexture.addControl(endPoint);
   advancedTexture.addControl(placeBtn);
   advancedTexture.addControl(block);
