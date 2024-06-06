@@ -30,7 +30,7 @@ When you start the application, click the button for AR function in the lower ri
 If you want to develop for the long term, we recommend using Apache.
 If you want to use it for a short term, you can use a script to set up a web server in python.
 
-To run the website enter this command:
+To run the project enter this command:
 ```
 python3 https_server.py
 ```
