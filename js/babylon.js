@@ -63,6 +63,12 @@ var createScene = async function () {
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
         model.setEnabled(false);
+        const cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 0.2, diameterTop: 0.32, diameterBottom: 0.32}, scene);
+        cylinder.position = model.position;
+        cylinder.rotationQuaternion = model.rotationQuaternion;
+        cylinder.visibility = 0.5;
+        cylinder.isVisible = true;
+        cylinder.parent = model;
     });
 
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "flag_in_the_wind.glb", scene, function (meshes) {
@@ -207,14 +213,8 @@ var createScene = async function () {
             if (meshToMove && targetMesh) {
                 //meshToMove.position = targetMesh.position;
 
-                // visualisation
                 // Create a cylinder between meshToMove and targetMesh
-                const cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 0.1, diameterBottom: 0.1}, scene);
-                cylinder.position = meshToMove.position;
-                cylinder.rotationQuaternion = meshToMove.rotationQuaternion;
-                cylinder.lookAt(targetMesh.position);
-                cylinder.isVisible = false;
-
+                meshToMove.lookAt(targetMesh.position);
                 /*
                 const updateLookAt = () => {
                     // Calculate the target position based on the current time
@@ -235,16 +235,41 @@ var createScene = async function () {
 
                 // Create a cylinder between meshToMove and targetMesh
                 // Create a line between meshToMove and targetMesh
-                const tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [meshToMove.position, targetMesh.position], radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
+
+                function lerp(start, end, t) {
+                    return start+(end-start)*t;
+                }
+
+                var points = [];
+                for (let i = 0; i < 70; i++) {
+                    const t = i / 70;
+                    const x = lerp(meshToMove.position.x, targetMesh.position.x, t);
+                    const y = lerp(meshToMove.position.y, targetMesh.position.y, t);
+                    const z = lerp(meshToMove.position.z, targetMesh.position.z, t);
+                    points.push(new BABYLON.Vector3(x, y, z));
+                }
+
+                //var tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [meshToMove.position, targetMesh.position], radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
                 //const line = BABYLON.MeshBuilder.CreateLines("line", {points: [meshToMove.position, targetMesh.position]}, scene);
-                tube.color = new BABYLON.Color3(1, 0, 0);
-                tube.isVisible = true;
+                //tube.color = new BABYLON.Color3(1, 0, 0);
+                //tube.isVisible = true;
                // cylinder.scaling.y = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
                // cylinder.isVisible = false;
                 
 
-                BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 30, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                BABYLON.MeshBuilder.CreateTube("tube", { path: [meshToMove.position, targetMesh.position], radius: 0.015, instance: tube }, scene);
+                var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 30, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                //var currentFrame = scene.getAnimationByName("moveAnimation").currentFrame;
+                //alert(currentFrame);
+                //function createTube(){
+                //    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points, radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
+                //    tube.dispose();
+                //}
+                for (let i = 0; i < 29; i++) {
+                    
+                    //alert(points.slice(i));
+                   const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points.slice(i), radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
+                   //tube.dispose();
+                }
             }
         }
     });
