@@ -1,9 +1,8 @@
 // Variable to track the button presses
 var buttonPressed = 0;
-var advancedTexture; // Declare advancedTexture at a higher scope
 
 // Function to handle button clicks
-function handleButtonClick(buttonId) {
+function handleButtonClick(buttonId, advancedTexture) {
     buttonPressed = buttonId;
     console.log("Button pressed: " + buttonPressed);
 
@@ -12,8 +11,14 @@ function handleButtonClick(buttonId) {
         if (control instanceof BABYLON.GUI.Rectangle || control instanceof BABYLON.GUI.Button) {
             control.isVisible = false;
             control.isEnabled = false;
+            console.log("Control hidden: " + control.name);
         }
     });
+
+    // Trigger a render update
+    engine.beginFrame();
+    scene.render();
+    engine.endFrame();
 }
 
 // Function to create buttons
@@ -31,7 +36,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
     advancedTexture.addControl(button);
 
     button.onPointerClickObservable.add(function() {
-        handleButtonClick(button.name);
+        handleButtonClick(button.name, advancedTexture);
     });
 
     return button;
@@ -46,6 +51,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.left = left;
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
+    
 
     // Create an image
     var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
@@ -74,11 +80,38 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
                 buttonId = 4;
                 break;
         }
-        handleButtonClick(buttonId);
+        handleButtonClick(buttonId, advancedTexture);
     });
 
     return buttonContainer;
 }
+
+// Function to open PC scene
+function openPCScene() {
+    // TODO: Add implementation
+}
+
+// Get the canvas element
+var canvas = document.getElementById("renderCanvas");
+
+// Function to start the render loop
+var startRenderLoop = function(engine, canvas) {
+    engine.runRenderLoop(function() {
+        if (sceneToRender && sceneToRender.activeCamera) {
+            sceneToRender.render();
+        }
+    });
+}
+
+// Initialize variables
+var engine = null;
+var scene = null;
+var sceneToRender = null;
+
+// Function to create the default engine
+var createDefaultEngine = function() {
+    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
+};
 
 // Function to create the scene
 var createScene = async function() {
@@ -101,7 +134,7 @@ var createScene = async function() {
     ground.isVisible = false;
 
     // Create an advanced texture for GUI
-    advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
     // Define start and end positions for animation
     const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
@@ -197,18 +230,6 @@ var createScene = async function() {
     return scene;
 };
 
-// Function to request full screen
-function requestFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) { // Firefox
-        element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-        element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) { // IE/Edge
-        element.msRequestFullscreen();
-    }
-}
 
 // Initialize the scene and engine
 window.initFunction = async function() {
@@ -226,8 +247,7 @@ window.initFunction = async function() {
     startRenderLoop(engine, canvas);
     window.scene = createScene();
 
-    // Request full screen
-    requestFullscreen(canvas);
+    
 };
 
 // Start the initialization process
