@@ -1,3 +1,21 @@
+// Variable to track the button presses
+var buttonPressed = 0;
+var advancedTexture; // Declare advancedTexture at a higher scope
+
+// Function to handle button clicks
+function handleButtonClick(buttonId) {
+    buttonPressed = buttonId;
+    console.log("Button pressed: " + buttonPressed);
+
+    // Hide and disable all buttons
+    advancedTexture.getDescendants().forEach(control => {
+        if (control instanceof BABYLON.GUI.Rectangle || control instanceof BABYLON.GUI.Button) {
+            control.isVisible = false;
+            control.isEnabled = false;
+        }
+    });
+}
+
 // Function to create buttons
 function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment, advancedTexture) {
     var button = BABYLON.GUI.Button.CreateSimpleButton(name, text);
@@ -11,35 +29,56 @@ function createButton(name, text, width, height, color, cornerRadius, background
     button.fontSize = fontSize;
     button.horizontalAlignment = horizontalAlignment;
     advancedTexture.addControl(button);
+
+    button.onPointerClickObservable.add(function() {
+        handleButtonClick(button.name);
+    });
+
     return button;
 }
 
-// Function to open PC scene
-function openPCScene() {
-    // TODO: Add implementation
-}
+function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius) {
+    // Create a button container
+    var buttonContainer = new BABYLON.GUI.Rectangle(name);
+    buttonContainer.width = width;
+    buttonContainer.height = height;
+    buttonContainer.top = top;
+    buttonContainer.left = left;
+    buttonContainer.horizontalAlignment = horizontalAlignment;
+    buttonContainer.cornerRadius = cornerRadius;
 
-// Get the canvas element
-var canvas = document.getElementById("renderCanvas");
+    // Create an image
+    var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
+    image.width = "100%";
+    image.height = "100%";
 
-// Function to start the render loop
-var startRenderLoop = function(engine, canvas) {
-    engine.runRenderLoop(function() {
-        if (sceneToRender && sceneToRender.activeCamera) {
-            sceneToRender.render();
+    // Add the image to the button container
+    buttonContainer.addControl(image);
+
+    // Add the button container to the advanced texture
+    advancedTexture.addControl(buttonContainer);
+
+    buttonContainer.onPointerClickObservable.add(function() {
+        var buttonId = 0;
+        switch (name) {
+            case "vaccum":
+                buttonId = 1;
+                break;
+            case "roboticArm":
+                buttonId = 2;
+                break;
+            case "drone":
+                buttonId = 3;
+                break;
+            case "mower":
+                buttonId = 4;
+                break;
         }
+        handleButtonClick(buttonId);
     });
+
+    return buttonContainer;
 }
-
-// Initialize variables
-var engine = null;
-var scene = null;
-var sceneToRender = null;
-
-// Function to create the default engine
-var createDefaultEngine = function() {
-    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
-};
 
 // Function to create the scene
 var createScene = async function() {
@@ -62,7 +101,7 @@ var createScene = async function() {
     ground.isVisible = false;
 
     // Create an advanced texture for GUI
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
     // Define start and end positions for animation
     const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
@@ -87,26 +126,44 @@ var createScene = async function() {
         model1.setEnabled(false);
     });
 
-    // Create a GUI rectangle to represent the black block
-    var blackBlock = new BABYLON.GUI.Rectangle("blackBlock");
-    blackBlock.width = "95%";
-    blackBlock.height = "97%";
-    blackBlock.color = "black";
-    blackBlock.alpha = 0.6;
-    blackBlock.thickness = 0;
-    blackBlock.background = "black";
-    blackBlock.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    blackBlock.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-
+    function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize) {
+        const rectangle = new BABYLON.GUI.Rectangle(name);
+        rectangle.width = width;
+        rectangle.height = height;
+        rectangle.color = color;
+        rectangle.thickness = 0;
+        rectangle.background = color; // Use the color for the background
+        rectangle.alpha = alpha; // Set the transparency of the rectangle
+        rectangle.cornerRadius = cornerRadius;
+        rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    
+        // Create a text block
+        const textBlock = new BABYLON.GUI.TextBlock();
+        textBlock.text = text;
+        textBlock.color = "White";
+        textBlock.fontSize = fontSize;
+        textBlock.fontFamily = "Monaco";
+        textBlock.fontWeight = "bold";
+        textBlock.alpha = 1; // Keep the text fully opaque
+        textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        textBlock.top = "15%"; // Adjust position of the text
+        rectangle.addControl(textBlock);
+    
+        return rectangle;
+    }
+    
     // Add the GUI rectangle to the advanced texture
+    var blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
     advancedTexture.addControl(blackBlock);
 
     // Create buttons using the createButton function
-    createButton("vaccum", "Vaccum", "42%", "20%", "#9a1673", 50, "white", "0", "6%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture);
-    createButton("roboticArm", "Robotic Arm", "42%", "20%", "#9a1673", 50, "white", "0%", "52%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture);
-    createButton("drone", "Delivery Drone", "42%", "20%", "#9a1673", 50, "white", "25%", "6%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture);
-    createButton("mower", "Land Mower", "42%", "20%", "#9a1673", 50, "white", "25%", "52%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture);
-
+    createButtonImaged("vaccum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    
     // Create a marker mesh
     const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
     marker.isVisible = false;
