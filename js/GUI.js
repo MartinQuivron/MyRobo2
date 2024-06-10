@@ -1,5 +1,24 @@
-// Variable to track the button presses
-var buttonPressed = 0;
+// Get the canvas element
+var canvas = document.getElementById("renderCanvas");
+
+// Function to start the render loop
+var startRenderLoop = function(engine, canvas) {
+    engine.runRenderLoop(function() {
+        if (sceneToRender && sceneToRender.activeCamera) {
+            sceneToRender.render();
+        }
+    });
+}
+
+// Initialize variables
+var engine = null;
+var scene = null;
+var sceneToRender = null;
+
+// Function to create the default engine
+var createDefaultEngine = function() {
+    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
+};
 
 // Function to handle button clicks
 function handleButtonClick(buttonId, advancedTexture) {
@@ -90,28 +109,6 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
 function openPCScene() {
     // TODO: Add implementation
 }
-
-// Get the canvas element
-var canvas = document.getElementById("renderCanvas");
-
-// Function to start the render loop
-var startRenderLoop = function(engine, canvas) {
-    engine.runRenderLoop(function() {
-        if (sceneToRender && sceneToRender.activeCamera) {
-            sceneToRender.render();
-        }
-    });
-}
-
-// Initialize variables
-var engine = null;
-var scene = null;
-var sceneToRender = null;
-
-// Function to create the default engine
-var createDefaultEngine = function() {
-    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
-};
 
 // Function to create the scene
 var createScene = async function() {
@@ -227,9 +224,11 @@ var createScene = async function() {
         }
     });
 
+    // Variable to track the button presses
+    var buttonPressed = 0;
+
     return scene;
 };
-
 
 // Initialize the scene and engine
 window.initFunction = async function() {
@@ -246,8 +245,6 @@ window.initFunction = async function() {
     if (!engine) throw 'engine should not be null.';
     startRenderLoop(engine, canvas);
     window.scene = createScene();
-
-    
 };
 
 // Start the initialization process
