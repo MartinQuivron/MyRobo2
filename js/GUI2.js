@@ -49,7 +49,6 @@ var createScene = async function () {
   // Define start and end positions for animation
   const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
 
-
   // Create a box mesh
   var model2 = new BABYLON.MeshBuilder.CreateBox("box", {width: 0.2, height: 0.2, depth: 0.2}, scene);
   model2.rotationQuaternion = new BABYLON.Quaternion();
@@ -70,50 +69,91 @@ var createScene = async function () {
       model1.setEnabled(false);
   });
 
+  // Main background
+  function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize) {
+    const rectangle = new BABYLON.GUI.Rectangle(name);
+    rectangle.width = width;
+    rectangle.height = height;
+    rectangle.color = color;
+    rectangle.thickness = 0;
+    rectangle.background = color; // Use the color for the background
+    rectangle.alpha = alpha; // Set the transparency of the rectangle
+    rectangle.cornerRadius = cornerRadius;
+    rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+
+    // Create a text block
+    const textBlock = new BABYLON.GUI.TextBlock();
+    textBlock.text = text;
+    textBlock.color = "White";
+    textBlock.fontSize = fontSize;
+    textBlock.fontFamily = "Monaco";
+    textBlock.fontWeight = "bold";
+    textBlock.alpha = 1; // Keep the text fully opaque
+    textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    textBlock.top = "15%"; // Adjust position of the text
+    rectangle.addControl(textBlock);
+
+    return rectangle;
+  }
+
+  // Add the GUI rectangle to the advanced texture
+  var blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
+  advancedTexture.addControl(blackBlock);
+
+  // Function to create buttons
+  function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment) {
+    var button = BABYLON.GUI.Button.CreateSimpleButton(name, text);
+    button.width = width;
+    button.height = height;
+    button.color = color;
+    button.cornerRadius = cornerRadius;
+    button.background = background;
+    button.top = top;
+    button.left = left;
+    button.fontSize = fontSize;
+    button.horizontalAlignment = horizontalAlignment;
+
+    return button;
+  }
+  function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius) {
+    // Create a button container
+    var buttonContainer = new BABYLON.GUI.Rectangle(name);
+    buttonContainer.width = width;
+    buttonContainer.height = height;
+    buttonContainer.top = top;
+    buttonContainer.left = left;
+    buttonContainer.horizontalAlignment = horizontalAlignment;
+    buttonContainer.cornerRadius = cornerRadius;
+    buttonContainer.thickness = 0; // optional, to remove border
+
+    // Create an image
+    var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
+    image.width = "100%";
+    image.height = "100%";
+
+    // Add the image to the button container
+    buttonContainer.addControl(image);
+
+    // Add the button container to the advanced texture
+    advancedTexture.addControl(buttonContainer);
+
+    return buttonContainer;
+  }
+
+  // Create buttons using the createButton function
+  createButtonImaged("vaccum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+
+
   // Create buttons for user interaction
-  var placeBtn = BABYLON.GUI.Button.CreateSimpleButton("placeBtn", "Place model");
-  placeBtn.width = "25%";
-  placeBtn.height = "10%";
-  placeBtn.color = "white";
-  placeBtn.cornerRadius = 20;
-  placeBtn.background = "green";
-  placeBtn.top = "35%";
-  placeBtn.left = "5%";
-  placeBtn.fontSize = "40px";
-  placeBtn.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-  var endPoint = BABYLON.GUI.Button.CreateSimpleButton("endPoint", "Place endpoint");
-  endPoint.width = "25%";
-  endPoint.height = "10%";
-  endPoint.color = "white";
-  endPoint.cornerRadius = 20;
-  endPoint.background = "green";
-  endPoint.top = "35%";
-  endPoint.left = "38%";
-  endPoint.fontSize = "40px";
-  endPoint.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-  var block = BABYLON.GUI.Button.CreateSimpleButton("block", "Place block");
-  block.width = "25%";
-  block.height = "10%";
-  block.color = "white";
-  block.cornerRadius = 20;
-  block.background = "green";
-  block.top = "35%";
-  block.left = "70%";
-  block.fontSize = "40px";
-  block.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-  var move = BABYLON.GUI.Button.CreateSimpleButton("move", "Move model");
-  move.width = "25%";
-  move.height = "10%";
-  move.color = "white";
-  move.cornerRadius = 20;
-  move.background = "green";
-  move.top = "45%";
-  move.left = "38%";
-  move.fontSize = "40px";
-  move.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  var placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  var endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  var block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  var move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
   // Add buttons to the advanced texture
   advancedTexture.addControl(endPoint);
@@ -190,58 +230,12 @@ var createScene = async function () {
       if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           const meshToMove = scene.getMeshByName('robot');
           const targetMesh = scene.getMeshByName('endPoint');
-          /*
-          alert(targetMeshPosition);
-          alert(meshToMove.position);
-          alert(meshToMove.rotationQuaternion)
 
-
-          const directionVector = targetMesh.position.subtract(meshToMove.position);
-
-          const rotationQuaternion = BABYLON.Quaternion.RotationBetweenVectors(
-              BABYLON.Vector3.Forward(), // Mesh's forward direction (usually [0, 0, 1])
-              directionVector
-            );
-            meshToMove.rotationQuaternion = rotationQuaternion;
-*/
           if (meshToMove && targetMesh) {
-              //meshToMove.position = targetMesh.position;
-
-              // visualisation
-              // Create a cylinder between meshToMove and targetMesh
-              const cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 0.1, diameterBottom: 0.1}, scene);
-              cylinder.position = meshToMove.position;
-              cylinder.rotationQuaternion = meshToMove.rotationQuaternion;
-              cylinder.lookAt(targetMesh.position);
-              cylinder.isVisible = false;
-
-              /*
-              const updateLookAt = () => {
-                  // Calculate the target position based on the current time
-                  const time = performance.now() / 1000; // Get time in seconds
-                  const targetPosition = targetMesh.position.clone();
-                  targetPosition.y += Math.sin(time) * 2; // Add some vertical movement
-                
-                  // Update the cylinder's lookAt target
-                  cylinder.lookAt(targetPosition);
-                
-                  // Request the next frame to continue the animation
-                  requestAnimationFrame(updateLookAt);
-                };
-                
-                // Start the animation loop
-                updateLookAt();
-              */
-
-              // Create a cylinder between meshToMove and targetMesh
-              // Create a line between meshToMove and targetMesh
+              // Visualisation
               const tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [meshToMove.position, targetMesh.position], radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
-              //const line = BABYLON.MeshBuilder.CreateLines("line", {points: [meshToMove.position, targetMesh.position]}, scene);
               tube.color = new BABYLON.Color3(1, 0, 0);
               tube.isVisible = true;
-             // cylinder.scaling.y = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
-             // cylinder.isVisible = false;
-              
 
               BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 30, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
               BABYLON.MeshBuilder.CreateTube("tube", { path: [meshToMove.position, targetMesh.position], radius: 0.015, instance: tube }, scene);
@@ -250,30 +244,30 @@ var createScene = async function () {
   });
 
   // Function to attach pointer drag behavior to a mesh
-  function attachOwnPointerDragBehavior(mesh){
+  function attachOwnPointerDragBehavior(mesh) {
       var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
       pointerDragBehavior.moveAttached = false;
       pointerDragBehavior.useObjectOrienationForDragging = false;
-      pointerDragBehavior.onDragStartObservable.add((event)=>{
+      pointerDragBehavior.onDragStartObservable.add((event) => {
           console.log("startDrag");
           placeBtn.isVisible = false;
           endPoint.isVisible = false;
           block.isVisible = false;
-      })
-      pointerDragBehavior.onDragObservable.add((event)=>{
+      });
+      pointerDragBehavior.onDragObservable.add((event) => {
           console.log("drag");
           placeBtn.isVisible = false;
           endPoint.isVisible = false;
           block.isVisible = false;
           pointerDragBehavior.attachedNode.position.x += event.delta.x;
           pointerDragBehavior.attachedNode.position.z += event.delta.z;
-      })
-      pointerDragBehavior.onDragEndObservable.add((event)=>{
+      });
+      pointerDragBehavior.onDragEndObservable.add((event) => {
           console.log("endDrag");
           placeBtn.isVisible = true;
           endPoint.isVisible = true;
           block.isVisible = true;
-      })
+      });
       mesh.addBehavior(pointerDragBehavior);
   }
 

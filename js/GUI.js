@@ -1,3 +1,8 @@
+// Function to open PC scene
+function openPCScene() {
+    // TODO: Add implementation
+}
+
 // Get the canvas element
 var canvas = document.getElementById("renderCanvas");
 
@@ -105,10 +110,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
-// Function to open PC scene
-function openPCScene() {
-    // TODO: Add implementation
-}
+
 
 // Function to create the scene
 var createScene = async function() {
