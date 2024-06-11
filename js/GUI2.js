@@ -19,9 +19,11 @@ var startRenderLoop = function (engine, canvas) {
 var engine = null;
 var scene = null;
 var sceneToRender = null;
+var advancedTexture = null;
+var blackBlock = null;
 
 // Function to create the default engine
-var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false}); };
 
 // Function to create the scene
 var createScene = async function () {
@@ -44,7 +46,7 @@ var createScene = async function () {
   ground.isVisible = false;
 
   // Create an advanced texture for GUI
-  var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+  advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
   // Define start and end positions for animation
   const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
@@ -99,8 +101,26 @@ var createScene = async function () {
   }
 
   // Add the GUI rectangle to the advanced texture
-  var blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
+  blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
+
+  // Add the "Home" button
+  var homeButton = BABYLON.GUI.Button.CreateSimpleButton("homeButton", "Home");
+  homeButton.width = "20%";
+  homeButton.height = "10%";
+  homeButton.color = "white";
+  homeButton.cornerRadius = 20;
+  homeButton.background = "red";
+  homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  homeButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+  homeButton.left = "0%";
+  homeButton.top = "-40%";
+
+  homeButton.onPointerUpObservable.add(function() {
+      resetScene();
+  });
+
   advancedTexture.addControl(blackBlock);
+  blackBlock.addControl(homeButton);
 
   // Function to create buttons
   function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment) {
@@ -117,6 +137,7 @@ var createScene = async function () {
 
     return button;
   }
+
   function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius) {
     // Create a button container
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
@@ -142,12 +163,11 @@ var createScene = async function () {
     return buttonContainer;
   }
 
-  // Create buttons using the createButton function
-  createButtonImaged("vaccum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-
+  // Create image buttons
+  var vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  var roboticArmBtn = createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  var droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  var mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
 
   // Create buttons for user interaction
   var placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
@@ -155,11 +175,54 @@ var createScene = async function () {
   var block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
   var move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
+  // Initially hide and disable the buttons
+  placeBtn.isVisible = false;
+  placeBtn.isEnabled = false;
+  endPoint.isVisible = false;
+  endPoint.isEnabled = false;
+  block.isVisible = false;
+  block.isEnabled = false;
+  move.isVisible = false;
+  move.isEnabled = false;
+
   // Add buttons to the advanced texture
   advancedTexture.addControl(endPoint);
   advancedTexture.addControl(placeBtn);
   advancedTexture.addControl(block);
   advancedTexture.addControl(move);
+
+  // Function to hide all image buttons
+  function hideAllButtons() {
+    vacumBtn.isVisible = false;
+    vacumBtn.isEnabled = false;
+    roboticArmBtn.isVisible = false;
+    roboticArmBtn.isEnabled = false;
+    droneBtn.isVisible = false;
+    droneBtn.isEnabled = false;
+    mowerBtn.isVisible = false;
+    mowerBtn.isEnabled = false;
+    blackBlock.isVisible = false;
+  }
+
+  // Function to show interaction buttons and hide all image buttons
+  function showInteractionButtons() {
+    placeBtn.isVisible = true;
+    placeBtn.isEnabled = true;
+    endPoint.isVisible = true;
+    endPoint.isEnabled = true;
+    block.isVisible = true;
+    block.isEnabled = true;
+    move.isVisible = true;
+    move.isEnabled = true;
+
+    // Hide and disable all image buttons
+    hideAllButtons();
+  }
+
+  vacumBtn.onPointerUpObservable.add(showInteractionButtons);
+  roboticArmBtn.onPointerUpObservable.add(showInteractionButtons);
+  droneBtn.onPointerUpObservable.add(showInteractionButtons);
+  mowerBtn.onPointerUpObservable.add(showInteractionButtons);
 
   // Create a marker mesh
   const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -191,7 +254,6 @@ var createScene = async function () {
       }
   });
 
-  // Handle button click events
   placeBtn.onPointerUpObservable.add(function() {
       if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           model.setEnabled(true);
@@ -273,6 +335,38 @@ var createScene = async function () {
 
   return scene;
 };
+
+// Function to reset the scene
+function resetScene() {
+  // Dispose the current scene
+  if (scene) {
+      scene.dispose();
+  }
+
+  // Recreate the scene
+  scene = createScene();
+
+  // Hide interaction buttons
+  placeBtn.isVisible = false;
+  placeBtn.isEnabled = false;
+  endPoint.isVisible = false;
+  endPoint.isEnabled = false;
+  block.isVisible = false;
+  block.isEnabled = false;
+  move.isVisible = false;
+  move.isEnabled = false;
+
+  // Show the black block and image buttons
+  blackBlock.isVisible = true;
+  vacumBtn.isVisible = true;
+  vacumBtn.isEnabled = true;
+  roboticArmBtn.isVisible = true;
+  roboticArmBtn.isEnabled = true;
+  droneBtn.isVisible = true;
+  droneBtn.isEnabled = true;
+  mowerBtn.isVisible = true;
+  mowerBtn.isEnabled = true;
+}
 
 // Initialize the scene and engine
 window.initFunction = async function() {
