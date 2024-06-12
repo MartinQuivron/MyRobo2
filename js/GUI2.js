@@ -21,6 +21,22 @@ var scene = null;
 var sceneToRender = null;
 var advancedTexture = null;
 var blackBlock = null;
+var homeButton = null; // Declare homeButton globally
+
+// Interactive buttons
+var placeBtn = null;
+var endPoint = null;
+var block = null;
+var move = null;
+
+// Image buttons
+var vacumBtn = null;
+var roboticArmBtn = null;
+var droneBtn = null;
+var mowerBtn = null;
+
+// WebXR variables
+var xrHelper = null;
 
 // Function to create the default engine
 var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false}); };
@@ -104,7 +120,7 @@ var createScene = async function () {
   blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
 
   // Add the "Home" button
-  var homeButton = BABYLON.GUI.Button.CreateSimpleButton("homeButton", "Home");
+  homeButton = BABYLON.GUI.Button.CreateSimpleButton("homeButton", "Home");
   homeButton.width = "20%";
   homeButton.height = "10%";
   homeButton.color = "white";
@@ -112,15 +128,15 @@ var createScene = async function () {
   homeButton.background = "red";
   homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   homeButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-  homeButton.left = "0%";
-  homeButton.top = "-40%";
+  homeButton.left = "5%";
+  homeButton.top = "-30%";
 
   homeButton.onPointerUpObservable.add(function() {
       resetScene();
   });
 
   advancedTexture.addControl(blackBlock);
-  blackBlock.addControl(homeButton);
+  advancedTexture.addControl(homeButton); // Add homeButton directly to advancedTexture
 
   // Function to create buttons
   function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment) {
@@ -164,16 +180,16 @@ var createScene = async function () {
   }
 
   // Create image buttons
-  var vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  var roboticArmBtn = createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  var droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-  var mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  roboticArmBtn = createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+  mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
 
   // Create buttons for user interaction
-  var placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-  var endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-  var block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-  var move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+  move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
   // Initially hide and disable the buttons
   placeBtn.isVisible = false;
@@ -215,8 +231,10 @@ var createScene = async function () {
     move.isVisible = true;
     move.isEnabled = true;
 
-    // Hide and disable all image buttons
+    // Hide and disable all image buttons except the Home button
     hideAllButtons();
+    homeButton.isVisible = true;
+    homeButton.isEnabled = true;
   }
 
   vacumBtn.onPointerUpObservable.add(showInteractionButtons);
@@ -230,14 +248,14 @@ var createScene = async function () {
   marker.rotationQuaternion = new BABYLON.Quaternion();
 
   // Create XR experience
-  const xr = await scene.createDefaultXRExperienceAsync({
+  xrHelper = await scene.createDefaultXRExperienceAsync({
       uiOptions: {
           sessionMode: "immersive-ar",
       },
       optionalFeatures: true,
   });
 
-  const fm = xr.baseExperience.featuresManager;
+  const fm = xrHelper.baseExperience.featuresManager;
   const xrTest = fm.enableFeature(BABYLON.WebXRHitTest, "latest");
 
   // Handle hit test results
@@ -255,7 +273,7 @@ var createScene = async function () {
   });
 
   placeBtn.onPointerUpObservable.add(function() {
-      if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      if (hitTest && xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           model.setEnabled(true);
           model.isVisible = true;
           clonedMesh = model.clone('robot');
@@ -267,7 +285,7 @@ var createScene = async function () {
   });
 
   endPoint.onPointerUpObservable.add(function() {
-      if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      if (hitTest && xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           model1.setEnabled(true);
           model1.isVisible = true;
           clonedMesh = model1.clone('endPoint');
@@ -279,7 +297,7 @@ var createScene = async function () {
   });
 
   block.onPointerUpObservable.add(function() {
-      if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      if (hitTest && xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           model2.isVisible = true;
           clonedMesh = model2.clone('block');
           model2.isVisible = false;
@@ -289,7 +307,7 @@ var createScene = async function () {
   });
 
   move.onPointerUpObservable.add(function() {
-      if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      if (hitTest && xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
           const meshToMove = scene.getMeshByName('robot');
           const targetMesh = scene.getMeshByName('endPoint');
 
@@ -337,14 +355,22 @@ var createScene = async function () {
 };
 
 // Function to reset the scene
-function resetScene() {
+async function resetScene() {
+  // Dispose the current XR session if it exists
+  if (xrHelper && xrHelper.baseExperience) {
+      await xrHelper.baseExperience.exitXRAsync();
+      xrHelper.dispose();
+      xrHelper = null;
+  }
+
   // Dispose the current scene
   if (scene) {
       scene.dispose();
   }
 
   // Recreate the scene
-  scene = createScene();
+  scene = await createScene();
+  sceneToRender = scene;
 
   // Hide interaction buttons
   placeBtn.isVisible = false;
@@ -366,6 +392,10 @@ function resetScene() {
   droneBtn.isEnabled = true;
   mowerBtn.isVisible = true;
   mowerBtn.isEnabled = true;
+
+  // Ensure the home button remains visible and enabled
+  homeButton.isVisible = true;
+  homeButton.isEnabled = true;
 }
 
 // Initialize the scene and engine
@@ -382,14 +412,13 @@ window.initFunction = async function() {
   window.engine = await asyncEngineCreation();
   if (!engine) throw 'engine should not be null.';
   startRenderLoop(engine, canvas);
-  window.scene = createScene();
+  window.scene = await createScene();
+  sceneToRender = scene;
 };
 
 // Start the initialization process
 initFunction().then(() => {
-  scene.then(returnedScene => {
-      sceneToRender = returnedScene;
-  });
+  sceneToRender = scene;
 });
 
 // Resize the canvas when the window is resized
