@@ -46,9 +46,8 @@ var createScene = async function () {
     // Create an advanced texture for GUI
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    // Define start and end positions for animation
-    const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
-
+    //Enable physics engine
+    scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), new BABYLON.OimoJSPlugin());
 
     // Create a box mesh
     var model2 = new BABYLON.MeshBuilder.CreateBox("box", {width: 0.2, height: 0.2, depth: 0.2}, scene);
@@ -63,12 +62,15 @@ var createScene = async function () {
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
         model.setEnabled(false);
-        const cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 0.2, diameterTop: 0.32, diameterBottom: 0.32}, scene);
+        /*
+        var cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 0.08, diameterTop: 0.35, diameterBottom: 0.35}, scene);
         cylinder.position = model.position;
         cylinder.rotationQuaternion = model.rotationQuaternion;
         cylinder.visibility = 0.5;
         cylinder.isVisible = true;
         cylinder.parent = model;
+        cylinder.position.y += 0.06;
+        */
     });
 
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "flag_in_the_wind.glb", scene, function (meshes) {
@@ -160,42 +162,63 @@ var createScene = async function () {
     // Handle button click events
     placeBtn.onPointerUpObservable.add(function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-            model.setEnabled(true);
-            model.isVisible = true;
-            clonedMesh = model.clone('robot');
-            model.isVisible = false;
-            model.setEnabled(false);
-            hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
-            attachOwnPointerDragBehavior(clonedMesh);
+            const meshToMove = scene.getMeshByName('robot');
+            if (meshToMove) {
+                meshToMove.dispose();
+            }
+            else {  
+                model.setEnabled(true);
+                model.isVisible = true;
+                clonedMesh = model.clone('robot');
+                model.isVisible = false;
+                model.setEnabled(false);
+                hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
+                attachOwnPointerDragBehavior(clonedMesh);
+                var collider = BABYLON.Mesh.CreateBox("collider_box", 0, scene, false);		
+                var modele = clonedMesh.getBoundingInfo();
+                collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/2, clonedMesh.scaling.y/4, clonedMesh.scaling.z/2);
+                collider.parent = clonedMesh;
+                collider.material = new BABYLON.StandardMaterial("collidermat", scene);
+                collider.material.alpha = 0.8;
+            }
         }
     });
 
     endPoint.onPointerUpObservable.add(function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-            model1.setEnabled(true);
-            model1.isVisible = true;
-            clonedMesh = model1.clone('endPoint');
-            model1.isVisible = false;
-            model1.setEnabled(false);
-            hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
-            attachOwnPointerDragBehavior(clonedMesh);
+            const targetMesh = scene.getMeshByName('endPoint');
+            if (targetMesh) {
+                targetMesh.dispose();
+            }
+            else { 
+                model1.setEnabled(true);
+                model1.isVisible = true;
+                clonedMesh = model1.clone('endPoint');
+                model1.isVisible = false;
+                model1.setEnabled(false);
+                hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
+                attachOwnPointerDragBehavior(clonedMesh);
+            }
         }
     });
 
     block.onPointerUpObservable.add(function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             model2.isVisible = true;
-            clonedMesh = model2.clone('block');
+            clonedMesh = model2.clone('block2');
             model2.isVisible = false;
             hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
             attachOwnPointerDragBehavior(clonedMesh);
         }
     });
 
-    move.onPointerUpObservable.add(function() {
+    move.onPointerUpObservable.add(async function() {
         if (hitTest && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const meshToMove = scene.getMeshByName('robot');
             const targetMesh = scene.getMeshByName('endPoint');
+            const cylinder = scene.getMeshByName('cylinder');
+            const collider1 = scene.getMeshByName('collider_box');
+            const cube = scene.getMeshByName('block2');
             /*
             alert(targetMeshPosition);
             alert(meshToMove.position);
@@ -257,7 +280,7 @@ var createScene = async function () {
                // cylinder.isVisible = false;
                 
 
-                var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 30, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 15, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 //var currentFrame = scene.getAnimationByName("moveAnimation").currentFrame;
                 //alert(currentFrame);
                 //function createTube(){
@@ -269,6 +292,37 @@ var createScene = async function () {
                     //alert(points.slice(i));
                    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points.slice(i), radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
                    //tube.dispose();
+                }
+
+                function checkCollision(box1, box2) {
+                    // Check on X-axis
+                    if (box1.minimum.x > box2.maximum.x || box1.maximum.x < box2.minimum.x) {
+                      return true;
+                    }
+                  
+                    // Check on Y-axis
+                    if (box1.minimum.y > box2.maximum.y || box1.maximum.y < box2.minimum.y) {
+                      return true;
+                    }
+                  
+                    // Check on Z-axis
+                    if (box1.minimum.z > box2.maximum.z || box1.maximum.z < box2.minimum.z) {
+                      return true;
+                    }
+                  
+                    // No separation on any axis, collision detected
+                    return false;
+                }
+
+                if (collider1 && cube) {
+                    console.log("collider1 and cube exist");
+                    collider1.physicsImpostor = new BABYLON.PhysicsImpostor(collider1, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+                    cube.physicsImpostor = new BABYLON.PhysicsImpostor(cube, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+                    scene.onBeforeRenderObservable.add(() => {
+                        if(collider1.intersectsMesh(cube, true)) {
+                            console.log("Collision between collider1 and cube!");
+                        }
+                    });
                 }
             }
         }
