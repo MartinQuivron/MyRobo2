@@ -99,6 +99,7 @@ var createScene = async function () {
     rectangle.cornerRadius = cornerRadius;
     rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    rectangle.zIndex = 0; // Ensure it's behind the home button
 
     // Create a text block
     const textBlock = new BABYLON.GUI.TextBlock();
@@ -120,23 +121,26 @@ var createScene = async function () {
   blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
 
   // Add the "Home" button
-  homeButton = BABYLON.GUI.Button.CreateSimpleButton("homeButton", "Home");
-  homeButton.width = "20%";
-  homeButton.height = "10%";
-  homeButton.color = "white";
-  homeButton.cornerRadius = 20;
-  homeButton.background = "red";
-  homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-  homeButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-  homeButton.left = "5%";
-  homeButton.top = "-30%";
+  function createHomeButton() {
+    homeButton = BABYLON.GUI.Button.CreateImageOnlyButton("homeButton", "./assets/img/home2.png");
+    homeButton.width = "8%";
+    homeButton.height = "3.5%";
+    homeButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    homeButton.left = "5%";
+    homeButton.top = "5%";
+    homeButton.zIndex = 1; // Ensure it's in front of the black block
 
-  homeButton.onPointerUpObservable.add(function() {
-      resetScene();
-  });
+    homeButton.onPointerUpObservable.add(function() {
+        resetScene();
+    });
+
+    advancedTexture.addControl(homeButton);
+  }
+
+  createHomeButton(); // Call the function to create and add the home button
 
   advancedTexture.addControl(blackBlock);
-  advancedTexture.addControl(homeButton); // Add homeButton directly to advancedTexture
 
   // Function to create buttons
   function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment) {
