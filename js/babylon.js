@@ -34,10 +34,6 @@ var createScene = async function () {
     // Create a hemispheric light
     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 
-    // Create a ground mesh
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width:10, height:10}, scene, false);
-    ground.isVisible = false;
-
     // Create an advanced texture for GUI
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
@@ -65,49 +61,10 @@ var createScene = async function () {
     });
 
     // Create buttons for user interaction
-    var placeBtn = BABYLON.GUI.Button.CreateSimpleButton("placeBtn", "Place model");
-    placeBtn.width = "25%";
-    placeBtn.height = "10%";
-    placeBtn.color = "white";
-    placeBtn.cornerRadius = 20;
-    placeBtn.background = "green";
-    placeBtn.top = "35%";
-    placeBtn.left = "5%";
-    placeBtn.fontSize = "40px";
-    placeBtn.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-    var endPoint = BABYLON.GUI.Button.CreateSimpleButton("endPoint", "Place endpoint");
-    endPoint.width = "25%";
-    endPoint.height = "10%";
-    endPoint.color = "white";
-    endPoint.cornerRadius = 20;
-    endPoint.background = "green";
-    endPoint.top = "35%";
-    endPoint.left = "38%";
-    endPoint.fontSize = "40px";
-    endPoint.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-    var block = BABYLON.GUI.Button.CreateSimpleButton("block", "Place block");
-    block.width = "25%";
-    block.height = "10%";
-    block.color = "white";
-    block.cornerRadius = 20;
-    block.background = "green";
-    block.top = "35%";
-    block.left = "70%";
-    block.fontSize = "40px";
-    block.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-    var move = BABYLON.GUI.Button.CreateSimpleButton("move", "Move model");
-    move.width = "25%";
-    move.height = "10%";
-    move.color = "white";
-    move.cornerRadius = 20;
-    move.background = "green";
-    move.top = "45%";
-    move.left = "38%";
-    move.fontSize = "40px";
-    move.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+    endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+    block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+    move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
     // Add buttons to the advanced texture
     advancedTexture.addControl(endPoint);
@@ -206,49 +163,11 @@ var createScene = async function () {
             const cylinder = scene.getMeshByName('cylinder');
             const collider1 = scene.getMeshByName('collider_box');
             const cube = scene.getMeshByName('block2');
-            /*
-            alert(targetMeshPosition);
-            alert(meshToMove.position);
-            alert(meshToMove.rotationQuaternion)
 
-
-            const directionVector = targetMesh.position.subtract(meshToMove.position);
-
-            const rotationQuaternion = BABYLON.Quaternion.RotationBetweenVectors(
-                BABYLON.Vector3.Forward(), // Mesh's forward direction (usually [0, 0, 1])
-                directionVector
-              );
-              meshToMove.rotationQuaternion = rotationQuaternion;
-*/
             if (meshToMove && targetMesh) {
-                //meshToMove.position = targetMesh.position;
 
                 // Create a cylinder between meshToMove and targetMesh
                 meshToMove.lookAt(targetMesh.position);
-                /*
-                const updateLookAt = () => {
-                    // Calculate the target position based on the current time
-                    const time = performance.now() / 1000; // Get time in seconds
-                    const targetPosition = targetMesh.position.clone();
-                    targetPosition.y += Math.sin(time) * 2; // Add some vertical movement
-                  
-                    // Update the cylinder's lookAt target
-                    cylinder.lookAt(targetPosition);
-                  
-                    // Request the next frame to continue the animation
-                    requestAnimationFrame(updateLookAt);
-                  };
-                  
-                  // Start the animation loop
-                  updateLookAt();
-                */
-
-                // Create a cylinder between meshToMove and targetMesh
-                // Create a line between meshToMove and targetMesh
-
-                function lerp(start, end, t) {
-                    return start+(end-start)*t;
-                }
 
                 var points = [];
                 for (let i = 0; i < 70; i++) {
@@ -258,26 +177,11 @@ var createScene = async function () {
                     const z = lerp(meshToMove.position.z, targetMesh.position.z, t);
                     points.push(new BABYLON.Vector3(x, y, z));
                 }
-
-                //var tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [meshToMove.position, targetMesh.position], radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
-                //const line = BABYLON.MeshBuilder.CreateLines("line", {points: [meshToMove.position, targetMesh.position]}, scene);
-                //tube.color = new BABYLON.Color3(1, 0, 0);
-                //tube.isVisible = true;
-               // cylinder.scaling.y = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
-               // cylinder.isVisible = false;
                 
-
                 var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 15, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                //var currentFrame = scene.getAnimationByName("moveAnimation").currentFrame;
-                //alert(currentFrame);
-                //function createTube(){
-                //    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points, radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
-                //    tube.dispose();
-                //}
 
                 const tubes = [];
                 for (let i = 0; i < 69; i++) {
-                    
                     //alert(points.slice(i));
                    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points.slice(i), radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
                    tube.physicsImpostor = new BABYLON.PhysicsImpostor(tube, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.9 }, scene);
@@ -301,7 +205,6 @@ var createScene = async function () {
                     scene.onBeforeRenderObservable.add(() => {
                         if(collider1.intersectsMesh(cube, true)) {
                             //cube.dispose();
-                            
                             //console.log("Collision between collider1 and cube!");
                         }
                     });
@@ -309,35 +212,7 @@ var createScene = async function () {
             }
         }
     });
-
-    // Function to attach pointer drag behavior to a mesh
-    function attachOwnPointerDragBehavior(mesh){
-        var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
-        pointerDragBehavior.moveAttached = false;
-        pointerDragBehavior.useObjectOrienationForDragging = false;
-        pointerDragBehavior.onDragStartObservable.add((event)=>{
-            console.log("startDrag");
-            placeBtn.isVisible = false;
-            endPoint.isVisible = false;
-            block.isVisible = false;
-        })
-        pointerDragBehavior.onDragObservable.add((event)=>{
-            console.log("drag");
-            placeBtn.isVisible = false;
-            endPoint.isVisible = false;
-            block.isVisible = false;
-            pointerDragBehavior.attachedNode.position.x += event.delta.x;
-            pointerDragBehavior.attachedNode.position.z += event.delta.z;
-        })
-        pointerDragBehavior.onDragEndObservable.add((event)=>{
-            console.log("endDrag");
-            placeBtn.isVisible = true;
-            endPoint.isVisible = true;
-            block.isVisible = true;
-        })
-        mesh.addBehavior(pointerDragBehavior);
-    }
-
+    
     return scene;
 };
 
