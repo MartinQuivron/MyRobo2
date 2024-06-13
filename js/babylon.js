@@ -57,15 +57,6 @@ var createScene = async function () {
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
         model.setEnabled(false);
-        /*
-        var cylinder = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 0.08, diameterTop: 0.35, diameterBottom: 0.35}, scene);
-        cylinder.position = model.position;
-        cylinder.rotationQuaternion = model.rotationQuaternion;
-        cylinder.visibility = 0.5;
-        cylinder.isVisible = true;
-        cylinder.parent = model;
-        cylinder.position.y += 0.06;
-        */
     });
 
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "flag_in_the_wind.glb", scene, function (meshes) {
