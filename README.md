@@ -1,6 +1,6 @@
 # MyRobo
 ## Overview
-MyRobo is a web application for robot simulation.
+MyRobo is a web application for robot simulation using OimoJS physic engine
 
 ### Running the service
 MyRobo allows the user to see the simulation robot (AR) executing a service set by the user.
