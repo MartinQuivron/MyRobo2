@@ -2,8 +2,8 @@
 var canvas = document.getElementById("renderCanvas");
 
 // Function to start the render loop
-var startRenderLoop = function (engine, canvas) {
-    engine.runRenderLoop(function () {
+const startRenderLoop = (engine, scene) => {
+    engine.runRenderLoop(() => {
         if (sceneToRender && sceneToRender.activeCamera) {
             sceneToRender.render();
         }
@@ -16,7 +16,7 @@ var scene = null;
 var sceneToRender = null;
 
 // Function to create the default engine
-var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+const createDefaultEngine = () => new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
 
 // Function to create the scene
 var createScene = async function () {
