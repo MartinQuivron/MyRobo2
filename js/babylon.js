@@ -1,8 +1,3 @@
-// Function to open PC scene
-function openPCScene() {
-    // TODO: Add implementation
-}
-
 // Get the canvas element
 var canvas = document.getElementById("renderCanvas");
 
@@ -176,10 +171,11 @@ var createScene = async function () {
                 attachOwnPointerDragBehavior(clonedMesh);
                 var collider = BABYLON.Mesh.CreateBox("collider_box", 0, scene, false);		
                 var modele = clonedMesh.getBoundingInfo();
-                collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/2, clonedMesh.scaling.y/4, clonedMesh.scaling.z/2);
+                collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
                 collider.parent = clonedMesh;
                 collider.material = new BABYLON.StandardMaterial("collidermat", scene);
-                collider.material.alpha = 0.8;
+                collider.material.alpha = 0;
+                collider.position.y += 0.06;
             }
         }
     });
@@ -287,32 +283,25 @@ var createScene = async function () {
                 //    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points, radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
                 //    tube.dispose();
                 //}
-                for (let i = 0; i < 29; i++) {
+
+                const tubes = [];
+                for (let i = 0; i < 69; i++) {
                     
                     //alert(points.slice(i));
                    const tube = BABYLON.MeshBuilder.CreateTube("tube", { path: points.slice(i), radius: 0.015, sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true }, scene);
+                   tube.physicsImpostor = new BABYLON.PhysicsImpostor(tube, BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 0, restitution: 0.9 }, scene);
                    //tube.dispose();
+                   tubes.push(tube);
                 }
 
-                function checkCollision(box1, box2) {
-                    // Check on X-axis
-                    if (box1.minimum.x > box2.maximum.x || box1.maximum.x < box2.minimum.x) {
-                      return true;
-                    }
-                  
-                    // Check on Y-axis
-                    if (box1.minimum.y > box2.maximum.y || box1.maximum.y < box2.minimum.y) {
-                      return true;
-                    }
-                  
-                    // Check on Z-axis
-                    if (box1.minimum.z > box2.maximum.z || box1.maximum.z < box2.minimum.z) {
-                      return true;
-                    }
-                  
-                    // No separation on any axis, collision detected
-                    return false;
-                }
+                scene.onBeforeRenderObservable.add(() => {
+                    tubes.forEach(tube => {
+                        if (collider1.intersectsMesh(tube, true)) {
+                            tube.dispose();
+                            //console.log("Collision between collider1 and tube!");
+                        }
+                    });
+                });
 
                 if (collider1 && cube) {
                     console.log("collider1 and cube exist");
@@ -320,7 +309,9 @@ var createScene = async function () {
                     cube.physicsImpostor = new BABYLON.PhysicsImpostor(cube, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
                     scene.onBeforeRenderObservable.add(() => {
                         if(collider1.intersectsMesh(cube, true)) {
-                            console.log("Collision between collider1 and cube!");
+                            //cube.dispose();
+                            
+                            //console.log("Collision between collider1 and cube!");
                         }
                     });
                 }
