@@ -57,7 +57,7 @@ var createScene = async function () {
   ground.isVisible = false;
 
   // Create an advanced texture for GUI
-  advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+  advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
   // Define start and end positions for animation
   const targetPosition = new BABYLON.Vector3(10, 5, 2); // Specific coordinates
