@@ -4,12 +4,12 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     rectangle.height = height;
     rectangle.color = color;
     rectangle.thickness = 0;
-    rectangle.background = color; // Use the color for the background
-    rectangle.alpha = alpha; // Set the transparency of the rectangle
+    rectangle.background = color; 
+    rectangle.alpha = alpha; 
     rectangle.cornerRadius = cornerRadius;
     rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-    rectangle.zIndex = 0; // Ensure it's behind the home button
+   
 
     // Create a text block
     const textBlock = new BABYLON.GUI.TextBlock();
@@ -18,10 +18,9 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     textBlock.fontSize = fontSize;
     textBlock.fontFamily = "Monaco";
     textBlock.fontWeight = "bold";
-    textBlock.alpha = 1; // Keep the text fully opaque
     textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    textBlock.top = "15%"; // Adjust position of the text
+    textBlock.top = "15%";
     rectangle.addControl(textBlock);
 
     return rectangle;
@@ -36,7 +35,7 @@ function createHomeButton() {
     homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     homeButton.left = "5%";
     homeButton.top = "5%";
-    homeButton.zIndex = 1; // Ensure it's in front of the black block
+    homeButton.zIndex = 1; 
 
     homeButton.onPointerUpObservable.add(function() {
         resetScene();
