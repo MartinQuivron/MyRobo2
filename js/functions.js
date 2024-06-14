@@ -1,3 +1,4 @@
+// Linear interpolation function
 function lerp(start, end, t) {
     return start+(end-start)*t;
 }
@@ -28,4 +29,12 @@ function attachOwnPointerDragBehavior(mesh){
         block.isVisible = true;
     })
     mesh.addBehavior(pointerDragBehavior);
+}
+
+// Function to import meshes from external files
+function importMeshes(fileName, scene, callback) {
+    BABYLON.SceneLoader.ImportMesh("", "./assets/", fileName, scene, function (meshes) {
+        callback(meshes[0]);
+        meshes[0].setEnabled(false);
+    });
 }
