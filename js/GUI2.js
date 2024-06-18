@@ -17,6 +17,8 @@ var sceneToRender = null;
 var advancedTexture = null;
 var blackBlock = null;
 var homeButton = null; // Declare homeButton globally
+var simulationButton = null; // Declare simulationButton globally
+var objectBtn = null; // Declare objectBtn globally
 
 // Interactive buttons
 var placeBtn = null;
@@ -96,6 +98,16 @@ var createScene = async function () {
     droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
     mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
 
+    // Create simulation button
+    simulationButton = createButtonImaged("simulationButton", "assets/img/simulation.png", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    simulationButton.isVisible = false;  // Initially hide and disable the button
+    simulationButton.isEnabled = false;
+
+    // Create object button
+    objectBtn = createButtonImaged("objectBtn", "assets/img/objects.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    objectBtn.isVisible = false;  // Initially hide and disable the button
+    objectBtn.isEnabled = false;
+
     // Create buttons for user interaction
     placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
     endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
@@ -117,11 +129,13 @@ var createScene = async function () {
     advancedTexture.addControl(placeBtn);
     advancedTexture.addControl(block);
     advancedTexture.addControl(move);
+    advancedTexture.addControl(simulationButton);  // Add the simulation button to the advanced texture
+    advancedTexture.addControl(objectBtn);  // Add the object button to the advanced texture
 
-    vacumBtn.onPointerUpObservable.add(showInteractionButtons);
-    roboticArmBtn.onPointerUpObservable.add(showInteractionButtons);
-    droneBtn.onPointerUpObservable.add(showInteractionButtons);
-    mowerBtn.onPointerUpObservable.add(showInteractionButtons);
+    vacumBtn.onPointerUpObservable.add(handleInteractionButtonClick);
+    roboticArmBtn.onPointerUpObservable.add(handleInteractionButtonClick);
+    droneBtn.onPointerUpObservable.add(handleInteractionButtonClick);
+    mowerBtn.onPointerUpObservable.add(handleInteractionButtonClick);
 
     // Create a marker mesh
     const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -266,6 +280,12 @@ async function resetScene() {
     droneBtn.isEnabled = true;
     mowerBtn.isVisible = true;
     mowerBtn.isEnabled = true;
+
+    // Hide and disable the simulation and object buttons
+    simulationButton.isVisible = false;
+    simulationButton.isEnabled = false;
+    objectBtn.isVisible = false;
+    objectBtn.isEnabled = false;
 
     // Ensure the home button remains visible and enabled
     homeButton.isVisible = true;

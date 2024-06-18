@@ -62,7 +62,8 @@ function createButton(name, text, width, height, color, cornerRadius, background
     return button;
 }
 
-function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius) {
+// Function to create buttons with images
+function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background) {
     // Create a button container
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
@@ -73,6 +74,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0; 
     buttonContainer.zIndex = 1; 
+    buttonContainer.background = background; // Set the background color
 
     // Create an image
     var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
@@ -98,6 +100,10 @@ function hideAllButtons() {
     droneBtn.isEnabled = false;
     mowerBtn.isVisible = false;
     mowerBtn.isEnabled = false;
+    simulationButton.isVisible = false;
+    simulationButton.isEnabled = false;
+    objectBtn.isVisible = false;
+    objectBtn.isEnabled = false;
     blackBlock.isVisible = false;
 }
 
@@ -118,10 +124,19 @@ function showInteractionButtons() {
     homeButton.isEnabled = true;
 }
 
+// Function to handle interaction button clicks
+function handleInteractionButtonClick() {
+    showInteractionButtons();
+    simulationButton.isVisible = true;
+    simulationButton.isEnabled = true;
+    objectBtn.isVisible = true;
+    objectBtn.isEnabled = true;
+}
+
 // Function to hide and disable all buttons
 function hideAndDisableAllButtons() {
     // Array of all buttons
-    const buttons = [homeButton, vacumBtn, roboticArmBtn, droneBtn, mowerBtn, placeBtn, endPoint, block, move];
+    const buttons = [homeButton, vacumBtn, roboticArmBtn, droneBtn, mowerBtn, placeBtn, endPoint, block, move, blackBlock];
   
     // Loop through each button and set isVisible and isEnabled to false
     buttons.forEach(button => {
