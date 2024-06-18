@@ -9,7 +9,7 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     rectangle.cornerRadius = cornerRadius;
     rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-   
+    rectangle.zIndex = 1; 
 
     // Create a text block
     const textBlock = new BABYLON.GUI.TextBlock();
@@ -35,7 +35,8 @@ function createHomeButton() {
     homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     homeButton.left = "5%";
     homeButton.top = "5%";
-    homeButton.zIndex = 1; 
+    homeButton.zIndex = 2; 
+    homeButton.thickness = 0;
 
     homeButton.onPointerUpObservable.add(function() {
         resetScene();
@@ -56,6 +57,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
     button.left = left;
     button.fontSize = fontSize;
     button.horizontalAlignment = horizontalAlignment;
+    button.zIndex = 1;
 
     return button;
 }
@@ -69,7 +71,8 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.left = left;
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
-    buttonContainer.thickness = 0; // optional, to remove border
+    buttonContainer.thickness = 0; 
+    buttonContainer.zIndex = 1; 
 
     // Create an image
     var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
@@ -113,4 +116,18 @@ function showInteractionButtons() {
     hideAllButtons();
     homeButton.isVisible = true;
     homeButton.isEnabled = true;
+}
+
+// Function to hide and disable all buttons
+function hideAndDisableAllButtons() {
+    // Array of all buttons
+    const buttons = [homeButton, vacumBtn, roboticArmBtn, droneBtn, mowerBtn, placeBtn, endPoint, block, move];
+  
+    // Loop through each button and set isVisible and isEnabled to false
+    buttons.forEach(button => {
+      if (button) { // Check if the button is not null
+        button.isVisible = false;
+        button.isEnabled = false;
+      }
+    });
 }
