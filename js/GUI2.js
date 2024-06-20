@@ -132,6 +132,9 @@ var createScene = async function () {
     advancedTexture.addControl(simulationButton);  // Add the simulation button to the advanced texture
     advancedTexture.addControl(objectBtn);  // Add the object button to the advanced texture
 
+    // Attach event handlers
+    objectBtn.onPointerUpObservable.add(handleObjectButtonClick);
+
     vacumBtn.onPointerUpObservable.add(handleInteractionButtonClick);
     roboticArmBtn.onPointerUpObservable.add(handleInteractionButtonClick);
     droneBtn.onPointerUpObservable.add(handleInteractionButtonClick);
