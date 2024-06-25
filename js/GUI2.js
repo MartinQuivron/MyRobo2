@@ -19,6 +19,7 @@ var blackBlock = null;
 var homeButton = null; // Declare homeButton globally
 var simulationButton = null; // Declare simulationButton globally
 var objectBtn = null; // Declare objectBtn globally
+var backButton = null; // Declare backButton globally
 
 // Interactive buttons
 var placeBtn = null;
@@ -99,12 +100,12 @@ var createScene = async function () {
     mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
 
     // Create simulation button
-    simulationButton = createButtonImaged("simulationButton", "assets/img/simulation.png", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    simulationButton = createButtonImaged("simulationButton", "assets/img/simulation.png", "25%", "12%", "25%", "62%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 13, "white");
     simulationButton.isVisible = false;  // Initially hide and disable the button
     simulationButton.isEnabled = false;
 
     // Create object button
-    objectBtn = createButtonImaged("objectBtn", "assets/img/objects.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    objectBtn = createButtonImaged("objectBtn", "assets/img/objects.png", "25%", "12%", "25%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 13, "white");
     objectBtn.isVisible = false;  // Initially hide and disable the button
     objectBtn.isEnabled = false;
 
@@ -135,10 +136,14 @@ var createScene = async function () {
     // Attach event handlers
     objectBtn.onPointerUpObservable.add(handleObjectButtonClick);
 
-    vacumBtn.onPointerUpObservable.add(handleInteractionButtonClick);
-    roboticArmBtn.onPointerUpObservable.add(handleInteractionButtonClick);
-    droneBtn.onPointerUpObservable.add(handleInteractionButtonClick);
-    mowerBtn.onPointerUpObservable.add(handleInteractionButtonClick);
+    vacumBtn.onPointerUpObservable.add(mainPage);
+    roboticArmBtn.onPointerUpObservable.add(mainPage);
+    droneBtn.onPointerUpObservable.add(mainPage);
+    mowerBtn.onPointerUpObservable.add(mainPage);
+
+    // Create the back button and add it to the advanced texture
+    createBackButton();
+    advancedTexture.addControl(backButton); // Call the function to create and add the back button
 
     // Create a marker mesh
     const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -289,6 +294,8 @@ async function resetScene() {
     simulationButton.isEnabled = false;
     objectBtn.isVisible = false;
     objectBtn.isEnabled = false;
+    backButton.isVisible = false;  // Hide the back button
+    backButton.isEnabled = false;
 
     // Ensure the home button remains visible and enabled
     homeButton.isVisible = true;

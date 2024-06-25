@@ -1,6 +1,10 @@
 // Global array to store all buttons
 var allButtons = [];
 
+// Global array to store the history of button states
+var buttonStateHistory = [];
+
+// -------------------------------------- Functions -------------------------------------- //
 
 // Function to create GUI rectangles
 function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize) {
@@ -34,8 +38,8 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
 // Add the "Home" button
 function createHomeButton() {
     homeButton = BABYLON.GUI.Button.CreateImageOnlyButton("homeButton", "./assets/img/home2.png");
-    homeButton.width = "8%";
-    homeButton.height = "3.5%";
+    homeButton.width = "10%";
+    homeButton.height = "4.5%";
     homeButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     homeButton.left = "5%";
@@ -48,6 +52,33 @@ function createHomeButton() {
     });
 
     advancedTexture.addControl(homeButton);
+
+    // Add the home button to the global array
+    allButtons.push(homeButton);
+}
+
+// Add the "Back" button
+function createBackButton() {
+    backButton = BABYLON.GUI.Button.CreateImageOnlyButton("backButton", "./assets/img/return.png");
+    backButton.width = "10%";
+    backButton.height = "4.5%";
+    backButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    backButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    backButton.left = "5%";
+    backButton.top = "5%";
+    backButton.zIndex = 2;
+    backButton.thickness = 0;
+    backButton.isVisible = false;  
+    backButton.isEnabled = false;
+
+    backButton.onPointerUpObservable.add(function() {
+        restorePreviousButtonState();
+    });
+
+    advancedTexture.addControl(backButton);
+
+    // Add the back button to the global array
+    allButtons.push(backButton);
 }
 
 // Function to create buttons and add them to the global array
@@ -98,7 +129,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
 
 
 // Function to show interaction buttons and hide all image buttons
-function showInteractionButtons() {
+function vaccumObjects() {
     placeBtn.isVisible = true;
     placeBtn.isEnabled = true;
     endPoint.isVisible = true;
@@ -111,15 +142,16 @@ function showInteractionButtons() {
     simulationButton.isEnabled = false;
     objectBtn.isVisible = false;
     objectBtn.isEnabled = false;
+    backButton.isVisible = true;  
+    backButton.isEnabled = true;
+    homeButton.isVisible = false;
+    homeButton.isEnabled = false;
 
-    // Hide and disable all image buttons except the Home button
-    
-    homeButton.isVisible = true;
-    homeButton.isEnabled = true;
 }
 
 // Function to handle interaction button clicks
-function handleInteractionButtonClick() {
+function mainPage() {
+    saveButtonState();  // Save the current state before changing
     hideAndDisableAllButtons();
     simulationButton.isVisible = true;
     simulationButton.isEnabled = true;
@@ -127,13 +159,15 @@ function handleInteractionButtonClick() {
     objectBtn.isEnabled = true;
     homeButton.isVisible = true;
     homeButton.isEnabled = true;
-    
 }
+
 
 // Function to handle object button click
 function handleObjectButtonClick() {
-    showInteractionButtons();
+    saveButtonState();  // Save the current state before changing
+    vaccumObjects();
 }
+
 
 // Function to hide and disable all buttons
 function hideAndDisableAllButtons() {
@@ -145,4 +179,25 @@ function hideAndDisableAllButtons() {
         }
         blackBlock.isVisible = false;
     });
+}
+
+// Function to save the current state of all buttons
+function saveButtonState() {
+    const currentState = allButtons.map(button => ({
+        button: button,
+        isVisible: button.isVisible,
+        isEnabled: button.isEnabled
+    }));
+    buttonStateHistory.push(currentState);
+}
+
+// Function to restore the previous state of all buttons
+function restorePreviousButtonState() {
+    if (buttonStateHistory.length > 0) {
+        const previousState = buttonStateHistory.pop();
+        previousState.forEach(state => {
+            state.button.isVisible = state.isVisible;
+            state.button.isEnabled = state.isEnabled;
+        });
+    }
 }
