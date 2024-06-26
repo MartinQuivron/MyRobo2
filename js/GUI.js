@@ -57,6 +57,21 @@ function createHomeButton() {
     allButtons.push(homeButton);
 }
 
+function createTrashButton() {
+    trashButton = BABYLON.GUI.Button.CreateImageOnlyButton("trashButton", "./assets/img/trash.png");
+    trashButton.width = "10%";
+    trashButton.height = "4.5%";
+    trashButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    trashButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    trashButton.left = "-5%";
+    trashButton.top = "5%";
+    trashButton.zIndex = 2;
+    trashButton.thickness = 0;
+
+    advancedTexture.addControl(trashButton);
+    allButtons.push(trashButton);
+}
+
 // Add the "Back" button
 function createBackButton() {
     backButton = BABYLON.GUI.Button.CreateImageOnlyButton("backButton", "./assets/img/return.png");
@@ -68,8 +83,6 @@ function createBackButton() {
     backButton.top = "5%";
     backButton.zIndex = 2;
     backButton.thickness = 0;
-    backButton.isVisible = false;  
-    backButton.isEnabled = false;
 
     backButton.onPointerUpObservable.add(function() {
         restorePreviousButtonState();
@@ -102,7 +115,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
 }
 
 // Function to create image buttons and add them to the global array
-function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background) {
+function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color) {
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
     buttonContainer.height = height;
@@ -113,6 +126,8 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.thickness = 0;
     buttonContainer.zIndex = 1;
     buttonContainer.background = background;
+    buttonContainer.thickness = 2;
+    buttonContainer.color = color;
 
     var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
     image.width = "100%";
@@ -146,6 +161,8 @@ function vaccumObjects() {
     backButton.isEnabled = true;
     homeButton.isVisible = false;
     homeButton.isEnabled = false;
+    trashButton.isVisible = true;
+    trashButton.isEnabled = true;
 
 }
 
@@ -200,4 +217,31 @@ function restorePreviousButtonState() {
             state.button.isEnabled = state.isEnabled;
         });
     }
+}
+
+function checkCollisionWithTrashButton(mesh) {
+    // Get the 2D position of the mesh
+    var meshPosition = BABYLON.Vector3.Project(
+        mesh.position,
+        BABYLON.Matrix.Identity(),
+        scene.getTransformMatrix(),
+        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+    );
+
+    // Get the 2D bounding box of the trash button
+    var trashButtonBoundingBox = trashButton._rootContainer.getLocalCoordinates(trashButton._currentMeasure);
+    var trashButtonGlobalPosition = BABYLON.Vector3.Project(
+        new BABYLON.Vector3(trashButton._currentMeasure.left, trashButton._currentMeasure.top, 0),
+        BABYLON.Matrix.Identity(),
+        scene.getTransformMatrix(),
+        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+    );
+
+    // Check if the mesh is within the bounds of the trash button
+    return (
+        meshPosition.x >= trashButtonGlobalPosition.x &&
+        meshPosition.x <= trashButtonGlobalPosition.x + trashButtonBoundingBox.width &&
+        meshPosition.y >= trashButtonGlobalPosition.y &&
+        meshPosition.y <= trashButtonGlobalPosition.y + trashButtonBoundingBox.height
+    );
 }

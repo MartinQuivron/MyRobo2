@@ -19,7 +19,6 @@ var blackBlock = null;
 var homeButton = null; // Declare homeButton globally
 var simulationButton = null; // Declare simulationButton globally
 var objectBtn = null; // Declare objectBtn globally
-var backButton = null; // Declare backButton globally
 
 // Interactive buttons
 var placeBtn = null;
@@ -37,7 +36,9 @@ var mowerBtn = null;
 var xrHelper = null;
 
 /* --- Function to create the default engine --- */
-var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false}); };
+var createDefaultEngine = function() {
+    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false});
+};
 
 /* --- Function to create the scene --- */
 var createScene = async function () {
@@ -77,9 +78,10 @@ var createScene = async function () {
     // Import meshes from external files
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
-        model.setEnabled(false);
+        model.isVisible = true; // Le modèle est visible dès le début
+        attachOwnPointerDragBehavior(model); // Attacher le comportement de glisser-déposer
     });
-
+    
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "flag_in_the_wind.glb", scene, function (meshes) {
         model1 = meshes[0];
         model1.setEnabled(false);
@@ -89,23 +91,27 @@ var createScene = async function () {
     blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
 
     createHomeButton();
+    createBackButton();
+    createTrashButton();
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button
-    advancedTexture.addControl(blackBlock);
+    advancedTexture.addControl(backButton); // Call the function to create and add the back button
+    advancedTexture.addControl(trashButton); // Call the function to create and add the trash button
+    advancedTexture.addControl(blackBlock); // Add the black block to the advanced texture
 
     // Create image buttons
-    vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.jpg", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-    roboticArmBtn = createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-    droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
-    mowerBtn = createButtonImaged("mower", "assets/img/mower_image.jpg", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.png", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    roboticArmBtn = createButtonImaged("roboticArm", "assets/img/robotic_arm_image.png", "42%", "20%", "0%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    droneBtn = createButtonImaged("drone", "assets/img/drone_image.png", "42%", "20%", "25%", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
+    mowerBtn = createButtonImaged("mower", "assets/img/mower_image.png", "42%", "20%", "25%", "52%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
 
     // Create simulation button
-    simulationButton = createButtonImaged("simulationButton", "assets/img/simulation.png", "25%", "12%", "25%", "62%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 13, "white");
+    simulationButton = createButtonImaged("simulationButton", "assets/img/simulation.png", "25%", "12%", "35%", "62%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
     simulationButton.isVisible = false;  // Initially hide and disable the button
     simulationButton.isEnabled = false;
 
     // Create object button
-    objectBtn = createButtonImaged("objectBtn", "assets/img/objects.png", "25%", "12%", "25%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 13, "white");
+    objectBtn = createButtonImaged("objectBtn", "assets/img/objects.png", "25%", "12%", "35%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
     objectBtn.isVisible = false;  // Initially hide and disable the button
     objectBtn.isEnabled = false;
 
@@ -140,10 +146,6 @@ var createScene = async function () {
     roboticArmBtn.onPointerUpObservable.add(mainPage);
     droneBtn.onPointerUpObservable.add(mainPage);
     mowerBtn.onPointerUpObservable.add(mainPage);
-
-    // Create the back button and add it to the advanced texture
-    createBackButton();
-    advancedTexture.addControl(backButton); // Call the function to create and add the back button
 
     // Create a marker mesh
     const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -226,31 +228,46 @@ var createScene = async function () {
         }
     });
 
-    // Function to attach pointer drag behavior to a mesh
     function attachOwnPointerDragBehavior(mesh) {
-        var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
+        var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0, 1, 0)});
         pointerDragBehavior.moveAttached = false;
         pointerDragBehavior.useObjectOrienationForDragging = false;
+    
         pointerDragBehavior.onDragStartObservable.add((event) => {
             console.log("startDrag");
             placeBtn.isVisible = false;
             endPoint.isVisible = false;
             block.isVisible = false;
+            trashButton.isVisible = true;
+            trashButton.isEnabled = true;
         });
+    
         pointerDragBehavior.onDragObservable.add((event) => {
             console.log("drag");
             placeBtn.isVisible = false;
             endPoint.isVisible = false;
             block.isVisible = false;
+            trashButton.isVisible = true;
+            trashButton.isEnabled = true;
+    
             pointerDragBehavior.attachedNode.position.x += event.delta.x;
             pointerDragBehavior.attachedNode.position.z += event.delta.z;
         });
+    
         pointerDragBehavior.onDragEndObservable.add((event) => {
             console.log("endDrag");
             placeBtn.isVisible = true;
             endPoint.isVisible = true;
             block.isVisible = true;
+            trashButton.isVisible = false;
+            trashButton.isEnabled = false;
+    
+            // Check if the mesh is over the trash button
+            if (checkCollisionWithTrashButton(mesh)) {
+                mesh.dispose(); // Dispose the mesh if it's over the trash button
+            }
         });
+    
         mesh.addBehavior(pointerDragBehavior);
     }
 
@@ -289,14 +306,6 @@ async function resetScene() {
     mowerBtn.isVisible = true;
     mowerBtn.isEnabled = true;
 
-    // Hide and disable the simulation and object buttons
-    simulationButton.isVisible = false;
-    simulationButton.isEnabled = false;
-    objectBtn.isVisible = false;
-    objectBtn.isEnabled = false;
-    backButton.isVisible = false;  // Hide the back button
-    backButton.isEnabled = false;
-
     // Ensure the home button remains visible and enabled
     homeButton.isVisible = true;
     homeButton.isEnabled = true;
@@ -318,6 +327,14 @@ window.initFunction = async function() {
     startRenderLoop(engine, canvas);
     window.scene = await createScene();
     sceneToRender = scene;
+
+    // Add resize event listener
+    window.addEventListener("resize", function () {
+        engine.resize();
+        if (scene.activeCamera) {
+            scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
+        }
+    });
 };
 
 // Start the initialization process
@@ -328,4 +345,7 @@ initFunction().then(() => {
 // Resize the canvas when the window is resized
 window.addEventListener("resize", function () {
     engine.resize();
+    if (scene && scene.activeCamera) {
+        scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
+    }
 });
