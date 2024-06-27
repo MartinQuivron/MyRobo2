@@ -117,7 +117,7 @@ var createScene = async function () {
                 collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
                 collider.parent = clonedMesh;
                 collider.material = new BABYLON.StandardMaterial("collidermat", scene);
-                collider.material.alpha = 0.8;
+                collider.material.alpha = 0;
                 collider.position.y += 0.06;
             }
         }
@@ -155,7 +155,7 @@ var createScene = async function () {
             collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/2, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/2);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
-            collider1.material.alpha = 0.8;
+            collider1.material.alpha = 0;
             collider1.position.y += 0.06;
         }
     });
@@ -241,79 +241,175 @@ var createScene = async function () {
     });
 
     var makeSphere = (position, color) => {
-        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.2, segments: 32});
+        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.05, segments: 32});
         sphere.material = new BABYLON.StandardMaterial("sp");
         sphere.material.diffuseColor = color;
         sphere.position = position;
     }
 
+    function frontDetector(start, end) {
+        const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+        // Perform ray intersection test with the mesh
+        const pickInfo = scene.pickWithRay(ray, function (mesh) {
+            return mesh.name === 'collider_box_block'; // Filter by mesh name
+        });
+        if (pickInfo.pickedMesh) {
+            makeSphere(pickInfo.pickedPoint, new BABYLON.Color3(1, 0, 0));
+            return pickInfo;
+        } else {
+            makeSphere(ray.origin.add(ray.direction.scale(2)), new BABYLON.Color3(0, 1, 0));
+            return null;
+        }
+    }
+/*
+    function leftAndRightDetector(meshInfo, meshWorld, mesh) {
+
+        var picks = [];
+
+        const intersectionPoint = meshInfo.pickedPoint;
+
+        // Matrice de transformation inverse du cube
+        const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(meshWorld);
+
+        // Convertir l'intersection en coordonnées locales par rapport au cube
+        const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
+
+        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
+        const localX = intersectionLocalPoint.x;
+        const localY = intersectionLocalPoint.y;
+        const localZ = intersectionLocalPoint.z;
+
+        // Right side
+        var localPosition = new BABYLON.Vector3(0.5, localY, -0.5); // Position locale par rapport au cube
+        var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, mesh.getWorldMatrix());
+
+        var ray = new BABYLON.Ray(intersectionPoint, globalPosition.subtract(intersectionPoint).normalize(), 2);
+        
+        // Perform ray intersection test with the mesh
+        var pickInfo = scene.pickWithRay(ray, function (mesh) {
+            return mesh.name === 'collider_box_block'; // Filter by mesh name
+        });
+
+        if (pickInfo.pickedMesh) {
+            makeSphere(pickInfo.pickedPoint, new BABYLON.Color3(1, 0, 0));
+            picks.push(pickInfo);
+        }
+        else {
+            picks.push(null);
+        }
+
+        return picks;
+    }
+*/
     trajectory.onPointerUpObservable.add(async function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const meshToMove = scene.getMeshByName('robot');
             const targetMesh = scene.getMeshByName('endPoint');
-            const collider1 = scene.getMeshByName('collider_box');
-            const collider2 = scene.getMeshByName('collider_box_block');
-            //const cube = scene.getMeshByName('block2');
 
             if (meshToMove && targetMesh) {
 
-                var rayOrigin = meshToMove.position;
-                var rayDirection = targetMesh.position.subtract(meshToMove.position).normalize(); // Normalize direction vector
-                var rayLength = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position); // Length of the ray
-                var ray = new BABYLON.Ray(rayOrigin, rayDirection, rayLength);
-                
-                // Perform ray intersection test with the mesh
-                var pickInfo = scene.pickWithRay(ray, function (mesh) {
-                    return mesh.name === 'collider_box_block'; // Filter by mesh name
-                });
+                var steps = [meshToMove.position, targetMesh.position];
+                var pickInfo = frontDetector(meshToMove.position, targetMesh.position);
+                console.log("meshToMove:", meshToMove.position);
+                console.log("targetMesh:", targetMesh.position);
+                console.log("PickInfo:", pickInfo);
 
                 var cube = scene.getMeshByName('collider_box_block'); // Récupérer le mesh du cube par son nom
                 var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
                 
+                if (pickInfo == null) {
+                    console.log("No intersection");
+                    return;
+                }
                 // Check if there was an intersection
                 if (pickInfo.hit) {
-                    // Intersection point en coordonnées mondiales
-                    var intersectionPoint = pickInfo.pickedPoint;
 
-                    // Matrice de transformation inverse du cube
-                    var cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
+                    console.log("Intersection");
+                    const intersectionPoint = pickInfo.pickedPoint;
+                    steps.splice(steps.length - 1, 0, intersectionPoint);
 
-                    // Convertir l'intersection en coordonnées locales par rapport au cube
-                    var intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
+                    while (pickInfo.pickedMesh.name == 'collider_box_block') {
 
-                    // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
-                    var localX = intersectionLocalPoint.x;
-                    var localY = intersectionLocalPoint.y;
-                    var localZ = intersectionLocalPoint.z;
+                        // Matrice de transformation inverse du cube
+                        const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
 
-                    // Vous pouvez utiliser localX, localY, localZ comme vous le souhaitez
-                    console.log("Intersection Point Local Coordinates:", localX, localZ);
+                        // Convertir l'intersection en coordonnées locales par rapport au cube
+                        const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
 
-                    // Créer une sphère à l'intersection locale
-                    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.1 }, scene);
-                    sphere.position = intersectionPoint;
-                    sphere.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
-                    sphere.material.diffuseColor = new BABYLON.Color3(0, 1, 0); // Couleur verte
+                        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
+                        const localX = intersectionLocalPoint.x;
+                        const localY = intersectionLocalPoint.y;
+                        const localZ = intersectionLocalPoint.z;
+                        console.log("LocalX:", localX);
+                        console.log("LocalZ:", localZ);
+                        if (Math.abs(localX) >= 0.5) {
+                            // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
+                            var localPosition = new BABYLON.Vector3(localX, localY, 0.55); // Position locale par rapport au cube
+                            var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
-                    if (localX >= 0) {
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", { diameter: 0.05 }, scene);
+                            sphere2.position = globalPosition;
+                            sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                            sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
+                        }
+                        if (Math.abs(localZ) >= 0.5) {
+                            // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
+                            var localPosition = new BABYLON.Vector3(0.55, localY, localZ); // Position locale par rapport au cube
+                            var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
-                        // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
-                        var localPosition = new BABYLON.Vector3(0.5, localY, -0.5); // Position locale par rapport au cube
-                        var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", { diameter: 0.05 }, scene);
+                            sphere2.position = globalPosition;
+                            sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                            sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
+                        }
 
-                        var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", { diameter: 0.1 }, scene);
-                        sphere2.position = globalPosition;
-                        sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
-                        sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
-
-                        var localPosition = new BABYLON.Vector3(0.5, localY, 0.5); // Position locale par rapport au cube
-                        var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
-
-                        var sphere3 = BABYLON.MeshBuilder.CreateSphere("sphere3", { diameter: 0.1 }, scene);
-                        sphere3.position = globalPosition;
-                        sphere3.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
-                        sphere3.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
+                        console.log("sphere2:", sphere2.position);
+                        steps.splice(steps.length - 1, 0, sphere2.position);
+                        pickInfo = frontDetector(sphere2.position, targetMesh.position);
+                        if (pickInfo == null) {
+                            console.log("No intersection");
+                            break;
+                        }
+                        console.log("Steps:", steps);
+                        
                     }
+                    var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
+
+
+                    function startMoveAnimation(meshToMove, targetMeshPosition) {
+                        return new Promise((resolve, reject) => {
+                            var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 15, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+                        });
+                    }
+
+
+                    async function animateMesh(step) {
+                        // Assuming meshToMove and targetMesh are defined elsewhere
+                        console.log("Animation start");
+
+                        for (let i = 1; i < steps.length; i++) {
+                            console.log("Step:", steps[i]);
+                            meshToMove.lookAt(steps[i]);
+                            await startMoveAnimation(meshToMove, steps[i]);
+                            console.log("Animation", i + 1, "finished!");
+                        }
+                    
+                        console.log("All animations finished!");
+                    }
+
+                    animateMesh(meshToMove, steps)
+                    .then(() => {
+                        console.log("Entire animation sequence completed.");
+                    })
+                    .catch((error) => {
+                        console.error("An error occurred during animation:", error);
+                    });
+                    
+
+                    /*
+                    var pickInfo2 = leftAndRightDetector(pickInfo, cubeWorldMatrix, cube);
+                    console.log("PickInfo2:", pickInfo2);
+*/
                 }
             }
         }
