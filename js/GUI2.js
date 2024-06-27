@@ -13,6 +13,7 @@ var startRenderLoop = function (engine, canvas) {
 /* --- Initialize variables --- */
 var engine = null;
 var scene = null;
+var camera = null;
 var sceneToRender = null;
 var advancedTexture = null;
 var blackBlock = null;
@@ -45,7 +46,7 @@ var createScene = async function () {
     var scene = new BABYLON.Scene(engine);
 
     // Create an arc rotate camera
-    var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 12, BABYLON.Vector3.Zero(), scene);
+    camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 12, BABYLON.Vector3.Zero(), scene);
 
     // Target the camera to the scene origin
     camera.setTarget(BABYLON.Vector3.Zero());
@@ -330,8 +331,10 @@ window.initFunction = async function() {
 
     // Add resize event listener
     window.addEventListener("resize", function () {
-        engine.resize();
-        if (scene.activeCamera) {
+        if (engine) {
+            engine.resize();
+        }
+        if (scene && scene.activeCamera) {
             scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
         }
     });
@@ -344,7 +347,9 @@ initFunction().then(() => {
 
 // Resize the canvas when the window is resized
 window.addEventListener("resize", function () {
-    engine.resize();
+    if (engine) {
+        engine.resize();
+    }
     if (scene && scene.activeCamera) {
         scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
     }

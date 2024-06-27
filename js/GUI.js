@@ -83,6 +83,8 @@ function createBackButton() {
     backButton.top = "5%";
     backButton.zIndex = 2;
     backButton.thickness = 0;
+    backButton.isVisible = false;
+    backButton.isEnabled = false;
 
     backButton.onPointerUpObservable.add(function() {
         restorePreviousButtonState();
@@ -220,7 +222,10 @@ function restorePreviousButtonState() {
 }
 
 function checkCollisionWithTrashButton(mesh) {
-    // Get the 2D position of the mesh
+    // Get the position of the trash button in screen coordinates
+    var trashButtonPosition = trashButton._currentMeasure;
+
+    // Get the position of the mesh in screen coordinates
     var meshPosition = BABYLON.Vector3.Project(
         mesh.position,
         BABYLON.Matrix.Identity(),
@@ -228,20 +233,17 @@ function checkCollisionWithTrashButton(mesh) {
         camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
     );
 
-    // Get the 2D bounding box of the trash button
-    var trashButtonBoundingBox = trashButton._rootContainer.getLocalCoordinates(trashButton._currentMeasure);
-    var trashButtonGlobalPosition = BABYLON.Vector3.Project(
-        new BABYLON.Vector3(trashButton._currentMeasure.left, trashButton._currentMeasure.top, 0),
-        BABYLON.Matrix.Identity(),
-        scene.getTransformMatrix(),
-        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-    );
+    // Calculate the boundaries of the trash button
+    var trashButtonLeft = trashButtonPosition.left;
+    var trashButtonRight = trashButtonPosition.left + trashButtonPosition.width;
+    var trashButtonTop = trashButtonPosition.top;
+    var trashButtonBottom = trashButtonPosition.top + trashButtonPosition.height;
 
     // Check if the mesh is within the bounds of the trash button
     return (
-        meshPosition.x >= trashButtonGlobalPosition.x &&
-        meshPosition.x <= trashButtonGlobalPosition.x + trashButtonBoundingBox.width &&
-        meshPosition.y >= trashButtonGlobalPosition.y &&
-        meshPosition.y <= trashButtonGlobalPosition.y + trashButtonBoundingBox.height
+        meshPosition.x >= trashButtonLeft &&
+        meshPosition.x <= trashButtonRight &&
+        meshPosition.y >= trashButtonTop &&
+        meshPosition.y <= trashButtonBottom
     );
 }
