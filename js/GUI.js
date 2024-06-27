@@ -144,7 +144,6 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
-
 // Function to show interaction buttons and hide all image buttons
 function vaccumObjects() {
     placeBtn.isVisible = true;
@@ -165,7 +164,6 @@ function vaccumObjects() {
     homeButton.isEnabled = false;
     trashButton.isVisible = true;
     trashButton.isEnabled = true;
-
 }
 
 // Function to handle interaction button clicks
@@ -180,13 +178,11 @@ function mainPage() {
     homeButton.isEnabled = true;
 }
 
-
 // Function to handle object button click
 function handleObjectButtonClick() {
     saveButtonState();  // Save the current state before changing
     vaccumObjects();
 }
-
 
 // Function to hide and disable all buttons
 function hideAndDisableAllButtons() {
@@ -234,10 +230,10 @@ function checkCollisionWithTrashButton(mesh) {
     );
 
     // Calculate the boundaries of the trash button
-    var trashButtonLeft = trashButtonPosition.left;
-    var trashButtonRight = trashButtonPosition.left + trashButtonPosition.width;
-    var trashButtonTop = trashButtonPosition.top;
-    var trashButtonBottom = trashButtonPosition.top + trashButtonPosition.height;
+    var trashButtonLeft = trashButtonPosition.left * engine.getRenderWidth();
+    var trashButtonRight = (trashButtonPosition.left + trashButtonPosition.width) * engine.getRenderWidth();
+    var trashButtonTop = trashButtonPosition.top * engine.getRenderHeight();
+    var trashButtonBottom = (trashButtonPosition.top + trashButtonPosition.height) * engine.getRenderHeight();
 
     // Check if the mesh is within the bounds of the trash button
     return (
