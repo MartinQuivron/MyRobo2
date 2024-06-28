@@ -313,9 +313,6 @@ var createScene = async function () {
                 console.log("meshToMove:", meshToMove.position);
                 console.log("targetMesh:", targetMesh.position);
                 console.log("PickInfo:", pickInfo);
-
-                var cube = scene.getMeshByName('collider_box_block'); // Récupérer le mesh du cube par son nom
-                var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
                 
                 if (pickInfo == null) {
                     console.log("No intersection");
@@ -324,11 +321,18 @@ var createScene = async function () {
                 // Check if there was an intersection
                 if (pickInfo.hit) {
 
+                    console.log("pickInfo:", pickInfo);
+
                     console.log("Intersection");
-                    const intersectionPoint = pickInfo.pickedPoint;
+                    var intersectionPoint = pickInfo.pickedPoint;
                     steps.splice(steps.length - 1, 0, intersectionPoint);
 
                     while (pickInfo.pickedMesh.name == 'collider_box_block') {
+
+                        intersectionPoint = pickInfo.pickedPoint;
+
+                        var cube = pickInfo.pickedMesh; // Récupérer le mesh du cube par son nom
+                        var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
 
                         // Matrice de transformation inverse du cube
                         const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
@@ -342,28 +346,37 @@ var createScene = async function () {
                         const localZ = intersectionLocalPoint.z;
                         console.log("LocalX:", localX);
                         console.log("LocalZ:", localZ);
-                        if (Math.abs(localX) >= 0.5) {
+                        if (Math.abs(localX) >= 0.5 && Math.abs(localZ) <= 0.5) {
                             // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
                             var localPosition = new BABYLON.Vector3(localX, localY, 0.55); // Position locale par rapport au cube
                             var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
-                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", { diameter: 0.05 }, scene);
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                             sphere2.position = globalPosition;
                             sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                             sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
                         }
-                        if (Math.abs(localZ) >= 0.5) {
+                        if (Math.abs(localZ) >= 0.5 && Math.abs(localX) <= 0.5) {
                             // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
                             var localPosition = new BABYLON.Vector3(0.55, localY, localZ); // Position locale par rapport au cube
                             var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
-                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", { diameter: 0.05 }, scene);
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
+                            sphere2.position = globalPosition;
+                            sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                            sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
+                        }
+                        if  (Math.abs(localX) >= 0.5 && Math.abs(localZ) >= 0.5) {
+                            var localPosition = new BABYLON.Vector3(-localX, localY, -localZ);
+                            var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
+
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                             sphere2.position = globalPosition;
                             sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                             sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
                         }
 
-                        console.log("sphere2:", sphere2.position);
+                        console.log("sphere:", sphere2.position);
                         steps.splice(steps.length - 1, 0, sphere2.position);
                         pickInfo = frontDetector(sphere2.position, targetMesh.position);
                         if (pickInfo == null) {
@@ -395,6 +408,32 @@ var createScene = async function () {
                         }
                     
                         console.log("All animations finished!");
+
+                        // Delete all meshes named "line"
+                        var lineMeshes = [];
+                        scene.meshes.forEach(function(mesh) {
+                            if (mesh.name === 'line') {
+                                lineMeshes.push(mesh);
+                            }
+                        });
+
+                        // Dispose each line mesh found
+                        lineMeshes.forEach(function(mesh) {
+                            mesh.dispose(); // Dispose the mesh from the scene
+                        });
+
+                        // Delete all meshes named "sphere"
+                        var spheremeshes = [];
+                        scene.meshes.forEach(function(mesh) {
+                            if (mesh.name === 'sphere') {
+                                spheremeshes.push(mesh);
+                            }
+                        });
+
+                        // Dispose each cube mesh found
+                        spheremeshes.forEach(function(mesh) {
+                            mesh.dispose(); // Dispose the mesh from the scene
+                        });
                     }
 
                     animateMesh(meshToMove, steps)
