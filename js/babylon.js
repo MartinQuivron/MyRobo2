@@ -388,10 +388,17 @@ var createScene = async function () {
                     }
                     var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
 
+                    function startRotationAnimation(meshToMove, targetMeshPosition) {
+                        return new Promise((resolve, reject) => {
+                            var directionToTarget = targetMeshPosition.subtract(meshToMove.position);
+                            var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
+                            var rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+                        });
+                    }
 
                     function startMoveAnimation(meshToMove, targetMeshPosition) {
                         return new Promise((resolve, reject) => {
-                            var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 15, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+                            var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 60, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
                         });
                     }
 
@@ -402,7 +409,7 @@ var createScene = async function () {
 
                         for (let i = 1; i < steps.length; i++) {
                             console.log("Step:", steps[i]);
-                            meshToMove.lookAt(steps[i]);
+                            await startRotationAnimation(meshToMove, steps[i]);
                             await startMoveAnimation(meshToMove, steps[i]);
                             console.log("Animation", i + 1, "finished!");
                         }
