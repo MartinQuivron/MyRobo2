@@ -229,17 +229,78 @@ function checkCollisionWithTrashButton(mesh) {
         camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
     );
 
+    // Convert the mesh position to screen coordinates
+    var screenMeshPosition = {
+        x: meshPosition.x * engine.getRenderWidth(),
+        y: (1 - meshPosition.y) * engine.getRenderHeight() // invert y-axis for screen coordinates
+    };
+
     // Calculate the boundaries of the trash button
     var trashButtonLeft = trashButtonPosition.left * engine.getRenderWidth();
-    var trashButtonRight = (trashButtonPosition.left + trashButtonPosition.width) * engine.getRenderWidth();
+    var trashButtonRight = trashButtonLeft + (trashButtonPosition.width * engine.getRenderWidth());
     var trashButtonTop = trashButtonPosition.top * engine.getRenderHeight();
-    var trashButtonBottom = (trashButtonPosition.top + trashButtonPosition.height) * engine.getRenderHeight();
+    var trashButtonBottom = trashButtonTop + (trashButtonPosition.height * engine.getRenderHeight());
+
+    console.log("Mesh Position:", screenMeshPosition);
+    console.log("Trash Button Boundaries:", {
+        left: trashButtonLeft,
+        right: trashButtonRight,
+        top: trashButtonTop,
+        bottom: trashButtonBottom
+    });
 
     // Check if the mesh is within the bounds of the trash button
-    return (
-        meshPosition.x >= trashButtonLeft &&
-        meshPosition.x <= trashButtonRight &&
-        meshPosition.y >= trashButtonTop &&
-        meshPosition.y <= trashButtonBottom
+    const collision = (
+        screenMeshPosition.x >= trashButtonLeft &&
+        screenMeshPosition.x <= trashButtonRight &&
+        screenMeshPosition.y >= trashButtonTop &&
+        screenMeshPosition.y <= trashButtonBottom
     );
+
+    console.log("Collision Detected:", collision);
+    return collision;
+}
+
+function attachOwnPointerDragBehavior(mesh) {
+    var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0, 1, 0)});
+    pointerDragBehavior.moveAttached = false;
+    pointerDragBehavior.useObjectOrienationForDragging = false;
+
+    pointerDragBehavior.onDragStartObservable.add((event) => {
+        console.log("startDrag");
+        placeBtn.isVisible = false;
+        endPoint.isVisible = false;
+        block.isVisible = false;
+        trashButton.isVisible = true;
+        trashButton.isEnabled = true;
+    });
+
+    pointerDragBehavior.onDragObservable.add((event) => {
+        console.log("drag");
+        placeBtn.isVisible = false;
+        endPoint.isVisible = false;
+        block.isVisible = false;
+        trashButton.isVisible = true;
+        trashButton.isEnabled = true;
+
+        pointerDragBehavior.attachedNode.position.x += event.delta.x;
+        pointerDragBehavior.attachedNode.position.z += event.delta.z;
+    });
+
+    pointerDragBehavior.onDragEndObservable.add((event) => {
+        console.log("endDrag");
+        placeBtn.isVisible = true;
+        endPoint.isVisible = true;
+        block.isVisible = true;
+        trashButton.isVisible = false;
+        trashButton.isEnabled = false;
+
+        // Check if the mesh is over the trash button
+        if (checkCollisionWithTrashButton(mesh)) {
+            console.log("Disposing mesh:", mesh.name);
+            mesh.dispose(); // Dispose the mesh if it's over the trash button
+        }
+    });
+
+    mesh.addBehavior(pointerDragBehavior);
 }
