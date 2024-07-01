@@ -240,27 +240,6 @@ var createScene = async function () {
         }
     });
 
-    var makeSphere = (position, color) => {
-        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.05, segments: 32});
-        sphere.material = new BABYLON.StandardMaterial("sp");
-        sphere.material.diffuseColor = color;
-        sphere.position = position;
-    }
-
-    function frontDetector(start, end) {
-        const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
-        // Perform ray intersection test with the mesh
-        const pickInfo = scene.pickWithRay(ray, function (mesh) {
-            return mesh.name === 'collider_box_block'; // Filter by mesh name
-        });
-        if (pickInfo.pickedMesh) {
-            makeSphere(pickInfo.pickedPoint, new BABYLON.Color3(1, 0, 0));
-            return pickInfo;
-        } else {
-            makeSphere(ray.origin.add(ray.direction.scale(2)), new BABYLON.Color3(0, 1, 0));
-            return null;
-        }
-    }
 /*
     function leftAndRightDetector(meshInfo, meshWorld, mesh) {
 
@@ -309,7 +288,7 @@ var createScene = async function () {
             if (meshToMove && targetMesh) {
 
                 var steps = [meshToMove.position, targetMesh.position];
-                var pickInfo = frontDetector(meshToMove.position, targetMesh.position);
+                var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
                 console.log("meshToMove:", meshToMove.position);
                 console.log("targetMesh:", targetMesh.position);
                 console.log("PickInfo:", pickInfo);
@@ -378,7 +357,7 @@ var createScene = async function () {
 
                         console.log("sphere:", sphere2.position);
                         steps.splice(steps.length - 1, 0, sphere2.position);
-                        pickInfo = frontDetector(sphere2.position, targetMesh.position);
+                        pickInfo = frontDetector(sphere2.position, targetMesh.position, scene);
                         if (pickInfo == null) {
                             console.log("No intersection");
                             break;
@@ -386,31 +365,17 @@ var createScene = async function () {
                         console.log("Steps:", steps);
                         
                     }
-                    var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
+                }
+                var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
 
-                    function startRotationAnimation(meshToMove, targetMeshPosition) {
-                        return new Promise((resolve, reject) => {
-                            var directionToTarget = targetMeshPosition.subtract(meshToMove.position);
-                            var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
-                            var rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
-                        });
-                    }
-
-                    function startMoveAnimation(meshToMove, targetMeshPosition) {
-                        return new Promise((resolve, reject) => {
-                            var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 60, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
-                        });
-                    }
-
-
-                    async function animateMesh(step) {
+                    async function animateMesh(mesh, step, scene) {
                         // Assuming meshToMove and targetMesh are defined elsewhere
                         console.log("Animation start");
 
-                        for (let i = 1; i < steps.length; i++) {
-                            console.log("Step:", steps[i]);
-                            await startRotationAnimation(meshToMove, steps[i]);
-                            await startMoveAnimation(meshToMove, steps[i]);
+                        for (let i = 1; i < step.length; i++) {
+                            console.log("Step:", step[i]);
+                            await startRotationAnimation(mesh, step[i]);
+                            await startMoveAnimation(mesh, step[i]);
                             console.log("Animation", i + 1, "finished!");
                         }
                     
@@ -443,20 +408,13 @@ var createScene = async function () {
                         });
                     }
 
-                    animateMesh(meshToMove, steps)
+                    animateMesh(meshToMove, steps, scene)
                     .then(() => {
                         console.log("Entire animation sequence completed.");
                     })
                     .catch((error) => {
                         console.error("An error occurred during animation:", error);
                     });
-                    
-
-                    /*
-                    var pickInfo2 = leftAndRightDetector(pickInfo, cubeWorldMatrix, cube);
-                    console.log("PickInfo2:", pickInfo2);
-*/
-                }
             }
         }
     });
