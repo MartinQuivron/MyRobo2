@@ -60,6 +60,7 @@ var createScene = async function () {
     block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
     move = createButton("move", "Move robot", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
     trajectory = createButton("trajectory", "Trajectory", "25%", "10%", "white", 20, "green", "45%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
+    trajectory2 = createButton("trajectory2", "Trajectory", "25%", "10%", "white", 20, "green", "45%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
     // Add buttons to the advanced texture
     advancedTexture.addControl(endPoint);
@@ -67,6 +68,7 @@ var createScene = async function () {
     advancedTexture.addControl(block);
     advancedTexture.addControl(move);
     advancedTexture.addControl(trajectory);
+    advancedTexture.addControl(trajectory2);
 
 /* Enable AR experience ---------------------------------------------------------------- */
     
@@ -152,10 +154,10 @@ var createScene = async function () {
             attachOwnPointerDragBehavior(clonedMesh1);
             const collider1 = BABYLON.Mesh.CreateBox("collider_box_block", 0, scene, false);		
             var robote = clonedMesh1.getBoundingInfo();
-            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/2, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/2);
+            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
-            collider1.material.alpha = 0;
+            collider1.material.alpha = 0.6;
             collider1.position.y += 0.06;
         }
     });
@@ -241,24 +243,8 @@ var createScene = async function () {
     });
 
 /*
-    function leftAndRightDetector(meshInfo, meshWorld, mesh) {
+    function obstacleDetector(meshInfo, meshWorld, mesh) {
 
-        var picks = [];
-
-        const intersectionPoint = meshInfo.pickedPoint;
-
-        // Matrice de transformation inverse du cube
-        const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(meshWorld);
-
-        // Convertir l'intersection en coordonnées locales par rapport au cube
-        const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
-
-        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
-        const localX = intersectionLocalPoint.x;
-        const localY = intersectionLocalPoint.y;
-        const localZ = intersectionLocalPoint.z;
-
-        // Right side
         var localPosition = new BABYLON.Vector3(0.5, localY, -0.5); // Position locale par rapport au cube
         var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, mesh.getWorldMatrix());
 
@@ -286,11 +272,10 @@ var createScene = async function () {
             const targetMesh = scene.getMeshByName('endPoint');
 
             if (meshToMove && targetMesh) {
-
                 var steps = [meshToMove.position, targetMesh.position];
                 var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
-                console.log("meshToMove:", meshToMove.position);
-                console.log("targetMesh:", targetMesh.position);
+                //console.log("meshToMove:", meshToMove.position);
+                //console.log("targetMesh:", targetMesh.position);
                 console.log("PickInfo:", pickInfo);
                 
                 if (pickInfo == null) {
@@ -325,9 +310,20 @@ var createScene = async function () {
                         const localZ = intersectionLocalPoint.z;
                         console.log("LocalX:", localX);
                         console.log("LocalZ:", localZ);
-                        if (Math.abs(localX) >= 0.5 && Math.abs(localZ) <= 0.5) {
-                            // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
-                            var localPosition = new BABYLON.Vector3(localX, localY, 0.55); // Position locale par rapport au cube
+                        if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
+                            console.log("je suis sur la largeur Z");
+
+                            if (localZ <= 0){
+                                var localPosition = new BABYLON.Vector3(localX, localY, -0.55); // Position locale par rapport au cube
+                                console.log("LocalX", localX);
+                                console.log("LocalZ", -0.55);
+                            }
+                            if (localZ > 0){
+                                var localPosition = new BABYLON.Vector3(localX, localY, 0.55); // Position locale par rapport au cube
+                                console.log("LocalX", localX);
+                                console.log("LocalZ", 0.55);
+                            }
+                            
                             var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
                             var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
@@ -335,9 +331,20 @@ var createScene = async function () {
                             sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                             sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
                         }
-                        if (Math.abs(localZ) >= 0.5 && Math.abs(localX) <= 0.5) {
-                            // Transformer la coordonnée locale (0.5, 0, 0) en coordonnée mondiale par rapport au cube
-                            var localPosition = new BABYLON.Vector3(0.55, localY, localZ); // Position locale par rapport au cube
+                        if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
+                            console.log("je suis sur la largeur X");
+
+                            if (localX <= 0){
+                                var localPosition = new BABYLON.Vector3(-0.55, localY, localZ); // Position locale par rapport au cube
+                                console.log("LocalX", -0.55);
+                                console.log("LocalZ", localZ);
+                            }
+                            if (localX > 0){
+                                var localPosition = new BABYLON.Vector3(0.55, localY, localZ); // Position locale par rapport au cube
+                                console.log("LocalX", 0.55);
+                                console.log("LocalZ", localZ);
+                            }
+
                             var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
                             var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
@@ -345,8 +352,13 @@ var createScene = async function () {
                             sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                             sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Couleur rouge
                         }
-                        if  (Math.abs(localX) >= 0.5 && Math.abs(localZ) >= 0.5) {
+                        if  (Math.abs(localX) >= 0.49 && Math.abs(localZ) >= 0.49) {
+                            console.log("je suis dans le coin");
+
+
                             var localPosition = new BABYLON.Vector3(-localX, localY, -localZ);
+                            console.log("LocalX", -localX);
+                            console.log("LocalZ", -localZ);
                             var globalPosition = BABYLON.Vector3.TransformCoordinates(localPosition, cube.getWorldMatrix());
 
                             var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
@@ -365,6 +377,231 @@ var createScene = async function () {
                         console.log("Steps:", steps);
                         
                     }
+                }
+                var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
+
+                    async function animateMesh(mesh, step, scene) {
+                        // Assuming meshToMove and targetMesh are defined elsewhere
+                        console.log("Animation start");
+
+                        for (let i = 1; i < step.length; i++) {
+                            console.log("Step:", step[i]);
+                            await startRotationAnimation(mesh, step[i]);
+                            await startMoveAnimation(mesh, step[i]);
+                            console.log("Animation", i + 1, "finished!");
+                        }
+                    
+                        console.log("All animations finished!");
+
+                        // Delete all meshes named "line"
+                        var lineMeshes = [];
+                        scene.meshes.forEach(function(mesh) {
+                            if (mesh.name === 'line') {
+                                lineMeshes.push(mesh);
+                            }
+                        });
+
+                        // Dispose each line mesh found
+                        lineMeshes.forEach(function(mesh) {
+                            mesh.dispose(); // Dispose the mesh from the scene
+                        });
+
+                        // Delete all meshes named "sphere"
+                        var spheremeshes = [];
+                        scene.meshes.forEach(function(mesh) {
+                            if (mesh.name === 'sphere') {
+                                spheremeshes.push(mesh);
+                            }
+                        });
+
+                        // Dispose each cube mesh found
+                        spheremeshes.forEach(function(mesh) {
+                            mesh.dispose(); // Dispose the mesh from the scene
+                        });
+                    }
+
+                    animateMesh(meshToMove, steps, scene)
+                    .then(() => {
+                        console.log("Entire animation sequence completed.");
+                    })
+                    .catch((error) => {
+                        console.error("An error occurred during animation:", error);
+                    });
+            }
+        }
+    });
+
+    function getDistanceBetweenPoints(point1, point2, point3) {
+        // Use the distance method of Vector3 to calculate the distance between two points
+        var pointA = BABYLON.Vector3.Distance(point1, point3);
+        var pointB = BABYLON.Vector3.Distance(point2, point3);
+        if (pointA < pointB) {
+            return point1;
+        }else {
+            return point2;
+        }
+    }
+
+    // Function to detect obstacle
+    function simpleDetector(start, end, scene) {
+        const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+        // Display the ray
+        var rayHelper = new BABYLON.RayHelper(ray);
+        rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+        // Perform ray intersection test with the mesh
+        const pickInfo = scene.pickWithRay(ray, function (mesh) {
+            return mesh.name === 'collider_box_block'; // Filter by mesh name
+        });
+
+        if (pickInfo.pickedMesh) {
+            console.log("Obstacle detected avec le simple detector");
+            return pickInfo;
+            
+        } else {
+            return null;
+        }
+    }
+
+    trajectory2.onPointerUpObservable.add(async function() {
+        if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+            const meshToMove = scene.getMeshByName('robot');
+            const targetMesh = scene.getMeshByName('endPoint');
+
+            if (meshToMove && targetMesh) {
+                var steps = [meshToMove.position, targetMesh.position];
+                var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
+                //console.log("meshToMove:", meshToMove.position);
+                //console.log("targetMesh:", targetMesh.position);
+                console.log("PickInfo:", pickInfo);
+                
+                if (pickInfo == null) {
+                    console.log("No intersection");
+                    return;
+                }
+                // Check if there was an intersection
+                if (pickInfo.hit) {
+
+                    console.log("pickInfo:", pickInfo);
+
+                    console.log("Intersection");
+                    var intersectionPoint = pickInfo.pickedPoint;
+                    steps.splice(steps.length - 1, 0, intersectionPoint);
+
+                    while (pickInfo.pickedMesh.name == 'collider_box_block') {
+
+                        intersectionPoint = pickInfo.pickedPoint;
+
+                        var cube = pickInfo.pickedMesh; // Récupérer le mesh du cube par son nom
+                        var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
+
+                        // Matrice de transformation inverse du cube
+                        const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
+
+                        // Convertir l'intersection en coordonnées locales par rapport au cube
+                        const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
+
+                        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
+                        const localX = intersectionLocalPoint.x;
+                        const localY = intersectionLocalPoint.y;
+                        const localZ = intersectionLocalPoint.z;
+                        console.log("LocalX:", localX);
+                        console.log("LocalZ:", localZ);
+
+                        if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
+                            console.log("je suis sur la largeur Z");
+
+                            var corner1 = new BABYLON.Vector3(0.55, localY, 0.55);
+                            var corner12 = new BABYLON.Vector3(-0.55, localY, 0.55)
+                            var globalCorner1 = BABYLON.Vector3.TransformCoordinates(corner1, cube.getWorldMatrix());
+                            var globalCorner12 = BABYLON.Vector3.TransformCoordinates(corner12, cube.getWorldMatrix());
+                            globalCorner1 = getDistanceBetweenPoints(globalCorner1, globalCorner12, intersectionPoint);
+
+                            var corner2 = new BABYLON.Vector3(0.55, localY, -0.55);
+                            var corner22 = new BABYLON.Vector3(-0.55, localY, -0.55);
+                            var globalCorner2 = BABYLON.Vector3.TransformCoordinates(corner2, cube.getWorldMatrix());
+                            var globalCorner22 = BABYLON.Vector3.TransformCoordinates(corner22, cube.getWorldMatrix());
+                            globalCorner2 = getDistanceBetweenPoints(globalCorner2, globalCorner22, intersectionPoint);
+
+                            var bestCorner = getDistanceBetweenPoints(globalCorner1, globalCorner2, targetMesh.position);
+                            
+                            if (bestCorner == globalCorner1){
+                                if (simpleDetector(intersectionPoint, globalCorner1, scene) == null) {
+                                    console.log("Le coin droit est libre");
+                                }else {
+                                    console.log("Le coin droit est occupé");
+                                }
+                            }
+                            if (bestCorner == globalCorner2){
+                                if (simpleDetector(intersectionPoint, globalCorner2, scene) == null) {
+                                    console.log("Le coin gauche est libre");
+                                }else {
+                                    console.log("Le coin gauche est occupé");
+                                }
+                            }
+/*
+                            if (bestCorner == globalCorner1 && simpleDetector(meshToMove.position, globalCorner1, scene) != null && simpleDetector(meshToMove.position, globalCorner2, scene) != null) {
+                            
+                            }
+                            if (bestCorner == globalCorner2 && simpleDetector(meshToMove.position, globalCorner2, scene) != null && simpleDetector(meshToMove.position, globalCorner1, scene) != null) {
+
+                            }
+
+*/
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
+                            sphere2.position = bestCorner;
+                            sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                            sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                        }
+                        if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
+                            console.log("je suis sur la largeur X");
+
+                            var corner1 = new BABYLON.Vector3(0.55, localY, 0.55);
+                            var corner12 = new BABYLON.Vector3(0.55, localY, -0.55);
+                            var globalCorner1 = BABYLON.Vector3.TransformCoordinates(corner1, cube.getWorldMatrix());
+                            var globalCorner12 = BABYLON.Vector3.TransformCoordinates(corner12, cube.getWorldMatrix());
+                            globalCorner1 = getDistanceBetweenPoints(globalCorner1, globalCorner12, intersectionPoint);
+
+                            var corner2 = new BABYLON.Vector3(-0.55, localY, 0.55);
+                            var corner22 = new BABYLON.Vector3(-0.55, localY, -0.55);
+                            var globalCorner2 = BABYLON.Vector3.TransformCoordinates(corner2, cube.getWorldMatrix());
+                            var globalCorner22 = BABYLON.Vector3.TransformCoordinates(corner22, cube.getWorldMatrix());
+                            globalCorner2 = getDistanceBetweenPoints(globalCorner2, globalCorner22, intersectionPoint);
+
+                            var bestCorner = getDistanceBetweenPoints(globalCorner1, globalCorner2, targetMesh.position);
+
+                            if (bestCorner == globalCorner1){
+                                if (simpleDetector(intersectionPoint, globalCorner1, scene) == null) {
+                                    console.log("Le coin droit est libre");
+                                }else {
+                                    console.log("Le coin droit est occupé");
+                                }
+                            }
+                            if (bestCorner == globalCorner2){
+                                if (simpleDetector(intersectionPoint, globalCorner2, scene) == null) {
+                                    console.log("Le coin gauche est libre");
+                                }else {
+                                    console.log("Le coin gauche est occupé");
+                                }
+                            }
+
+                            var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
+                            sphere2.position = bestCorner;
+                            sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                            sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                        }
+
+                        steps.splice(steps.length - 1, 0, sphere2.position);
+                        pickInfo = frontDetector(sphere2.position, targetMesh.position, scene);
+                        console.log("PickInfo:", pickInfo);
+                        if (pickInfo == null) {
+                            console.log("No intersection");
+                            break;
+                        }
+
+                    }
+
+
+                   
                 }
                 var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
 

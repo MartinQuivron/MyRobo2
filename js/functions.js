@@ -54,13 +54,50 @@ function frontDetector(start, end, scene) {
     const pickInfo = scene.pickWithRay(ray, function (mesh) {
         return mesh.name === 'collider_box_block'; // Filter by mesh name
     });
+
     if (pickInfo.pickedMesh) {
+        intersectionPoint = pickInfo.pickedPoint;
+
+        var cube = pickInfo.pickedMesh; // Récupérer le mesh du cube par son nom
+        var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
+
+        // Matrice de transformation inverse du cube
+        const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
+
+        // Convertir l'intersection en coordonnées locales par rapport au cube
+        const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
+
+        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
+        var localX = intersectionLocalPoint.x;
+        var localY = intersectionLocalPoint.y;
+        var localZ = intersectionLocalPoint.z;
+
+        if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
+            if (localX > 0.4){
+                localX += 0.05;
+            }else{
+                localX -= 0.05;
+            }
+        }
+        if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
+            if (localZ > 0.4){
+                localZ += 0.05;
+            }else{
+                localZ -= 0.05;
+            }
+        }
+
+        // Convertir les coordonnées locales en coordonnées mondiales
+        const newIntersectionPoint = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(localX, localY, localZ), cubeWorldMatrix);
+        pickInfo.pickedPoint = newIntersectionPoint;
         makeSphere(pickInfo.pickedPoint, new BABYLON.Color3(1, 0, 0));
         return pickInfo;
     } else {
         makeSphere(ray.origin.add(ray.direction.scale(2)), new BABYLON.Color3(0, 1, 0));
     }
 }
+
+
 
 //-------------Animation Functions----------------
 // Function to start rotation animation
