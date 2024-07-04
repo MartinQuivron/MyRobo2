@@ -190,6 +190,62 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
+function createSlider() {
+    var panel = new BABYLON.GUI.StackPanel();
+    panel.zIndex = 2;
+    panel.width = "80%"; 
+    panel.height = "20%"; 
+    panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP; 
+    panel.top = "30%"; 
+
+    var header = new BABYLON.GUI.TextBlock();
+    header.text = "Speed: " + "1";
+    header.fontSize = "60px"; 
+    header.height = "70px"; 
+    header.color = "white";
+    header.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT; 
+    header.paddingLeft = "10px"; 
+    panel.addControl(header);
+
+    
+    var spacer = new BABYLON.GUI.Rectangle();
+    spacer.height = "20px"; 
+    spacer.width = "100%";
+    spacer.thickness = 0;
+    spacer.isPointerBlocker = false;
+    panel.addControl(spacer);
+
+    var slider = new BABYLON.GUI.Slider();
+    slider.minimum = 1;
+    slider.maximum = 10;
+    slider.value = 1;
+    slider.isVertical = false;
+    slider.color = "white";
+    slider.background = "white";
+    slider.height = "40px"; 
+    slider.width = "100%"; 
+    slider.step = 1; 
+    slider.onValueChangedObservable.add(function (value) {
+        var roundedValue = Math.round(value); 
+        slider.value = roundedValue; 
+        header.text = "Speed: " + roundedValue;
+    });
+    panel.addControl(slider);
+
+    advancedTexture.addControl(panel);
+
+    
+    allButtons.push(panel);
+    panel.isVisible = false;
+    panel.isEnabled = false;
+
+    return panel;
+}
+
+
+
+
 function startPage() {
     hideAndDisableAllButtons();
     // Show the black block and image buttons
@@ -256,11 +312,12 @@ function vaccumObjects() {
 function optionPage() {
     saveButtonState();
     hideAndDisableAllButtons();
-    backButton.isVisible = true;
-    backButton.isEnabled = true;
-    blackBlock.isVisible = true;
+    blackBgOptionsPage.isVisible = true;
     optionsButton.isVisible = true;
     optionsButton.isEnabled = true;
+
+    sliderPanel.isVisible = true;
+    sliderPanel.isEnabled = true;
 
     currentPage = "optionPage";
 }
@@ -387,3 +444,4 @@ function attachOwnPointerDragBehavior(mesh) {
 
     mesh.addBehavior(pointerDragBehavior);
 }
+

@@ -30,6 +30,8 @@ var placeBtn = null;
 var endPoint = null;
 var block = null;
 var move = null;
+var sliderPanel = null;
+
 
 // Image buttons
 var vacumBtn = null;
@@ -94,14 +96,19 @@ var createScene = async function () {
     });
 
     // Add the GUI rectangle to the advanced texture
-    blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");    
+    blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "80px");    
     blackBgMainPage = createGuiRectangle("blackBgMainPage", "black", "95%", "20%", .6, 20, "", "0px", "35%"); // Adjust the top value as needed
     blackBgVaccumObjects = createGuiRectangle("blackBgVaccumObjects", "black", "95%", "35%", .6, 20, "", "0px", "27%"); // Adjust the top value as needed
+    blackBgOptionsPage = createGuiRectangle("blackBgOptionsPage", "black", "95%", "97%", .8, 20, "Options", "80px");
+    blackBgOptionsPage.isVisible = false;
+
 
     createHomeButton();
     createBackButton();
     createTrashButton();
     createOptionsButton();
+    sliderPanel = createSlider();
+
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button
     advancedTexture.addControl(backButton); // Call the function to create and add the back button
@@ -113,6 +120,8 @@ var createScene = async function () {
     allButtons.push(blackBgMainPage);
     advancedTexture.addControl(blackBgVaccumObjects);
     allButtons.push(blackBgVaccumObjects);
+    advancedTexture.addControl(blackBgOptionsPage);
+    allButtons.push(blackBgOptionsPage);
 
     // Create image buttons
     vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.png", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
