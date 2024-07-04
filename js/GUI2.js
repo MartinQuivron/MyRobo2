@@ -17,11 +17,15 @@ var camera = null;
 var sceneToRender = null;
 var advancedTexture = null;
 var blackBlock = null;
-var homeButton = null; // Declare homeButton globally
-var simulationButton = null; // Declare simulationButton globally
-var objectBtn = null; // Declare objectBtn globally
+var homeButton = null; 
+var simulationButton = null; 
+var objectBtn = null; 
+var draggedMesh = null; // the object being dragged
+var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
 
-// Interactive buttons
+// Interactive 
+var currentPage = "startPage";
+var isObjectButtonClicked = false;
 var placeBtn = null;
 var endPoint = null;
 var block = null;
@@ -79,7 +83,8 @@ var createScene = async function () {
     // Import meshes from external files
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "kobuki.rdtf.glb", scene, function (meshes) {
         model = meshes[0];
-        model.isVisible = true; // Le modèle est visible dès le début
+        model.isVisible = false; 
+        model.setEnabled(false);
         attachOwnPointerDragBehavior(model); // Attacher le comportement de glisser-déposer
     });
     
@@ -89,7 +94,9 @@ var createScene = async function () {
     });
 
     // Add the GUI rectangle to the advanced texture
-    blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");
+    blackBlock = createGuiRectangle("blackBlock", "black", "95%", "97%", .8, 20, "My Robo2", "60px");    
+    blackBgMainPage = createGuiRectangle("blackBgMainPage", "black", "95%", "20%", .6, 20, "", "0px", "35%"); // Adjust the top value as needed
+    blackBgVaccumObjects = createGuiRectangle("blackBgVaccumObjects", "black", "95%", "35%", .6, 20, "", "0px", "27%"); // Adjust the top value as needed
 
     createHomeButton();
     createBackButton();
@@ -99,6 +106,11 @@ var createScene = async function () {
     advancedTexture.addControl(backButton); // Call the function to create and add the back button
     advancedTexture.addControl(trashButton); // Call the function to create and add the trash button
     advancedTexture.addControl(blackBlock); // Add the black block to the advanced texture
+    allButtons.push(blackBlock);
+    advancedTexture.addControl(blackBgMainPage); 
+    allButtons.push(blackBgMainPage);
+    advancedTexture.addControl(blackBgVaccumObjects);
+    allButtons.push(blackBgVaccumObjects);
 
     // Create image buttons
     vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.png", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
@@ -116,12 +128,12 @@ var createScene = async function () {
     objectBtn.isVisible = false;  // Initially hide and disable the button
     objectBtn.isEnabled = false;
 
-    // Create buttons for user interaction
-    placeBtn = createButton("placeBtn", "Place model", "25%", "10%", "white", 20, "green", "35%", "5%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-    endPoint = createButton("endPoint", "Place endpoint", "25%", "10%", "white", 20, "green", "35%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-    block = createButton("block", "Place block", "25%", "10%", "white", 20, "green", "35%", "70%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
-    move = createButton("move", "Move model", "25%", "10%", "white", 20, "green", "45%", "38%", "40px", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT);
 
+    // Create buttons for user interaction
+    placeBtn = createButtonImaged("placeBtn", "./assets/img/vaccum_image.png", "25%", "12%", "20%", "5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
+    endPoint = createButtonImaged("endPoint", "./assets/img/end_point.png", "25%", "12%", "20%", "38%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
+    block = createButtonImaged("block", "./assets/img/obstacle.png", "25%", "12%", "20%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
+    
     // Initially hide and disable the buttons
     placeBtn.isVisible = false;
     placeBtn.isEnabled = false;
@@ -129,19 +141,24 @@ var createScene = async function () {
     endPoint.isEnabled = false;
     block.isVisible = false;
     block.isEnabled = false;
-    move.isVisible = false;
-    move.isEnabled = false;
 
     // Add buttons to the advanced texture
     advancedTexture.addControl(endPoint);
     advancedTexture.addControl(placeBtn);
     advancedTexture.addControl(block);
-    advancedTexture.addControl(move);
     advancedTexture.addControl(simulationButton);  // Add the simulation button to the advanced texture
     advancedTexture.addControl(objectBtn);  // Add the object button to the advanced texture
 
     // Attach event handlers
-    objectBtn.onPointerUpObservable.add(handleObjectButtonClick);
+    objectBtn.onPointerUpObservable.add(function() {
+        if (isObjectButtonClicked) {
+            handleObjectButtonClickDisabled();
+        } else {
+            handleObjectButtonClick();
+        }
+        // Toggle the flag
+        isObjectButtonClicked = !isObjectButtonClicked;
+    });
 
     vacumBtn.onPointerUpObservable.add(mainPage);
     roboticArmBtn.onPointerUpObservable.add(mainPage);
@@ -212,7 +229,7 @@ var createScene = async function () {
         }
     });
 
-    move.onPointerUpObservable.add(function() {
+    simulationButton.onPointerUpObservable.add(function() {
         if (hitTest && xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const meshToMove = scene.getMeshByName('robot');
             const targetMesh = scene.getMeshByName('endPoint');
@@ -228,49 +245,6 @@ var createScene = async function () {
             }
         }
     });
-
-    function attachOwnPointerDragBehavior(mesh) {
-        var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0, 1, 0)});
-        pointerDragBehavior.moveAttached = false;
-        pointerDragBehavior.useObjectOrienationForDragging = false;
-    
-        pointerDragBehavior.onDragStartObservable.add((event) => {
-            console.log("startDrag");
-            placeBtn.isVisible = false;
-            endPoint.isVisible = false;
-            block.isVisible = false;
-            trashButton.isVisible = true;
-            trashButton.isEnabled = true;
-        });
-    
-        pointerDragBehavior.onDragObservable.add((event) => {
-            console.log("drag");
-            placeBtn.isVisible = false;
-            endPoint.isVisible = false;
-            block.isVisible = false;
-            trashButton.isVisible = true;
-            trashButton.isEnabled = true;
-    
-            pointerDragBehavior.attachedNode.position.x += event.delta.x;
-            pointerDragBehavior.attachedNode.position.z += event.delta.z;
-        });
-    
-        pointerDragBehavior.onDragEndObservable.add((event) => {
-            console.log("endDrag");
-            placeBtn.isVisible = true;
-            endPoint.isVisible = true;
-            block.isVisible = true;
-            trashButton.isVisible = false;
-            trashButton.isEnabled = false;
-    
-            // Check if the mesh is over the trash button
-            if (checkCollisionWithTrashButton(mesh)) {
-                mesh.dispose(); // Dispose the mesh if it's over the trash button
-            }
-        });
-    
-        mesh.addBehavior(pointerDragBehavior);
-    }
 
     return scene;
 };
@@ -294,22 +268,8 @@ async function resetScene() {
     sceneToRender = scene;
 
     // Hide interaction buttons
-    hideAndDisableAllButtons();
-
-    // Show the black block and image buttons
-    blackBlock.isVisible = true;
-    vacumBtn.isVisible = true;
-    vacumBtn.isEnabled = true;
-    roboticArmBtn.isVisible = true;
-    roboticArmBtn.isEnabled = true;
-    droneBtn.isVisible = true;
-    droneBtn.isEnabled = true;
-    mowerBtn.isVisible = true;
-    mowerBtn.isEnabled = true;
-
-    // Ensure the home button remains visible and enabled
-    homeButton.isVisible = true;
-    homeButton.isEnabled = true;
+    startPage(); // Display the start page
+  
 }
 
 /* --- Initialize the scene and engine --- */
@@ -334,8 +294,8 @@ window.initFunction = async function() {
         if (engine) {
             engine.resize();
         }
-        if (scene && scene.activeCamera) {
-            scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
+        if (scene && scene.activeCamera && canvas) {
+            scene.activeCamera.aspectRatio = engine.getAspectRatio();
         }
     });
 };
@@ -350,7 +310,7 @@ window.addEventListener("resize", function () {
     if (engine) {
         engine.resize();
     }
-    if (scene && scene.activeCamera) {
-        scene.activeCamera.aspectRatio = engine.getAspectRatio(canvas);
+    if (scene && scene.activeCamera && canvas) {
+        scene.activeCamera.aspectRatio = engine.getAspectRatio();
     }
 });

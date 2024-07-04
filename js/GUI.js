@@ -7,7 +7,7 @@ var buttonStateHistory = [];
 // -------------------------------------- Functions -------------------------------------- //
 
 // Function to create GUI rectangles
-function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize) {
+function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px") {
     const rectangle = new BABYLON.GUI.Rectangle(name);
     rectangle.width = width;
     rectangle.height = height;
@@ -19,6 +19,7 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
     rectangle.zIndex = 1;
+    rectangle.top = top; // Set the top property to move the rectangle vertically
 
     // Create a text block
     const textBlock = new BABYLON.GUI.TextBlock();
@@ -67,10 +68,31 @@ function createTrashButton() {
     trashButton.top = "5%";
     trashButton.zIndex = 2;
     trashButton.thickness = 0;
+    trashButton.isVisible = false;
+    trashButton.isEnabled = false;
 
     advancedTexture.addControl(trashButton);
     allButtons.push(trashButton);
+
+    trashButton.onPointerEnterObservable.add(() => {
+        if (draggedMesh) {
+            isPointerOverTrashButton = true;
+            console.log("Pointer is over the trash button");
+            console.log("draggedMesh:", draggedMesh.name);
+            scene.getMeshByName(draggedMesh.name).dispose();  // Dispose the dragged mesh immediately
+            draggedMesh = null;  // Reset the dragged mesh to avoid further interactions
+        }
+    });
+
+    trashButton.onPointerOutObservable.add(() => {
+        if (draggedMesh) {
+            isPointerOverTrashButton = false;
+            console.log("Pointer left the trash button");
+            console.log("draggedMesh:", draggedMesh.name);
+        }
+    });
 }
+
 
 // Add the "Back" button
 function createBackButton() {
@@ -144,26 +166,24 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
-// Function to show interaction buttons and hide all image buttons
-function vaccumObjects() {
-    placeBtn.isVisible = true;
-    placeBtn.isEnabled = true;
-    endPoint.isVisible = true;
-    endPoint.isEnabled = true;
-    block.isVisible = true;
-    block.isEnabled = true;
-    move.isVisible = true;
-    move.isEnabled = true;
-    simulationButton.isVisible = false;
-    simulationButton.isEnabled = false;
-    objectBtn.isVisible = false;
-    objectBtn.isEnabled = false;
-    backButton.isVisible = true;  
-    backButton.isEnabled = true;
-    homeButton.isVisible = false;
-    homeButton.isEnabled = false;
-    trashButton.isVisible = true;
-    trashButton.isEnabled = true;
+function startPage() {
+    hideAndDisableAllButtons();
+    // Show the black block and image buttons
+    blackBlock.isVisible = true;
+    vacumBtn.isVisible = true;
+    vacumBtn.isEnabled = true;
+    roboticArmBtn.isVisible = true;
+    roboticArmBtn.isEnabled = true;
+    droneBtn.isVisible = true;
+    droneBtn.isEnabled = true;
+    mowerBtn.isVisible = true;
+    mowerBtn.isEnabled = true;
+
+    // Ensure the home button remains visible and enabled
+    homeButton.isVisible = true;
+    homeButton.isEnabled = true;
+
+    currentPage = "startPage";
 }
 
 // Function to handle interaction button clicks
@@ -174,14 +194,43 @@ function mainPage() {
     simulationButton.isEnabled = true;
     objectBtn.isVisible = true;
     objectBtn.isEnabled = true;
-    homeButton.isVisible = true;
-    homeButton.isEnabled = true;
+    backButton.isVisible = true;
+    backButton.isEnabled = true;
+    blackBgMainPage.isVisible = true;
+
+    currentPage = "mainPage";
+}
+
+// Function to show interaction buttons and hide all image buttons
+function vaccumObjects() {
+    hideAndDisableAllButtons();
+    placeBtn.isVisible = true;
+    placeBtn.isEnabled = true;
+    endPoint.isVisible = true;
+    endPoint.isEnabled = true;
+    block.isVisible = true;
+    block.isEnabled = true;
+    simulationButton.isVisible = true;
+    simulationButton.isEnabled = true;
+    objectBtn.isVisible = true;
+    objectBtn.isEnabled = true;
+    backButton.isVisible = true;  
+    backButton.isEnabled = true;
+    trashButton.isVisible = false;
+    trashButton.isEnabled = false;
+    blackBgVaccumObjects.isVisible = true;
+
+    currentPage = "vaccumObjects";
 }
 
 // Function to handle object button click
 function handleObjectButtonClick() {
     saveButtonState();  // Save the current state before changing
     vaccumObjects();
+}
+
+function handleObjectButtonClickDisabled() {
+    mainPage();  // Restore the previous state
 }
 
 // Function to hide and disable all buttons
@@ -198,69 +247,45 @@ function hideAndDisableAllButtons() {
 
 // Function to save the current state of all buttons
 function saveButtonState() {
-    const currentState = allButtons.map(button => ({
-        button: button,
-        isVisible: button.isVisible,
-        isEnabled: button.isEnabled
-    }));
+    const currentState = {
+        page: currentPage,
+        state: allButtons.map(button => ({
+            button: button,
+            isVisible: button.isVisible,
+            isEnabled: button.isEnabled
+        }))
+    };
     buttonStateHistory.push(currentState);
 }
 
 // Function to restore the previous state of all buttons
 function restorePreviousButtonState() {
-    if (buttonStateHistory.length > 0) {
+    if (currentPage === "mainPage") {
+        startPage();
+    } else if (currentPage === "vaccumObjects" && buttonStateHistory.length > 0) {
+        // Restore to mainPage from vaccumObjects
+        let previousState;
+        do {
+            previousState = buttonStateHistory.pop();
+        } while (previousState && previousState.page !== "mainPage");
+
+        if (previousState) {
+            currentPage = "mainPage";
+            previousState.state.forEach(state => {
+                state.button.isVisible = state.isVisible;
+                state.button.isEnabled = state.isEnabled;
+            });
+        }
+    } else if (buttonStateHistory.length > 0) {
         const previousState = buttonStateHistory.pop();
-        previousState.forEach(state => {
+        previousState.state.forEach(state => {
             state.button.isVisible = state.isVisible;
             state.button.isEnabled = state.isEnabled;
         });
     }
 }
 
-function checkCollisionWithTrashButton(mesh) {
-    // Get the position of the trash button in screen coordinates
-    var trashButtonPosition = trashButton._currentMeasure;
-
-    // Get the position of the mesh in screen coordinates
-    var meshPosition = BABYLON.Vector3.Project(
-        mesh.position,
-        BABYLON.Matrix.Identity(),
-        scene.getTransformMatrix(),
-        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-    );
-
-    // Convert the mesh position to screen coordinates
-    var screenMeshPosition = {
-        x: meshPosition.x * engine.getRenderWidth(),
-        y: (1 - meshPosition.y) * engine.getRenderHeight() // invert y-axis for screen coordinates
-    };
-
-    // Calculate the boundaries of the trash button
-    var trashButtonLeft = trashButtonPosition.left * engine.getRenderWidth();
-    var trashButtonRight = trashButtonLeft + (trashButtonPosition.width * engine.getRenderWidth());
-    var trashButtonTop = trashButtonPosition.top * engine.getRenderHeight();
-    var trashButtonBottom = trashButtonTop + (trashButtonPosition.height * engine.getRenderHeight());
-
-    console.log("Mesh Position:", screenMeshPosition);
-    console.log("Trash Button Boundaries:", {
-        left: trashButtonLeft,
-        right: trashButtonRight,
-        top: trashButtonTop,
-        bottom: trashButtonBottom
-    });
-
-    // Check if the mesh is within the bounds of the trash button
-    const collision = (
-        screenMeshPosition.x >= trashButtonLeft &&
-        screenMeshPosition.x <= trashButtonRight &&
-        screenMeshPosition.y >= trashButtonTop &&
-        screenMeshPosition.y <= trashButtonBottom
-    );
-
-    console.log("Collision Detected:", collision);
-    return collision;
-}
-
+// Function to reset the scene
 function attachOwnPointerDragBehavior(mesh) {
     var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0, 1, 0)});
     pointerDragBehavior.moveAttached = false;
@@ -268,6 +293,7 @@ function attachOwnPointerDragBehavior(mesh) {
 
     pointerDragBehavior.onDragStartObservable.add((event) => {
         console.log("startDrag");
+        draggedMesh = mesh;
         placeBtn.isVisible = false;
         endPoint.isVisible = false;
         block.isVisible = false;
@@ -276,29 +302,35 @@ function attachOwnPointerDragBehavior(mesh) {
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
-        console.log("drag");
-        placeBtn.isVisible = false;
-        endPoint.isVisible = false;
-        block.isVisible = false;
-        trashButton.isVisible = true;
-        trashButton.isEnabled = true;
+        if (draggedMesh) {
+            console.log("drag");
+            placeBtn.isVisible = false;
+            endPoint.isVisible = false;
+            block.isVisible = false;
+            trashButton.isVisible = true;
+            trashButton.isEnabled = true;
 
-        pointerDragBehavior.attachedNode.position.x += event.delta.x;
-        pointerDragBehavior.attachedNode.position.z += event.delta.z;
+            pointerDragBehavior.attachedNode.position.x += event.delta.x;
+            pointerDragBehavior.attachedNode.position.z += event.delta.z;
+        }
     });
 
     pointerDragBehavior.onDragEndObservable.add((event) => {
-        console.log("endDrag");
-        placeBtn.isVisible = true;
-        endPoint.isVisible = true;
-        block.isVisible = true;
-        trashButton.isVisible = false;
-        trashButton.isEnabled = false;
+        if (draggedMesh) {
+            console.log("endDrag");
+            placeBtn.isVisible = true;
+            endPoint.isVisible = true;
+            block.isVisible = true;
+            trashButton.isVisible = false;
+            trashButton.isEnabled = false;
 
-        // Check if the mesh is over the trash button
-        if (checkCollisionWithTrashButton(mesh)) {
-            console.log("Disposing mesh:", mesh.name);
-            mesh.dispose(); // Dispose the mesh if it's over the trash button
+            console.log("isPointerOverTrashButton:", isPointerOverTrashButton);
+
+            if (!isPointerOverTrashButton) {
+                console.log("Mesh not disposed, isPointerOverTrashButton:", isPointerOverTrashButton);
+            }
+
+            draggedMesh = null; // Réinitialise la variable
         }
     });
 
