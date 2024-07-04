@@ -101,10 +101,12 @@ var createScene = async function () {
     createHomeButton();
     createBackButton();
     createTrashButton();
+    createOptionsButton();
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button
     advancedTexture.addControl(backButton); // Call the function to create and add the back button
     advancedTexture.addControl(trashButton); // Call the function to create and add the trash button
+    advancedTexture.addControl(optionsButton); // Call the function to create and add the options button
     advancedTexture.addControl(blackBlock); // Add the black block to the advanced texture
     allButtons.push(blackBlock);
     advancedTexture.addControl(blackBgMainPage); 

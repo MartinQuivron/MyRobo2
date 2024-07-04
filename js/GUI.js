@@ -93,7 +93,6 @@ function createTrashButton() {
     });
 }
 
-
 // Add the "Back" button
 function createBackButton() {
     backButton = BABYLON.GUI.Button.CreateImageOnlyButton("backButton", "./assets/img/return.png");
@@ -116,6 +115,31 @@ function createBackButton() {
 
     // Add the back button to the global array
     allButtons.push(backButton);
+}
+
+// Function to create the "Options" button
+function createOptionsButton() {
+    optionsButton = BABYLON.GUI.Button.CreateImageOnlyButton("optionsButton", "./assets/img/options.png");
+    optionsButton.width = "10%";
+    optionsButton.height = "4.5%";
+    optionsButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    optionsButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    optionsButton.left = "-5%";
+    optionsButton.top = "5%";
+    optionsButton.zIndex = 2;
+    optionsButton.thickness = 0;
+    optionsButton.cornerRadius = 10;
+
+    advancedTexture.addControl(optionsButton);
+    allButtons.push(optionsButton);
+
+    optionsButton.onPointerUpObservable.add(() => {
+        if (currentPage == "optionPage") {
+            restorePreviousButtonState(); // Fonctionne comme un bouton retour si on est sur optionsPage
+        } else {
+            optionPage(); // Sinon, affiche la page des options
+        }
+    });
 }
 
 // Function to create buttons and add them to the global array
@@ -172,6 +196,8 @@ function startPage() {
     blackBlock.isVisible = true;
     vacumBtn.isVisible = true;
     vacumBtn.isEnabled = true;
+    optionsButton.isVisible = true;
+    optionsButton.isEnabled = true;
     roboticArmBtn.isVisible = true;
     roboticArmBtn.isEnabled = true;
     droneBtn.isVisible = true;
@@ -196,6 +222,8 @@ function mainPage() {
     objectBtn.isEnabled = true;
     backButton.isVisible = true;
     backButton.isEnabled = true;
+    optionsButton.isVisible = true;
+    optionsButton.isEnabled = true;
     blackBgMainPage.isVisible = true;
 
     currentPage = "mainPage";
@@ -216,11 +244,25 @@ function vaccumObjects() {
     objectBtn.isEnabled = true;
     backButton.isVisible = true;  
     backButton.isEnabled = true;
+    optionsButton.isVisible = true;
+    optionsButton.isEnabled = true;
     trashButton.isVisible = false;
     trashButton.isEnabled = false;
     blackBgVaccumObjects.isVisible = true;
 
     currentPage = "vaccumObjects";
+}
+
+function optionPage() {
+    saveButtonState();
+    hideAndDisableAllButtons();
+    backButton.isVisible = true;
+    backButton.isEnabled = true;
+    blackBlock.isVisible = true;
+    optionsButton.isVisible = true;
+    optionsButton.isEnabled = true;
+
+    currentPage = "optionPage";
 }
 
 // Function to handle object button click
@@ -260,7 +302,14 @@ function saveButtonState() {
 
 // Function to restore the previous state of all buttons
 function restorePreviousButtonState() {
-    if (currentPage === "mainPage") {
+    if (currentPage === "optionPage" && buttonStateHistory.length > 0) {
+        const previousState = buttonStateHistory.pop();
+        currentPage = previousState.page;  // Set the current page to the previous one
+        previousState.state.forEach(state => {
+            state.button.isVisible = state.isVisible;
+            state.button.isEnabled = state.isEnabled;
+        });
+    } else if (currentPage === "mainPage") {
         startPage();
     } else if (currentPage === "vaccumObjects" && buttonStateHistory.length > 0) {
         // Restore to mainPage from vaccumObjects
@@ -297,6 +346,8 @@ function attachOwnPointerDragBehavior(mesh) {
         placeBtn.isVisible = false;
         endPoint.isVisible = false;
         block.isVisible = false;
+        optionsButton.isVisible = false;
+        optionsButton.isEnabled = false;
         trashButton.isVisible = true;
         trashButton.isEnabled = true;
     });
@@ -304,9 +355,7 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.onDragObservable.add((event) => {
         if (draggedMesh) {
             console.log("drag");
-            placeBtn.isVisible = false;
-            endPoint.isVisible = false;
-            block.isVisible = false;
+            hideAndDisableAllButtons();
             trashButton.isVisible = true;
             trashButton.isEnabled = true;
 
@@ -318,11 +367,13 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.onDragEndObservable.add((event) => {
         if (draggedMesh) {
             console.log("endDrag");
-            placeBtn.isVisible = true;
-            endPoint.isVisible = true;
-            block.isVisible = true;
-            trashButton.isVisible = false;
-            trashButton.isEnabled = false;
+            hideAndDisableAllButtons();
+            if (currentPage === "vaccumObjects") {
+                vaccumObjects();
+            }
+            if (currentPage === "mainPage") {
+                mainPage();
+            }
 
             console.log("isPointerOverTrashButton:", isPointerOverTrashButton);
 
