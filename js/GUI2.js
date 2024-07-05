@@ -108,6 +108,7 @@ var createScene = async function () {
     createTrashButton();
     createOptionsButton();
     sliderPanel = createSlider();
+    createExcelButton();
 
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button

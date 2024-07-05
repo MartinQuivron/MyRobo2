@@ -190,6 +190,33 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
+function createExcelButton() {
+    const excelButton = BABYLON.GUI.Button.CreateSimpleButton("excelButton", "Generate Excel");
+    excelButton.width = "150px";
+    excelButton.height = "40px";
+    excelButton.color = "white";
+    excelButton.cornerRadius = 20;
+    excelButton.background = "green";
+    excelButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    excelButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    excelButton.left = "0px";
+    excelButton.top = "10%";
+
+    excelButton.onPointerUpObservable.add(() => {
+        // Example of simulation data
+        const simulationData = [
+            { "Time": "0s", "Value": 10 },
+            { "Time": "1s", "Value": 20 },
+            { "Time": "2s", "Value": 30 }
+        ];
+
+        generateExcel(simulationData);
+    });
+
+    advancedTexture.addControl(excelButton);
+    allButtons.push(excelButton);
+}
+
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
     panel.zIndex = 2;
@@ -223,9 +250,16 @@ function createSlider() {
     slider.isVertical = false;
     slider.color = "white";
     slider.background = "white";
-    slider.height = "40px"; 
+    slider.height = "80px"; 
     slider.width = "100%"; 
     slider.step = 1; 
+
+    slider.thumbWidth = "300px"; 
+    slider.thumbHeight = "300px";
+    slider.thumbColor = "#7B7B7B";
+    slider.thumbHighlightWidth = 5; 
+    slider.thumbHighlightColor = "white"; 
+
     slider.onValueChangedObservable.add(function (value) {
         var roundedValue = Math.round(value); 
         slider.value = roundedValue; 
@@ -242,8 +276,6 @@ function createSlider() {
 
     return panel;
 }
-
-
 
 
 function startPage() {
@@ -318,6 +350,7 @@ function optionPage() {
 
     sliderPanel.isVisible = true;
     sliderPanel.isEnabled = true;
+    createExcelButton();
 
     currentPage = "optionPage";
 }
@@ -445,3 +478,16 @@ function attachOwnPointerDragBehavior(mesh) {
     mesh.addBehavior(pointerDragBehavior);
 }
 
+function generateExcel(data) {
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+
+    // Convert the data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Simulation Data");
+
+    // Generate and download the Excel file
+    XLSX.writeFile(workbook, "simulation_data.xlsx");
+}
