@@ -74,16 +74,16 @@ function frontDetector(start, end, scene) {
 
         if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
             if (localX > 0.4){
-                localX += 0.05;
+                localX += 0.02;
             }else{
-                localX -= 0.05;
+                localX -= 0.02;
             }
         }
         if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
             if (localZ > 0.4){
-                localZ += 0.05;
+                localZ += 0.02;
             }else{
-                localZ -= 0.05;
+                localZ -= 0.02;
             }
         }
 
@@ -97,6 +97,40 @@ function frontDetector(start, end, scene) {
     }
 }
 
+// Function to detect obstacle
+function simpleDetector(start, end, scene) {
+    const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+    // Display the ray
+    var rayHelper = new BABYLON.RayHelper(ray);
+    rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+    // Perform ray intersection test with the mesh
+    const pickInfo = scene.pickWithRay(ray, function (mesh) {
+        return mesh.name === 'collider_box_block'; // Filter by mesh name
+    });
+
+    if (pickInfo.pickedMesh) {
+        console.log("Obstacle detected avec le simple detector");
+        return pickInfo;
+        
+    } else {
+        return null;
+    }
+}
+
+function getDistanceBetweenPoints(point1, point2) {
+    return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.z - point2.z, 2));
+}
+
+function getDistanceBetweenPoints(point1, point2, point3) {
+    // Use the distance method of Vector3 to calculate the distance between two points
+    var pointA = BABYLON.Vector3.Distance(point1, point3);
+    var pointB = BABYLON.Vector3.Distance(point2, point3);
+    if (pointA < pointB) {
+        return point1;
+    }else {
+        return point2;
+    }
+}
 
 
 //-------------Animation Functions----------------
@@ -110,8 +144,11 @@ function startRotationAnimation(meshToMove, targetMeshPosition) {
 }
 
 // Function to start move animation
-function startMoveAnimation(meshToMove, targetMeshPosition) {
+function startMoveAnimation(meshToMove, targetMeshPosition, finalTargetMeshPosition) {
     return new Promise((resolve, reject) => {
-        var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", 60, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        var distanceMax = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
+        var distance = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
+        var speed = (20 + (distanceMax - distance) * (40-20 / distanceMax)) / 7;
+        var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }
