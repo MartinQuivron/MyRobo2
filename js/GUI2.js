@@ -16,9 +16,11 @@ var scene = null;
 var camera = null;
 var sceneToRender = null;
 var advancedTexture = null;
+var excelButton = null;
 var blackBlock = null;
 var homeButton = null; 
 var simulationButton = null; 
+var excelButton = null;
 var objectBtn = null; 
 var draggedMesh = null; // the object being dragged
 var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
@@ -108,7 +110,7 @@ var createScene = async function () {
     createTrashButton();
     createOptionsButton();
     sliderPanel = createSlider();
-    createExcelButton();
+    excelButton = createExcelButton();
 
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button

@@ -201,6 +201,8 @@ function createExcelButton() {
     excelButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     excelButton.left = "0px";
     excelButton.top = "10%";
+    excelButton.isVisible = false;
+    excelButton.isEnabled = false;
 
     excelButton.onPointerUpObservable.add(() => {
         // Example of simulation data
@@ -215,6 +217,8 @@ function createExcelButton() {
 
     advancedTexture.addControl(excelButton);
     allButtons.push(excelButton);
+
+    return excelButton;
 }
 
 function createSlider() {
@@ -350,7 +354,11 @@ function optionPage() {
 
     sliderPanel.isVisible = true;
     sliderPanel.isEnabled = true;
-    createExcelButton();
+
+    // Créer et rendre visible le bouton Excel
+    const excelButton = createExcelButton();
+    excelButton.isVisible = true;
+    excelButton.isEnabled = true;
 
     currentPage = "optionPage";
 }
