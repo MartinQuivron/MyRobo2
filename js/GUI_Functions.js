@@ -77,8 +77,6 @@ function createTrashButton() {
     trashButton.onPointerEnterObservable.add(() => {
         if (draggedMesh) {
             isPointerOverTrashButton = true;
-            console.log("Pointer is over the trash button");
-            console.log("draggedMesh:", draggedMesh.name);
             scene.getMeshByName(draggedMesh.name).dispose();  // Dispose the dragged mesh immediately
             draggedMesh = null;  // Reset the dragged mesh to avoid further interactions
         }
@@ -87,8 +85,6 @@ function createTrashButton() {
     trashButton.onPointerOutObservable.add(() => {
         if (draggedMesh) {
             isPointerOverTrashButton = false;
-            console.log("Pointer left the trash button");
-            console.log("draggedMesh:", draggedMesh.name);
         }
     });
 }
