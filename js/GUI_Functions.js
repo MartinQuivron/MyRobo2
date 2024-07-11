@@ -434,18 +434,14 @@ function restorePreviousButtonState() {
 
 // Function to reset the scene
 function attachOwnPointerDragBehavior(mesh) {
-    var pointerDragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0, 1, 0)});
+    var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 
     pointerDragBehavior.onDragStartObservable.add((event) => {
         console.log("startDrag");
         draggedMesh = mesh;
-        placeBtn.isVisible = false;
-        endPoint.isVisible = false;
-        block.isVisible = false;
-        optionsButton.isVisible = false;
-        optionsButton.isEnabled = false;
+        hideAndDisableAllButtons();
         trashButton.isVisible = true;
         trashButton.isEnabled = true;
     });
