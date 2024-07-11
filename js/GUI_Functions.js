@@ -416,7 +416,7 @@ function restorePreviousButtonState() {
 
 // Function to reset the scene
 function attachOwnPointerDragBehavior(mesh) {
-    pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
+    var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 
@@ -429,7 +429,7 @@ function attachOwnPointerDragBehavior(mesh) {
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
-        if (draggedMesh) {
+        if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
             console.log("drag");
             hideAndDisableAllButtons();
             trashButton.isVisible = true;
@@ -441,7 +441,7 @@ function attachOwnPointerDragBehavior(mesh) {
     });
 
     pointerDragBehavior.onDragEndObservable.add((event) => {
-        if (draggedMesh) {
+        if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
             console.log("endDrag");
             hideAndDisableAllButtons();
             if (currentPage === "vaccumObjects") {
@@ -457,7 +457,7 @@ function attachOwnPointerDragBehavior(mesh) {
                 console.log("Mesh not disposed, isPointerOverTrashButton:", isPointerOverTrashButton);
             }
 
-            draggedMesh = null; // Réinitialise la variable
+            draggedMesh = null; // Reset the variable
         }
     });
 

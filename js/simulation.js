@@ -89,15 +89,14 @@ var createScene = async function () {
             const meshToMove = scene.getMeshByName('robot');
             if (meshToMove) {
                 meshToMove.dispose();
-            }
-            else {  
+            } else {  
                 robot.setEnabled(true);
                 robot.isVisible = true;
                 clonedMesh = robot.clone('robot');
                 robot.isVisible = false;
                 robot.setEnabled(false);
                 hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
-                attachOwnPointerDragBehavior(clonedMesh);
+                attachOwnPointerDragBehavior(clonedMesh); // Attach drag behavior
                 const collider = BABYLON.Mesh.CreateBox("collider_box", 0, scene, false);		
                 var robote = clonedMesh.getBoundingInfo();
                 collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
@@ -108,34 +107,31 @@ var createScene = async function () {
             }
         }
     });
-
-    // Handle button click events
+    
     endPoint.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const targetMesh = scene.getMeshByName('endPoint');
             if (targetMesh) {
                 targetMesh.dispose();
-            }
-            else { 
+            } else { 
                 endPointFlag.setEnabled(true);
                 endPointFlag.isVisible = true;
                 clonedMesh = endPointFlag.clone('endPoint');
                 endPointFlag.isVisible = false;
                 endPointFlag.setEnabled(false);
                 hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
-                attachOwnPointerDragBehavior(clonedMesh);
+                attachOwnPointerDragBehavior(clonedMesh); // Attach drag behavior
             }
         }
     });
-
-    // Handle button click events
+    
     block.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             obstacle.isVisible = true;
             clonedMesh1 = obstacle.clone('block2');
             obstacle.isVisible = false;
             hitTest.transformationMatrix.decompose(clonedMesh1.scaling, clonedMesh1.rotationQuaternion, clonedMesh1.position);
-            attachOwnPointerDragBehavior(clonedMesh1);
+            attachOwnPointerDragBehavior(clonedMesh1); // Attach drag behavior
             const collider1 = BABYLON.Mesh.CreateBox("collider_box_block", 0, scene, false);		
             var robote = clonedMesh1.getBoundingInfo();
             collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
@@ -459,6 +455,29 @@ var createScene = async function () {
 };
 
 /* Configuration ---------------------------------------------------------------- */
+
+/* --- Function to reset the scene --- */
+async function resetScene() {
+    // Dispose the current XR session if it exists
+    if (xrHelper && xrHelper.baseExperience) {
+        await xrHelper.baseExperience.exitXRAsync();
+        xrHelper.dispose();
+        xrHelper = null;
+    }
+
+    // Dispose the current scene
+    if (scene) {
+        scene.dispose();
+    }
+
+    // Recreate the scene
+    scene = await createScene();
+    sceneToRender = scene;
+
+    // Hide interaction buttons
+    startPage(); // Display the start page
+  
+}
 
 // Initialize the scene and engine
 window.initFunction = async function() {
