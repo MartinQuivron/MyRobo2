@@ -73,20 +73,6 @@ function createTrashButton() {
 
     advancedTexture.addControl(trashButton);
     allButtons.push(trashButton);
-
-    trashButton.onPointerEnterObservable.add(() => {
-        if (draggedMesh) {
-            isPointerOverTrashButton = true;
-            scene.getMeshByName(draggedMesh.name).dispose();  // Dispose the dragged mesh immediately
-            draggedMesh = null;  // Reset the dragged mesh to avoid further interactions
-        }
-    });
-
-    trashButton.onPointerOutObservable.add(() => {
-        if (draggedMesh) {
-            isPointerOverTrashButton = false;
-        }
-    });
 }
 
 // Add the "Back" button
@@ -430,7 +416,7 @@ function restorePreviousButtonState() {
 
 // Function to reset the scene
 function attachOwnPointerDragBehavior(mesh) {
-    var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
+    pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 

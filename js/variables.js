@@ -20,6 +20,7 @@ var excelButton = null;
 var objectBtn = null; 
 var draggedMesh = null; // the object being dragged
 var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
+var pointerDragBehavior = null; // pointer drag behavior
 
 // Interactive 
 var currentPage = "startPage";

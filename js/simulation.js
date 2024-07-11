@@ -145,6 +145,21 @@ var createScene = async function () {
             collider1.position.y += 0.06;
         }
     });
+
+    // Control trash button
+    trashButton.onPointerEnterObservable.add(() => {
+        if (draggedMesh) {
+            isPointerOverTrashButton = true;
+            scene.getMeshByName(draggedMesh.name).dispose();  // Dispose the dragged mesh immediately
+            draggedMesh = null;  // Reset the dragged mesh to avoid further interactions
+        }
+    });
+
+    trashButton.onPointerOutObservable.add(() => {
+        if (draggedMesh) {
+            isPointerOverTrashButton = false;
+        }
+    });
     
     // Handle button click events
     simulationButton.onPointerUpObservable.add(async function() {
