@@ -87,25 +87,3 @@ var createGUI = async function (scene) {
     mowerBtn.onPointerUpObservable.add(mainPage);
 };
 
-/* --- Function to reset the scene --- */
-async function resetScene() {
-    // Dispose the current XR session if it exists
-    if (xrHelper && xrHelper.baseExperience) {
-        await xrHelper.baseExperience.exitXRAsync();
-        xrHelper.dispose();
-        xrHelper = null;
-    }
-
-    // Dispose the current scene
-    if (scene) {
-        scene.dispose();
-    }
-
-    // Recreate the scene
-    scene = await createScene();
-    sceneToRender = scene;
-
-    // Hide interaction buttons
-    startPage(); // Display the start page
-  
-}
