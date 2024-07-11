@@ -184,7 +184,17 @@ var createScene = async function () {
                     
                     if (pickInfo == null) {
                         console.log("No intersection");
-                        return;
+                        new Promise((resolve, reject) => {
+                            var directionToTarget = targetMesh.position.subtract(meshToMove.position);
+                            var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
+                            var rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+                        });
+                        new Promise((resolve, reject) => {
+                            var distance = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
+                            var speed = (20 + (distance) * (40-20 / distance)) / 7;
+                            var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+                        });
+
                     }
                     // Check if there was an intersection
                     if (pickInfo.hit) {
