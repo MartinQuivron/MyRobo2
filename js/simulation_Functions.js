@@ -126,6 +126,20 @@ function getDistanceBetweenPoints(point1, point2, point3) {
     }
 }
 
+function isTouching(mesh1, mesh2) {
+    var isTouching = false;
+
+    mesh2.forEach(function(colliderMesh) {
+        // Check intersection between 'endpoint' and each 'collider_box_block'
+        if (mesh1.intersectsMesh(colliderMesh, false)) {
+            isTouching = true;
+            return; // Exit loop early if collision detected
+        }
+    });
+
+    return isTouching;
+}
+
 
 //-------------Animation Functions----------------
 
