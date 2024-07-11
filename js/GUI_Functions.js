@@ -355,7 +355,7 @@ function optionPage() {
     sliderPanel.isVisible = true;
     sliderPanel.isEnabled = true;
 
-    // Créer et rendre visible le bouton Excel
+    // Create and make visible the Excel button
     const excelButton = createExcelButton();
     excelButton.isVisible = true;
     excelButton.isEnabled = true;

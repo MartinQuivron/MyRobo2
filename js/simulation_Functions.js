@@ -52,34 +52,45 @@ function frontDetector(start, end, scene) {
     const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
     // Perform ray intersection test with the mesh
     const pickInfo = scene.pickWithRay(ray, function (mesh) {
-        return mesh.name === 'collider_box_block'; // Filter by mesh name
+        // Filter by mesh name
+        return mesh.name === 'collider_box_block'; 
     });
 
     if (pickInfo.pickedMesh) {
         intersectionPoint = pickInfo.pickedPoint;
 
-        var cube = pickInfo.pickedMesh; // Récupérer le mesh du cube par son nom
-        var cubeWorldMatrix = cube.getWorldMatrix(); // Obtenez la matrice de transformation du cube
+        // Retrieve the cube mesh by its name
+        var cube = pickInfo.pickedMesh; 
 
-        // Matrice de transformation inverse du cube
+        // Get the transformation matrix of the cube
+        var cubeWorldMatrix = cube.getWorldMatrix();
+        
+        // Inverse transformation matrix of the cube
         const cubeWorldMatrixInverse = BABYLON.Matrix.Invert(cubeWorldMatrix);
-
-        // Convertir l'intersection en coordonnées locales par rapport au cube
+        
+        // Convert the intersection point to local coordinates relative to the cube
         const intersectionLocalPoint = BABYLON.Vector3.TransformCoordinates(intersectionPoint, cubeWorldMatrixInverse);
-
-        // Maintenant, intersectionLocalPoint contient les coordonnées locales par rapport au cube
+        
+        // Now, intersectionLocalPoint contains the local coordinates relative to the cube
         var localX = intersectionLocalPoint.x;
         var localY = intersectionLocalPoint.y;
         var localZ = intersectionLocalPoint.z;
-
+        
+        // Check if the robot is in front of Z side of the cube
         if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
+
+            //Check wich side of Z the robot is in front
             if (localX > 0.4){
                 localX += 0.02;
             }else{
                 localX -= 0.02;
             }
         }
+
+        // Check if the robot is in front of X side of the cube
         if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
+
+            //Check wich side of X the robot is in front
             if (localZ > 0.4){
                 localZ += 0.02;
             }else{
@@ -87,29 +98,39 @@ function frontDetector(start, end, scene) {
             }
         }
 
-        // Convertir les coordonnées locales en coordonnées mondiales
+        // Convert local coordinates to world coordinates
         const newIntersectionPoint = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(localX, localY, localZ), cubeWorldMatrix);
         pickInfo.pickedPoint = newIntersectionPoint;
+        
+        // Create sphere at the intersection point
         makeSphere(pickInfo.pickedPoint, new BABYLON.Color3(1, 0, 0));
         return pickInfo;
     } else {
+
+        // Create sphere at the end of the ray
         makeSphere(ray.origin.add(ray.direction.scale(2)), new BABYLON.Color3(0, 1, 0));
     }
 }
 
 // Function to detect obstacle
 function simpleDetector(start, end, scene) {
+
+    // Create a ray from the start point to the end point
     const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+
     // Display the ray
     var rayHelper = new BABYLON.RayHelper(ray);
     rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+
     // Perform ray intersection test with the mesh
     const pickInfo = scene.pickWithRay(ray, function (mesh) {
-        return mesh.name === 'collider_box_block'; // Filter by mesh name
+
+        // Filter by mesh name
+        return mesh.name === 'collider_box_block';
     });
 
     if (pickInfo.pickedMesh) {
-        console.log("Obstacle detected avec le simple detector");
+        console.log("Obstacle detected");
         return pickInfo;
         
     } else {
@@ -117,14 +138,14 @@ function simpleDetector(start, end, scene) {
     }
 }
 
-function getDistanceBetweenPoints(point1, point2) {
-    return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.z - point2.z, 2));
-}
-
+// Function to get the shortest distance between two points
 function getDistanceBetweenPoints(point1, point2, point3) {
+
     // Use the distance method of Vector3 to calculate the distance between two points
     var pointA = BABYLON.Vector3.Distance(point1, point3);
     var pointB = BABYLON.Vector3.Distance(point2, point3);
+
+    // Return the shortest distance
     if (pointA < pointB) {
         return point1;
     }else {
@@ -134,6 +155,7 @@ function getDistanceBetweenPoints(point1, point2, point3) {
 
 
 //-------------Animation Functions----------------
+
 // Function to start rotation animation
 function startRotationAnimation(meshToMove, targetMeshPosition) {
     return new Promise((resolve, reject) => {

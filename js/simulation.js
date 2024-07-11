@@ -146,6 +146,7 @@ var createScene = async function () {
         }
     });
     
+    // Handle button click events
     simulationButton.onPointerUpObservable.add(async function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const meshToMove = scene.getMeshByName('robot');
@@ -214,50 +215,42 @@ var createScene = async function () {
                             while (cornerFound == false) {
                                 if (bestCorner == globalCorner1){
                                     if (simpleDetector(intersectionPoint, globalCorner1, scene) == null) {
-                                        console.log("Le coin droit est libre");
+                                        console.log("Right corner is free");
                                         cornerFound = true;
                                         break;
                                     }
                                     if (simpleDetector(intersectionPoint, globalCorner2, scene) == null) {
-                                        console.log("Le coin gauche est libre");
+                                        console.log("Left corner is free");
                                         cornerFound = true;
                                         bestCorner = globalCorner2;
                                         break;
                                     }
                                     else{
-                                        console.log("Les deux coins sont occupés");
+                                        console.log("Both corners are occupied");
                                         allBlock = 1;
                                         break;       
                                     }
                                 }
                                 if (bestCorner == globalCorner2){
                                     if (simpleDetector(intersectionPoint, globalCorner2, scene) == null) {
-                                        console.log("Le coin gauche est libre");
+                                        console.log("Left corner is free");
                                         cornerFound = true;
                                         break;
                                     }
                                     if (simpleDetector(intersectionPoint, globalCorner1, scene) == null) {
-                                        console.log("Le coin droit est libre");
+                                        console.log("Right corner is free");
                                         cornerFound = true;
                                         bestCorner = globalCorner1;
                                         break;
                                     }
                                     else{
-                                        console.log("Les deux coins sont occupés");
+                                        console.log("Both corners are occupied");
                                         allBlock = 1;
                                         break;
                                     }
                                 }
                             }
-/*
-                            if (bestCorner == globalCorner1 && simpleDetector(meshToMove.position, globalCorner1, scene) != null && simpleDetector(meshToMove.position, globalCorner2, scene) != null) {
-                            
-                            }
-                            if (bestCorner == globalCorner2 && simpleDetector(meshToMove.position, globalCorner2, scene) != null && simpleDetector(meshToMove.position, globalCorner1, scene) != null) {
 
-                            }
-
-*/
                             var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                             sphere2.position = bestCorner;
                             sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
