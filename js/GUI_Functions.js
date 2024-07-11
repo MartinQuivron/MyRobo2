@@ -4,7 +4,6 @@ var allButtons = [];
 // Global array to store the history of button states
 var buttonStateHistory = [];
 
-
 // -------------------------------------- Functions -------------------------------------- //
 
 // Function to create GUI rectangles
@@ -19,7 +18,7 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     rectangle.cornerRadius = cornerRadius;
     rectangle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     rectangle.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-    rectangle.zIndex = 1;
+    rectangle.zIndex = 2;
     rectangle.top = top; // Set the top property to move the rectangle vertically
 
     // Create a text block
@@ -46,7 +45,7 @@ function createHomeButton() {
     homeButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     homeButton.left = "5%";
     homeButton.top = "5%";
-    homeButton.zIndex = 2;
+    homeButton.zIndex = 10;
     homeButton.thickness = 0;
 
     homeButton.onPointerUpObservable.add(function() {
@@ -59,23 +58,6 @@ function createHomeButton() {
     allButtons.push(homeButton);
 }
 
-function createTrashButton() {
-    trashButton = BABYLON.GUI.Button.CreateImageOnlyButton("trashButton", "./assets/img/trash.png");
-    trashButton.width = "10%";
-    trashButton.height = "4.5%";
-    trashButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    trashButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    trashButton.left = "-5%";
-    trashButton.top = "5%";
-    trashButton.zIndex = 2;
-    trashButton.thickness = 0;
-    trashButton.isVisible = false;
-    trashButton.isEnabled = false;
-
-    advancedTexture.addControl(trashButton);
-    allButtons.push(trashButton);
-}
-
 // Add the "Back" button
 function createBackButton() {
     backButton = BABYLON.GUI.Button.CreateImageOnlyButton("backButton", "./assets/img/return.png");
@@ -85,7 +67,7 @@ function createBackButton() {
     backButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     backButton.left = "5%";
     backButton.top = "5%";
-    backButton.zIndex = 2;
+    backButton.zIndex = 10; 
     backButton.thickness = 0;
     backButton.isVisible = false;
     backButton.isEnabled = false;
@@ -100,7 +82,25 @@ function createBackButton() {
     allButtons.push(backButton);
 }
 
-// Function to create the "Options" button
+// Add the "Trash" button
+function createTrashButton() {
+    trashButton = BABYLON.GUI.Button.CreateImageOnlyButton("trashButton", "./assets/img/trash.png");
+    trashButton.width = "10%";
+    trashButton.height = "4.5%";
+    trashButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    trashButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    trashButton.left = "-5%";
+    trashButton.top = "5%";
+    trashButton.zIndex = 10; 
+    trashButton.thickness = 0;
+    trashButton.isVisible = false;
+    trashButton.isEnabled = false;
+
+    advancedTexture.addControl(trashButton);
+    allButtons.push(trashButton);
+}
+
+// Add the "Options" button
 function createOptionsButton() {
     optionsButton = BABYLON.GUI.Button.CreateImageOnlyButton("optionsButton", "./assets/img/options.png");
     optionsButton.width = "10%";
@@ -109,7 +109,7 @@ function createOptionsButton() {
     optionsButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
     optionsButton.left = "-5%";
     optionsButton.top = "5%";
-    optionsButton.zIndex = 2;
+    optionsButton.zIndex = 10; 
     optionsButton.thickness = 0;
     optionsButton.cornerRadius = 10;
 
@@ -137,7 +137,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
     button.left = left;
     button.fontSize = fontSize;
     button.horizontalAlignment = horizontalAlignment;
-    button.zIndex = 1;
+    button.zIndex = 10; 
 
     // Add the button to the global array
     allButtons.push(button);
@@ -155,7 +155,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0;
-    buttonContainer.zIndex = 1;
+    buttonContainer.zIndex = 10; 
     buttonContainer.background = background;
     buttonContainer.thickness = 2;
     buttonContainer.color = color;
@@ -186,7 +186,8 @@ function createExcelButton() {
     excelButton.top = "10%";
     excelButton.isVisible = false;
     excelButton.isEnabled = false;
-
+    excelButton.zIndex = 10; 
+    
     excelButton.onPointerUpObservable.add(() => {
         // Example of simulation data
         const simulationData = [
@@ -206,7 +207,7 @@ function createExcelButton() {
 
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
-    panel.zIndex = 2;
+    panel.zIndex = 10; // Assurer un zIndex élevé
     panel.width = "80%"; 
     panel.height = "20%"; 
     panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -421,16 +422,12 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 
-    pointerDragBehavior.onDragStartObservable.add((pointerInfo) => {
-        if (!isPointerOverButton(pointerInfo, advancedTexture)) {
-            console.log("startDrag");
-            draggedMesh = mesh;
-            hideAndDisableAllButtons();
-            trashButton.isVisible = true;
-            trashButton.isEnabled = true;
-        } else {
-            pointerDragBehavior.releaseDrag();
-        }
+    pointerDragBehavior.onDragStartObservable.add((event) => {
+        console.log("startDrag");
+        draggedMesh = mesh;
+        hideAndDisableAllButtons();
+        trashButton.isVisible = true;
+        trashButton.isEnabled = true;
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
@@ -468,7 +465,6 @@ function attachOwnPointerDragBehavior(mesh) {
 
     mesh.addBehavior(pointerDragBehavior);
 }
-
 
 function generateExcel(data) {
     // Create a new workbook
