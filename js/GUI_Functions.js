@@ -4,6 +4,7 @@ var allButtons = [];
 // Global array to store the history of button states
 var buttonStateHistory = [];
 
+
 // -------------------------------------- Functions -------------------------------------- //
 
 // Function to create GUI rectangles
@@ -420,12 +421,16 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 
-    pointerDragBehavior.onDragStartObservable.add((event) => {
-        console.log("startDrag");
-        draggedMesh = mesh;
-        hideAndDisableAllButtons();
-        trashButton.isVisible = true;
-        trashButton.isEnabled = true;
+    pointerDragBehavior.onDragStartObservable.add((pointerInfo) => {
+        if (!isPointerOverButton(pointerInfo, advancedTexture)) {
+            console.log("startDrag");
+            draggedMesh = mesh;
+            hideAndDisableAllButtons();
+            trashButton.isVisible = true;
+            trashButton.isEnabled = true;
+        } else {
+            pointerDragBehavior.releaseDrag();
+        }
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
@@ -463,6 +468,7 @@ function attachOwnPointerDragBehavior(mesh) {
 
     mesh.addBehavior(pointerDragBehavior);
 }
+
 
 function generateExcel(data) {
     // Create a new workbook
