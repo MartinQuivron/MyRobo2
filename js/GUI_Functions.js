@@ -205,6 +205,7 @@ function createExcelButton() {
     return excelButton;
 }
 
+
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
     panel.zIndex = 10; // Assurer un zIndex élevé

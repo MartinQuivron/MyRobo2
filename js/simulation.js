@@ -115,11 +115,7 @@ var createScene = async function () {
                 collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
                 collider.parent = clonedMesh;
                 collider.material = new BABYLON.StandardMaterial("collidermat", scene);
-                if (debug) {
-                    collider.material.alpha = 0.6;
-                }else{
-                    collider.material.alpha = 0;
-                }
+                collider.material.alpha = 0;
                 collider.position.y += 0.06;
             }
         }
@@ -180,16 +176,8 @@ var createScene = async function () {
             collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
-            if (debug) {
-                collider1.material.alpha = 0.6;
-            }else{
-                collider1.material.alpha = 0;
-            }
+            collider1.material.alpha = 0.6;
             collider1.position.y += 0.06;
-            
-            // Make collider1 non-pickable and non-draggable
-            collider1.isPickable = false;
-            collider1.removeBehavior(BABYLON.BehaviorPointerDrag);
         }
     });
 
@@ -235,7 +223,6 @@ var createScene = async function () {
                     
                     if (pickInfo == null) {
                         console.log("No intersection");
-                        animationRunning = true;
                         new Promise((resolve, reject) => {
                             var directionToTarget = targetMesh.position.subtract(meshToMove.position);
                             var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
@@ -246,7 +233,7 @@ var createScene = async function () {
                             var speed = (20 + (distance) * (40-20 / distance)) / 7;
                             var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
                         });
-                        animationRunning = false;
+
                     }
                     // Check if there was an intersection
                     if (pickInfo.hit) {
@@ -338,15 +325,10 @@ var createScene = async function () {
                                         }
                                     }
                                 }
-                                
+    
                                 var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                                 sphere2.position = bestCorner;
                                 sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
-                                if (debug) {
-                                    sphere2.material.alpha = 0.6;
-                                }else{
-                                    sphere2.material.alpha = 0;
-                                }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
                                 spheres.push(sphere2);
                             }
@@ -410,11 +392,6 @@ var createScene = async function () {
                                 var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                                 sphere2.position = bestCorner;
                                 sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
-                                if (debug) {
-                                    sphere2.material.alpha = 0.6;
-                                }else{
-                                    sphere2.material.alpha = 0;
-                                }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
                                 spheres.push(sphere2);
                             }
