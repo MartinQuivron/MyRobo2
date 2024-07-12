@@ -205,6 +205,12 @@ function createExcelButton() {
     return excelButton;
 }
 
+
+function isPointerOverGUI() {
+    var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+    return pickResult.hit && pickResult.pickedMesh && pickResult.pickedMesh.isGUI;
+}
+
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
     panel.zIndex = 10; // Assurer un zIndex élevé
@@ -417,22 +423,25 @@ function restorePreviousButtonState() {
     }
 }
 
-// Function to reset the scene
 function attachOwnPointerDragBehavior(mesh) {
     var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
     pointerDragBehavior.moveAttached = false;
     pointerDragBehavior.useObjectOrienationForDragging = false;
 
     pointerDragBehavior.onDragStartObservable.add((event) => {
-        console.log("startDrag");
-        draggedMesh = mesh;
-        hideAndDisableAllButtons();
-        trashButton.isVisible = true;
-        trashButton.isEnabled = true;
+        if (isPointerOverGUI()) {
+            pointerDragBehavior.detach();
+        } else {
+            console.log("startDrag");
+            draggedMesh = mesh;
+            hideAndDisableAllButtons();
+            trashButton.isVisible = true;
+            trashButton.isEnabled = true;
+        }
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
-        if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
+        if (draggedMesh === mesh) {
             console.log("drag");
             hideAndDisableAllButtons();
             trashButton.isVisible = true;
@@ -444,7 +453,7 @@ function attachOwnPointerDragBehavior(mesh) {
     });
 
     pointerDragBehavior.onDragEndObservable.add((event) => {
-        if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
+        if (draggedMesh === mesh) {
             console.log("endDrag");
             hideAndDisableAllButtons();
             if (currentPage === "vaccumObjects") {
@@ -460,7 +469,7 @@ function attachOwnPointerDragBehavior(mesh) {
                 console.log("Mesh not disposed, isPointerOverTrashButton:", isPointerOverTrashButton);
             }
 
-            draggedMesh = null; // Reset the variable
+            draggedMesh = null;
         }
     });
 
