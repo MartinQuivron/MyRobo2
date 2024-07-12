@@ -23,6 +23,7 @@ var makeSphere = (position, color) => {
     }
     sphere.material.diffuseColor = color;
     sphere.position = position;
+    spheres.push(sphere);
 }
 
 // Function to detect obstacle in front of the robot
@@ -100,6 +101,7 @@ function simpleDetector(start, end, scene) {
         // Display the ray
         var rayHelper = new BABYLON.RayHelper(ray);
         rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+        rays.push(rayHelper);
     }
 
     // Perform ray intersection test with the mesh
@@ -147,6 +149,24 @@ function isTouching(mesh1, mesh2) {
     return isTouching;
 }
 
+function deleteAllMeshes(){
+    // Delete all meshes named "line"
+    lines.forEach(function(line) {
+        line.dispose();
+    });
+    lines = [];
+
+    spheres.forEach(function(sphere) {
+        sphere.dispose();
+    });
+    spheres = [];
+
+    rays.forEach(rayHelper => {
+        rayHelper.dispose();
+    });
+    rays = [];
+}
+
 
 //-------------Animation Functions----------------
 
@@ -155,7 +175,7 @@ function startRotationAnimation(meshToMove, targetMeshPosition) {
     return new Promise((resolve, reject) => {
         var directionToTarget = targetMeshPosition.subtract(meshToMove.position);
         var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
-        var rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }
 
@@ -165,6 +185,6 @@ function startMoveAnimation(meshToMove, targetMeshPosition, finalTargetMeshPosit
         var distanceMax = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
         var distance = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
         var speed = (20 + (distanceMax - distance) * (40-20 / distanceMax)) / 7;
-        var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*actualSpeed, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*actualSpeed, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }

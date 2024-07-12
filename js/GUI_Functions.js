@@ -425,6 +425,19 @@ function attachOwnPointerDragBehavior(mesh) {
 
     pointerDragBehavior.onDragStartObservable.add((event) => {
         console.log("startDrag");
+        if (animationRunning) {
+            if (rotateAnimation){
+                rotateAnimation.stop();
+                rotateAnimation = null;
+            }
+            if (moveAnimation){
+                moveAnimation.stop();
+                moveAnimation = null;
+            }
+            animationRunning = false;
+            deleteAllMeshes();
+            //simulationButton.onPointerUpObservable.notifyObservers();
+        }
         draggedMesh = mesh;
         hideAndDisableAllButtons();
         trashButton.isVisible = true;
@@ -434,6 +447,7 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.onDragObservable.add((event) => {
         if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
             console.log("drag");
+
             hideAndDisableAllButtons();
             trashButton.isVisible = true;
             trashButton.isEnabled = true;
@@ -446,6 +460,7 @@ function attachOwnPointerDragBehavior(mesh) {
     pointerDragBehavior.onDragEndObservable.add((event) => {
         if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
             console.log("endDrag");
+
             hideAndDisableAllButtons();
             if (currentPage === "vaccumObjects") {
                 vaccumObjects();

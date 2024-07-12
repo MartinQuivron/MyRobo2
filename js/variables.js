@@ -8,6 +8,10 @@ var obstacle = null;
 // Initialize model variables
 var robot = null;
 var endPointFlag = null;
+var obstacles = [];
+var spheres = [];
+var rays = [];
+var lines = [];
 
 /* --- Initialize variables --- */
 var camera = null;
@@ -21,6 +25,10 @@ var objectBtn = null;
 var draggedMesh = null; // the object being dragged
 var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
 var pointerDragBehavior = null; // pointer drag behavior
+
+var animationRunning = false;
+var rotateAnimation = null;
+var moveAnimation = null;
 
 // Interactive 
 var currentPage = "startPage";
@@ -44,4 +52,4 @@ var mowerBtn = null;
 // WebXR variables
 var xrHelper = null;
 
-var debug = false;
+var debug = true;

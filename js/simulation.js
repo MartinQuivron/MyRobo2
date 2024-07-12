@@ -87,6 +87,19 @@ var createScene = async function () {
     placeBtn.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const meshToMove = scene.getMeshByName('robot');
+            if (animationRunning) {
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                animationRunning = false;
+                deleteAllMeshes();
+                //simulationButton.onPointerUpObservable.notifyObservers();
+            }
             if (meshToMove) {
                 meshToMove.dispose();
             } else {  
@@ -115,6 +128,19 @@ var createScene = async function () {
     endPoint.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             const targetMesh = scene.getMeshByName('endPoint');
+            if (animationRunning) {
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                animationRunning = false;
+                deleteAllMeshes();
+                //simulationButton.onPointerUpObservable.notifyObservers();
+            }
             if (targetMesh) {
                 targetMesh.dispose();
             } else { 
@@ -131,6 +157,19 @@ var createScene = async function () {
     
     block.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+            if (animationRunning) {
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                animationRunning = false;
+                deleteAllMeshes();
+                //simulationButton.onPointerUpObservable.notifyObservers();
+            }
             obstacle.isVisible = true;
             clonedMesh1 = obstacle.clone('block2');
             obstacle.isVisible = false;
@@ -196,6 +235,7 @@ var createScene = async function () {
                     
                     if (pickInfo == null) {
                         console.log("No intersection");
+                        animationRunning = true;
                         new Promise((resolve, reject) => {
                             var directionToTarget = targetMesh.position.subtract(meshToMove.position);
                             var angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
@@ -206,7 +246,7 @@ var createScene = async function () {
                             var speed = (20 + (distance) * (40-20 / distance)) / 7;
                             var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
                         });
-
+                        animationRunning = false;
                     }
                     // Check if there was an intersection
                     if (pickInfo.hit) {
@@ -308,6 +348,7 @@ var createScene = async function () {
                                     sphere2.material.alpha = 0;
                                 }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                                spheres.push(sphere2);
                             }
                             if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
                                 console.log("I am on the X width");
@@ -375,6 +416,7 @@ var createScene = async function () {
                                     sphere2.material.alpha = 0;
                                 }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                                spheres.push(sphere2);
                             }
     
                             steps.splice(steps.length - 1, 0, sphere2.position);
@@ -440,50 +482,34 @@ var createScene = async function () {
                     }
 
                     var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
+                    lines.push(line);
 
                     async function animateMesh(mesh, step, scene) {
+                        animationRunning = true;
                         // Assuming meshToMove and targetMesh are defined elsewhere
                         console.log("Animation start");
 
                         for (let i = 1; i < step.length; i++) {
-                            console.log("Step:", step[i]);
-                            await startRotationAnimation(mesh, step[i]);
-                            await startMoveAnimation(mesh, step[i], targetMesh.position);
-                            console.log("Animation", i + 1, "finished!");
+                            if (animationRunning == true) {
+                                console.log("Step:", step[i]);
+                                await startRotationAnimation(mesh, step[i]);
+                                await startMoveAnimation(mesh, step[i], targetMesh.position);
+                                console.log("Animation", i + 1, "finished!");
+                            }else{
+                                break;
+                            }
                         }
                     
                         console.log("All animations finished!");
 
-                        // Delete all meshes named "line"
-                        var lineMeshes = [];
-                        scene.meshes.forEach(function(mesh) {
-                            if (mesh.name === 'line') {
-                                lineMeshes.push(mesh);
-                            }
-                        });
+                        deleteAllMeshes();
 
-                        // Dispose each line mesh found
-                        lineMeshes.forEach(function(mesh) {
-                            mesh.dispose(); // Dispose the mesh from the scene
-                        });
-
-                        // Delete all meshes named "sphere"
-                        var spheremeshes = [];
-                        scene.meshes.forEach(function(mesh) {
-                            if (mesh.name === 'sphere') {
-                                spheremeshes.push(mesh);
-                            }
-                        });
-
-                        // Dispose each cube mesh found
-                        spheremeshes.forEach(function(mesh) {
-                            mesh.dispose(); // Dispose the mesh from the scene
-                        });
                     }
 
                     animateMesh(meshToMove, steps, scene)
                     .then(() => {
                         console.log("Entire animation sequence completed.");
+                        animationRunning = false;
                     })
                     .catch((error) => {
                         console.error("An error occurred during animation:", error);
