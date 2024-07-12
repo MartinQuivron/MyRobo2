@@ -232,9 +232,9 @@ function createSlider() {
     panel.addControl(spacer);
 
     var slider = new BABYLON.GUI.Slider();
-    slider.minimum = 1;
-    slider.maximum = 10;
-    slider.value = 1;
+    slider.minimum = speedMin;
+    slider.maximum = speedMax;
+    slider.value = actualSpeed;
     slider.isVertical = false;
     slider.color = "white";
     slider.background = "white";
@@ -250,7 +250,8 @@ function createSlider() {
 
     slider.onValueChangedObservable.add(function (value) {
         var roundedValue = Math.round(value); 
-        slider.value = roundedValue; 
+        actualSpeed = roundedValue; 
+        slider.value = actualSpeed;
         header.text = "Speed: " + roundedValue;
     });
     panel.addControl(slider);

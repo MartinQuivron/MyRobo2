@@ -29,6 +29,9 @@ var placeBtn = null;
 var endPoint = null;
 var block = null;
 var move = null;
+var speedMin = 1;
+var speedMax = 10;
+var actualSpeed = 1;
 var sliderPanel = null;
 
 

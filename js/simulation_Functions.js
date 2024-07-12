@@ -158,6 +158,6 @@ function startMoveAnimation(meshToMove, targetMeshPosition, finalTargetMeshPosit
         var distanceMax = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
         var distance = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
         var speed = (20 + (distanceMax - distance) * (40-20 / distanceMax)) / 7;
-        var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        var moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*actualSpeed, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }
