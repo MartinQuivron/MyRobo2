@@ -102,7 +102,11 @@ var createScene = async function () {
                 collider.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
                 collider.parent = clonedMesh;
                 collider.material = new BABYLON.StandardMaterial("collidermat", scene);
-                collider.material.alpha = 0;
+                if (debug) {
+                    collider.material.alpha = 0.6;
+                }else{
+                    collider.material.alpha = 0;
+                }
                 collider.position.y += 0.06;
             }
         }
@@ -137,8 +141,16 @@ var createScene = async function () {
             collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
-            collider1.material.alpha = 0.6;
+            if (debug) {
+                collider1.material.alpha = 0.6;
+            }else{
+                collider1.material.alpha = 0;
+            }
             collider1.position.y += 0.06;
+            
+            // Make collider1 non-pickable and non-draggable
+            collider1.isPickable = false;
+            collider1.removeBehavior(BABYLON.BehaviorPointerDrag);
         }
     });
 
@@ -286,10 +298,15 @@ var createScene = async function () {
                                         }
                                     }
                                 }
-    
+                                
                                 var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                                 sphere2.position = bestCorner;
                                 sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                                if (debug) {
+                                    sphere2.material.alpha = 0.6;
+                                }else{
+                                    sphere2.material.alpha = 0;
+                                }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
                             }
                             if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
@@ -352,6 +369,11 @@ var createScene = async function () {
                                 var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                                 sphere2.position = bestCorner;
                                 sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
+                                if (debug) {
+                                    sphere2.material.alpha = 0.6;
+                                }else{
+                                    sphere2.material.alpha = 0;
+                                }
                                 sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
                             }
     

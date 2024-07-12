@@ -16,6 +16,11 @@ function importMeshes(fileName, scene, callback) {
 var makeSphere = (position, color) => {
     var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.05, segments: 32});
     sphere.material = new BABYLON.StandardMaterial("sp");
+    if (debug) {
+        sphere.material.alpha = 0.6;
+    }else{
+        sphere.material.alpha = 0;
+    }
     sphere.material.diffuseColor = color;
     sphere.position = position;
 }
@@ -91,9 +96,11 @@ function simpleDetector(start, end, scene) {
     // Create a ray from the start point to the end point
     const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
 
-    // Display the ray
-    var rayHelper = new BABYLON.RayHelper(ray);
-    rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+    if (debug) {
+        // Display the ray
+        var rayHelper = new BABYLON.RayHelper(ray);
+        rayHelper.show(scene, new BABYLON.Color3(0, 0, 1));
+    }
 
     // Perform ray intersection test with the mesh
     const pickInfo = scene.pickWithRay(ray, function (mesh) {

@@ -43,3 +43,5 @@ var mowerBtn = null;
 
 // WebXR variables
 var xrHelper = null;
+
+var debug = false;
