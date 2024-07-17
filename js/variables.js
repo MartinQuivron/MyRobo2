@@ -1,20 +1,39 @@
 
-// Initialize variables
+// Initialize variables scene
 var engine = null;
 var scene = null;
 var sceneToRender = null;
-var obstacle = null;
+
 
 // Initialize model variables
 var robot = null;
 var endPointFlag = null;
-var obstacles = [];
+var obstacle = null;
+
+
+// Initialize meshes variables
+var meshToMove = null;
+var colliderMeshToMove = null;
+
+var targetMesh = null;
+
+var meshBlocks = [];
+var colliderMeshBlocks = [];
+
 var spheres = [];
 var rays = [];
 var lines = [];
 
-/* --- Initialize variables --- */
-var camera = null;
+var meshess = [];
+var obstacles = [];
+
+// Initialize state variables
+var rotateAnimation = null;
+var moveAnimation = null;
+var animationRunning = false;
+var animationBreak = false;
+
+/* --- GUI --- */
 var advancedTexture = null;
 var excelButton = null;
 var blackBlock = null;
@@ -25,10 +44,6 @@ var objectBtn = null;
 var draggedMesh = null; // the object being dragged
 var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
 var pointerDragBehavior = null; // pointer drag behavior
-
-var animationRunning = false;
-var rotateAnimation = null;
-var moveAnimation = null;
 
 // Interactive 
 var currentPage = "startPage";

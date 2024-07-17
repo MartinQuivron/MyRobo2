@@ -419,69 +419,6 @@ function restorePreviousButtonState() {
 }
 
 // Function to reset the scene
-function attachOwnPointerDragBehavior(mesh) {
-    var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
-    pointerDragBehavior.moveAttached = false;
-    pointerDragBehavior.useObjectOrienationForDragging = false;
-
-    pointerDragBehavior.onDragStartObservable.add((event) => {
-        console.log("startDrag");
-        if (animationRunning) {
-            if (rotateAnimation){
-                rotateAnimation.stop();
-                rotateAnimation = null;
-            }
-            if (moveAnimation){
-                moveAnimation.stop();
-                moveAnimation = null;
-            }
-            animationRunning = false;
-            deleteAllMeshes();
-            //simulationButton.onPointerUpObservable.notifyObservers();
-        }
-        draggedMesh = mesh;
-        hideAndDisableAllButtons();
-        trashButton.isVisible = true;
-        trashButton.isEnabled = true;
-    });
-
-    pointerDragBehavior.onDragObservable.add((event) => {
-        if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
-            console.log("drag");
-
-            hideAndDisableAllButtons();
-            trashButton.isVisible = true;
-            trashButton.isEnabled = true;
-
-            pointerDragBehavior.attachedNode.position.x += event.delta.x;
-            pointerDragBehavior.attachedNode.position.z += event.delta.z;
-        }
-    });
-
-    pointerDragBehavior.onDragEndObservable.add((event) => {
-        if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
-            console.log("endDrag");
-
-            hideAndDisableAllButtons();
-            if (currentPage === "vaccumObjects") {
-                vaccumObjects();
-            }
-            if (currentPage === "mainPage") {
-                mainPage();
-            }
-
-            console.log("isPointerOverTrashButton:", isPointerOverTrashButton);
-
-            if (!isPointerOverTrashButton) {
-                console.log("Mesh not disposed, isPointerOverTrashButton:", isPointerOverTrashButton);
-            }
-
-            draggedMesh = null; // Reset the variable
-        }
-    });
-
-    mesh.addBehavior(pointerDragBehavior);
-}
 
 function generateExcel(data) {
     // Create a new workbook
