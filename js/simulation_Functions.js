@@ -148,36 +148,42 @@ function isTouching(mesh1, mesh2) {
     return isTouching;
 }
 
+// Delete all meshes used for simulation
 function deleteAllMeshes(){
+
     // Delete all meshes named "line"
     lines.forEach(function(line) {
         line.dispose();
     });
     lines = [];
 
+    // Delete all meshes named "sphere"
     spheres.forEach(function(sphere) {
         sphere.dispose();
     });
     spheres = [];
 
+    // Delete all meshes named "ray"
     rays.forEach(rayHelper => {
         rayHelper.dispose();
     });
     rays = [];
 }
 
+// Function to get the trajectory of the robot
 function getTrajectory(meshToMove, targetMesh, scene){
     var steps = [meshToMove.position, targetMesh.position];
     var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
-    //console.log("meshToMove:", meshToMove.position);
-    //console.log("targetMesh:", targetMesh.position);
     console.log("PickInfo:", pickInfo);
-    
+
+    // Check if there was no intersection
     if (pickInfo == null || pickInfo == undefined) {
         console.log("No intersection");
     }
+
+    // Check if there was an intersection
     if (pickInfo != undefined){
-        // Check if there was an intersection
+
         if (pickInfo.hit) {
 
             console.log("pickInfo:", pickInfo);
@@ -211,23 +217,29 @@ function getTrajectory(meshToMove, targetMesh, scene){
                 console.log("LocalX:", localX);
                 console.log("LocalZ:", localZ);
 
+                // If the robot is in front of the Z side of the cube
                 if (Math.abs(localX) >= 0.49 && Math.abs(localZ) <= 0.51) {
-                    console.log("I am on the Z width");
+                    console.log("I am on the Z side");
 
+                    // Check which corner is the closest to the target
+                    // Check the right corner
                     var corner1 = new BABYLON.Vector3(0.52, localY, 0.52);
                     var corner12 = new BABYLON.Vector3(-0.52, localY, 0.52)
                     var globalCorner1 = BABYLON.Vector3.TransformCoordinates(corner1, cube.getWorldMatrix());
                     var globalCorner12 = BABYLON.Vector3.TransformCoordinates(corner12, cube.getWorldMatrix());
                     globalCorner1 = getDistanceBetweenPoints(globalCorner1, globalCorner12, intersectionPoint);
 
+                    // Check the left corner
                     var corner2 = new BABYLON.Vector3(0.52, localY, -0.52);
                     var corner22 = new BABYLON.Vector3(-0.52, localY, -0.52);
                     var globalCorner2 = BABYLON.Vector3.TransformCoordinates(corner2, cube.getWorldMatrix());
                     var globalCorner22 = BABYLON.Vector3.TransformCoordinates(corner22, cube.getWorldMatrix());
                     globalCorner2 = getDistanceBetweenPoints(globalCorner2, globalCorner22, intersectionPoint);
 
+                    // Get the best corner
                     var bestCorner = getDistanceBetweenPoints(globalCorner1, globalCorner2, targetMesh.position);
                     
+                    // Check each possibility and get the best one
                     var cornerFound = false;
                     while (cornerFound == false) {
                         if (bestCorner == globalCorner1){
@@ -268,15 +280,24 @@ function getTrajectory(meshToMove, targetMesh, scene){
                         }
                     }
 
+                    // Create a sphere at the best corner
                     var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                     sphere2.position = bestCorner;
                     sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                     sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                    if (debug) {
+                        sphere2.material.alpha = 0.6;
+                    }else{
+                        sphere2.material.alpha = 0;
+                    }
                     spheres.push(sphere2);
                 }
-                if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
-                    console.log("I am on the X width");
 
+                // If the robot is in front of the X side of the cube
+                if (Math.abs(localZ) >= 0.49 && Math.abs(localX) <= 0.51) {
+                    console.log("I am on the X side");
+
+                    // Check which corner is the closest to the target
                     var corner1 = new BABYLON.Vector3(0.52, localY, 0.52);
                     var corner12 = new BABYLON.Vector3(0.52, localY, -0.52);
                     var globalCorner1 = BABYLON.Vector3.TransformCoordinates(corner1, cube.getWorldMatrix());
@@ -289,8 +310,10 @@ function getTrajectory(meshToMove, targetMesh, scene){
                     var globalCorner22 = BABYLON.Vector3.TransformCoordinates(corner22, cube.getWorldMatrix());
                     globalCorner2 = getDistanceBetweenPoints(globalCorner2, globalCorner22, intersectionPoint);
 
+                    // Get the best corner
                     var bestCorner = getDistanceBetweenPoints(globalCorner1, globalCorner2, targetMesh.position);
 
+                    // Check each possibility and get the best one
                     var cornerFound = false;
                     while (cornerFound == false) {
                         if (bestCorner == globalCorner1){
@@ -331,14 +354,23 @@ function getTrajectory(meshToMove, targetMesh, scene){
                         }
                     }
 
+                    // Create a sphere at the best corner
                     var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.05 }, scene);
                     sphere2.position = bestCorner;
                     sphere2.material = new BABYLON.StandardMaterial("sphereMaterial", scene);
                     sphere2.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                    if (debug) {
+                        sphere2.material.alpha = 0.6;
+                    }else{
+                        sphere2.material.alpha = 0;
+                    }
                     spheres.push(sphere2);
                 }
 
+                // Add the point to the steps array
                 steps.splice(steps.length - 1, 0, sphere2.position);
+
+                // System if every corner is blocked
                 if (allBlock === 3) {
                     console.log("allBlock3");
                     allBlock = 0;
@@ -401,6 +433,7 @@ function getTrajectory(meshToMove, targetMesh, scene){
         }
     }
 
+    // Create the trajectory line
     var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
     lines.push(line);
     return steps;
@@ -412,23 +445,35 @@ function getTrajectory(meshToMove, targetMesh, scene){
 // Function to start rotation animation
 function startRotationAnimation(meshToMove, targetMeshPosition) {
     return new Promise((resolve, reject) => {
+
+        // Calculate the direction to the target
         const directionToTarget = targetMeshPosition.subtract(meshToMove.position);
+
+        // Calculate the angle to rotate
         const angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
+
+        // Create and start the rotation animation
         rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }
 
 // Function to start move animation
-function startMoveAnimation(meshToMove, targetMeshPosition, finalTargetMeshPosition) {
+function startMoveAnimation(meshToMove, targetMeshPosition, step) {
     return new Promise((resolve, reject) => {
-        const distanceMax = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
+
+        const stepLength = step.length;
+
+        // Calculate the maximum distance
+        const distanceMax = BABYLON.Vector3.Distance(step[0], step[stepLength - 1]);
+
+        // Calculate the distance
         const distance = BABYLON.Vector3.Distance(meshToMove.position, targetMeshPosition);
-        const speed = (20 + (distanceMax - distance) * (40-20 / distanceMax)) / 7;
-        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*actualSpeed, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        const speed = speedMin + ((distanceMax - distance) * (speedMax - speedMin) / distanceMax) ;
+        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", (speed*actualSpeed)/2, 60, meshToMove.position, targetMeshPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
 }
 
-function runStraightAnimation(meshToMove, targetMesh, scene) {
+function runStraightAnimation(meshToMove, targetMesh, step) {
     animationRunning = true;
     new Promise((resolve, reject) => {
         const directionToTarget = targetMesh.position.subtract(meshToMove.position);
@@ -436,9 +481,13 @@ function runStraightAnimation(meshToMove, targetMesh, scene) {
         rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
     new Promise((resolve, reject) => {
+
+        // Calculate the maximum distance
+        const distanceMax = BABYLON.Vector3.Distance(step[0], step[step.length - 1]);
+
         const distance = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
-        const speed = (20 + (distance) * (40-20 / distance)) / 7;
-        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", speed*10, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+        const speed = speedMin + ((distanceMax - distance) * (speedMax - speedMin) / distanceMax);
+        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", (speed*actualSpeed)/2, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
     });
     deleteAllMeshes();
     if (meshToMove.position == targetMesh.position) {
@@ -457,7 +506,7 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
             if (animationRunning == true) {
                 console.log("Step:", step[i]);
                 await startRotationAnimation(mesh, step[i]);
-                await startMoveAnimation(mesh, step[i], targetMesh.position);
+                await startMoveAnimation(mesh, step[i], step);
                 console.log("Animation", i + 1, "finished!");
             }else{
                 break;
@@ -471,7 +520,7 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
     }
     
     if (steps.length == 2) {
-        runStraightAnimation(meshToMove, targetMesh, scene);
+        runStraightAnimation(meshToMove, targetMesh, steps);
         return;
     }
     else{

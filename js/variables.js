@@ -54,7 +54,7 @@ var block = null;
 var move = null;
 var speedMin = 1;
 var speedMax = 10;
-var actualSpeed = 1;
+var actualSpeed = 5;
 var sliderPanel = null;
 
 
@@ -67,4 +67,4 @@ var mowerBtn = null;
 // WebXR variables
 var xrHelper = null;
 
-var debug = true;
+var debug = false;

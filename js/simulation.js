@@ -182,7 +182,11 @@ var createScene = async function () {
             collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
-            collider1.material.alpha = 0.6;
+            if (debug) {
+                collider1.material.alpha = 0.6;
+            }else{
+                collider1.material.alpha = 0;
+            }
             collider1.position.y += 0.06;
             colliderMeshBlocks.push(collider1);
         }
@@ -251,6 +255,7 @@ var createScene = async function () {
                 if (animationRunning == true) {
                     //animationRunning = false;
                     animationBreak = false;
+                    animationRunning = false;
                     var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
                     runAnimation(meshToMove, steps, targetMesh, scene);
                 }
