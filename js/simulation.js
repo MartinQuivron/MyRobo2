@@ -156,7 +156,7 @@ var createScene = async function () {
     
     block.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-            if (animationRunning) {
+            if (animationRunning == true) {
                 if (rotateAnimation){
                     rotateAnimation.stop();
                     rotateAnimation = null;
@@ -165,9 +165,11 @@ var createScene = async function () {
                     moveAnimation.stop();
                     moveAnimation = null;
                 }
-                animationRunning = false;
                 deleteAllMeshes();
-                //simulationButton.onPointerUpObservable.notifyObservers();
+                meshess = scene.meshes;
+                animationBreak = false;
+                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                runAnimation(meshToMove, steps, targetMesh, scene);
             }
             obstacle.isVisible = true;
             clonedMesh1 = obstacle.clone('block2');
@@ -230,6 +232,7 @@ var createScene = async function () {
                         moveAnimation = null;
                     }
                     deleteAllMeshes();
+                    meshess = scene.meshes;
                     verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
                 }
     
