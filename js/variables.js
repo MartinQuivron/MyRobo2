@@ -46,6 +46,7 @@ var isDragEnabled = true;
 // GUI variables
 var advancedTexture = null;
 var draggedMesh = null; // the object being dragged
+var positionDraggedMesh = null; // the start position of the object being dragged
 var isPointerOverTrashButton = false; // flag to check if the pointer is over the trash button
 var pointerDragBehavior = null; // pointer drag behavior
 

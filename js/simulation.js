@@ -198,6 +198,7 @@ var createScene = async function () {
                 deleteAllMeshes();
             }
             draggedMesh = mesh;
+            positionDraggedMesh = mesh.position.clone();
             hideAndDisableAllButtons();
             trashButton.isVisible = true;
             trashButton.isEnabled = true;
@@ -234,7 +235,18 @@ var createScene = async function () {
             if (!isDragEnabled) return; // Check if drag is enabled
             if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
                 console.log("endDrag");
-                if (animationRunning == true) {
+                var collider_box_blocks = [];
+                scene.meshes.forEach(function(mesh) {
+                    if (mesh.name === 'collider_box_block') {
+                        collider_box_blocks.push(mesh);
+                    }
+                });
+                const isTouchingTargetMesh = isTouching(draggedMesh, collider_box_blocks);
+                if (mesh.name != "block2" && isTouchingTargetMesh) {
+                    console.log("isTouchingTargetMesh:", isTouchingTargetMesh);
+                    draggedMesh.position = positionDraggedMesh;
+                }
+                if (animationRunning == true && (isTouchingTargetMesh == false || mesh.name === "block2")) {
                     //animationRunning = false;
                     animationBreak = false;
                     animationRunning = false;
