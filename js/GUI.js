@@ -17,6 +17,8 @@ var createGUI = async function (scene) {
     createOptionsButton();
     sliderPanel = createSlider();
     excelButton = createExcelButton();
+    debugButton = createDebugButton();
+
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button
     advancedTexture.addControl(backButton); // Call the function to create and add the back button
@@ -30,6 +32,8 @@ var createGUI = async function (scene) {
     allButtons.push(blackBgVaccumObjects);
     advancedTexture.addControl(blackBgOptionsPage);
     allButtons.push(blackBgOptionsPage);
+    advancedTexture.addControl(debugButton);
+    allButtons.push(debugButton);
 
     // Create image buttons
     vacumBtn = createButtonImaged("vacum", "./assets/img/vaccum_image.png", "42%", "20%", "0", "6%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white");
