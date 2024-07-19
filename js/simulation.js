@@ -87,24 +87,11 @@ var createScene = async function () {
     placeBtn.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             meshToMove = scene.getMeshByName('robot');
-            if (animationRunning == true) {
-                if (rotateAnimation){
-                    rotateAnimation.stop();
-                    rotateAnimation = null;
-                }
-                if (moveAnimation){
-                    moveAnimation.stop();
-                    moveAnimation = null;
-                }
-                deleteAllMeshes();
-                meshess = scene.meshes;
-                animationBreak = false;
-                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-                runAnimation(meshToMove, steps, targetMesh, scene);
-            }
             if (meshToMove) {
                 meshToMove.dispose();
                 colliderMeshToMove.dispose();
+                deleteAllMeshes();
+                animationRunning = false;
             } else {  
                 robot.setEnabled(true);
                 robot.isVisible = true;
@@ -128,23 +115,10 @@ var createScene = async function () {
     endPoint.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             targetMesh = scene.getMeshByName('endPoint');
-            if (animationRunning == true) {
-                if (rotateAnimation){
-                    rotateAnimation.stop();
-                    rotateAnimation = null;
-                }
-                if (moveAnimation){
-                    moveAnimation.stop();
-                    moveAnimation = null;
-                }
-                deleteAllMeshes();
-                meshess = scene.meshes;
-                animationBreak = false;
-                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-                runAnimation(meshToMove, steps, targetMesh, scene);
-            }
             if (targetMesh) {
                 targetMesh.dispose();
+                deleteAllMeshes();
+                animationRunning = false;
             } else { 
                 endPointFlag.setEnabled(true);
                 endPointFlag.isVisible = true;
