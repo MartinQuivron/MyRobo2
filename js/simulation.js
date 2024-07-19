@@ -194,6 +194,9 @@ var createScene = async function () {
         pointerDragBehavior.onDragStartObservable.add((event) => {
             if (!isDragEnabled) return; // Check if drag is enabled
             console.log("startDrag");
+            if (lines[0] == null){
+                animationRunning = false;
+            }
             if (animationRunning == true) {
                 deleteAllMeshes();
             }
