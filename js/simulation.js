@@ -283,21 +283,36 @@ var createScene = async function () {
 
 /* --- Function to reset the scene --- */
 async function resetScene() {
-    // Dispose the current XR session if it exists
-    if (xrHelper && xrHelper.baseExperience) {
-        await xrHelper.baseExperience.exitXRAsync();
-        xrHelper.dispose();
-        xrHelper = null;
-    }
 
-    // Dispose the current scene
-    if (scene) {
-        scene.dispose();
-    }
+    // Reset the scene
+    deleteAllMeshes(); // Delete all meshes
+    animationRunning = false; // Stop the animation
+    animationBreak = false; // Reset the animation break flag
+    meshToMove.dispose(); // Dispose the mesh to move
+    meshToMove = null; // Reset the mesh to move
+    colliderMeshToMove.dispose(); // Dispose the collider
+    colliderMeshToMove = null; // Reset the collider mesh to move
+    targetMesh.dispose(); // Dispose the target mesh
+    targetMesh = null; // Reset the target mesh
 
-    // Recreate the scene
-    scene = await createScene();
-    sceneToRender = scene;
+    // Delete all meshes named "line"
+    meshBlocks.forEach(function(meshBlock) {
+        meshBlock.dispose();
+    });
+    meshBlocks = [];
+
+    // Delete all meshes named "line"
+    colliderMeshBlocks.forEach(function(colliderMeshBlock) {
+        colliderMeshBlock.dispose();
+    });
+    colliderMeshBlocks = [];
+
+    spheres = [];
+    rays = [];
+    lines = [];
+
+    meshess = [];
+    obstacles = [];
 
     // Hide interaction buttons
     startPage(); // Display the start page
