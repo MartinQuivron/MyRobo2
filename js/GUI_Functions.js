@@ -1,10 +1,14 @@
-// Global array to store all buttons
-var allButtons = [];
-
-// Global array to store the history of button states
-var buttonStateHistory = [];
-
 // -------------------------------------- Functions -------------------------------------- //
+
+// Function to disable drag for 1 second
+function disableDragTemporarily() {
+    console.log("Button clicked, disabling drag");
+    isDragEnabled = false;
+    setTimeout(() => {
+        isDragEnabled = true;
+        console.log("Drag re-enabled");
+    }, 1000); // Re-enable drag after 1 second
+}
 
 // Function to create GUI rectangles
 function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px") {
@@ -205,7 +209,6 @@ function createExcelButton() {
     return excelButton;
 }
 
-
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
     panel.zIndex = 10; // Assurer un zIndex élevé
@@ -267,7 +270,6 @@ function createSlider() {
     return panel;
 }
 
-
 function startPage() {
     hideAndDisableAllButtons();
     // Show the black block and image buttons
@@ -287,6 +289,8 @@ function startPage() {
     homeButton.isVisible = true;
     homeButton.isEnabled = true;
 
+    isDragEnabled = false; // Disable drag on startPage
+
     currentPage = "startPage";
 }
 
@@ -303,6 +307,8 @@ function mainPage() {
     optionsButton.isVisible = true;
     optionsButton.isEnabled = true;
     blackBgMainPage.isVisible = true;
+
+    isDragEnabled = true; // Enable drag on mainPage
 
     currentPage = "mainPage";
 }
@@ -328,6 +334,8 @@ function vaccumObjects() {
     trashButton.isEnabled = false;
     blackBgVaccumObjects.isVisible = true;
 
+    isDragEnabled = true;
+
     currentPage = "vaccumObjects";
 }
 
@@ -345,6 +353,8 @@ function optionPage() {
     const excelButton = createExcelButton();
     excelButton.isVisible = true;
     excelButton.isEnabled = true;
+
+    isDragEnabled = false; // Disable drag on optionPage
 
     currentPage = "optionPage";
 }
@@ -393,6 +403,9 @@ function restorePreviousButtonState() {
             state.button.isVisible = state.isVisible;
             state.button.isEnabled = state.isEnabled;
         });
+        if (previousState.page === "mainPage" || previousState.page === "vaccumObjects") {
+            isDragEnabled = true; // Re-enable drag if returning to mainPage or vaccumObjects
+        }
     } else if (currentPage === "mainPage") {
         startPage();
     } else if (currentPage === "vaccumObjects" && buttonStateHistory.length > 0) {
@@ -408,17 +421,19 @@ function restorePreviousButtonState() {
                 state.button.isVisible = state.isVisible;
                 state.button.isEnabled = state.isEnabled;
             });
+            isDragEnabled = true; // Re-enable drag when restoring to mainPage
         }
     } else if (buttonStateHistory.length > 0) {
         const previousState = buttonStateHistory.pop();
         previousState.state.forEach(state => {
             state.button.isVisible = state.isVisible;
-            state.button.isEnabled = state.isEnabled;
+            state.isEnabled = state.isEnabled;
         });
+        if (previousState.page === "mainPage" || previousState.page === "vaccumObjects") {
+            isDragEnabled = true; // Re-enable drag if restoring to mainPage or vaccumObjects
+        }
     }
 }
-
-// Function to reset the scene
 
 function generateExcel(data) {
     // Create a new workbook

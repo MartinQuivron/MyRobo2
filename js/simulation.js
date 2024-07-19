@@ -213,6 +213,7 @@ var createScene = async function () {
         pointerDragBehavior.useObjectOrienationForDragging = false;
     
         pointerDragBehavior.onDragStartObservable.add((event) => {
+            if (!isDragEnabled) return; // Check if drag is enabled
             console.log("startDrag");
             if (animationRunning == true) {
                 deleteAllMeshes();
@@ -224,6 +225,7 @@ var createScene = async function () {
         });
     
         pointerDragBehavior.onDragObservable.add((event) => {
+            if (!isDragEnabled) return; // Check if drag is enabled
             if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
                 console.log("drag");
                 if (animationRunning == true) {
@@ -250,6 +252,7 @@ var createScene = async function () {
         });
     
         pointerDragBehavior.onDragEndObservable.add((event) => {
+            if (!isDragEnabled) return; // Check if drag is enabled
             if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
                 console.log("endDrag");
                 if (animationRunning == true) {

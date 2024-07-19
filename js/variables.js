@@ -34,6 +34,16 @@ var animationRunning = false;
 var animationBreak = false;
 
 /* --- GUI --- */
+// Global array to store all buttons
+var allButtons = [];
+
+// Global array to store the history of button states
+var buttonStateHistory = [];
+
+// Variable to control drag behavior
+var isDragEnabled = true;
+
+// GUI variables
 var advancedTexture = null;
 var excelButton = null;
 var blackBlock = null;
