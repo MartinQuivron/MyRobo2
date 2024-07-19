@@ -193,9 +193,15 @@ function getTrajectory(meshToMove, targetMesh, scene){
             steps.splice(steps.length - 1, 0, intersectionPoint);
 
             var allBlock = 0;
-
+            var crashCounter = 0;
             while (pickInfo.pickedMesh.name == 'collider_box_block') {
-
+                crashCounter += 1;
+                console.log("CrashCounter:", crashCounter);
+                if (crashCounter >= 25) {
+                    steps = [meshToMove.position, targetMesh.position];
+                    allBlock = 0;
+                    break;
+                } 
                 intersectionPoint = pickInfo.pickedPoint;
 
                 // Get the cube mesh by name
@@ -433,10 +439,16 @@ function getTrajectory(meshToMove, targetMesh, scene){
         }
     }
 
-    // Create the trajectory line
-    var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
-    lines.push(line);
-    return steps;
+    if (crashCounter < 25) {
+        // Create the trajectory line
+        var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
+        lines.push(line);
+        return steps;
+    }else{
+        crashCounter = 0;
+        steps = null;
+        return steps;
+    }
 }
 
 
