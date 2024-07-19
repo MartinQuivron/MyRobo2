@@ -87,7 +87,7 @@ var createScene = async function () {
     placeBtn.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             meshToMove = scene.getMeshByName('robot');
-            if (animationRunning) {
+            if (animationRunning == true) {
                 if (rotateAnimation){
                     rotateAnimation.stop();
                     rotateAnimation = null;
@@ -96,9 +96,11 @@ var createScene = async function () {
                     moveAnimation.stop();
                     moveAnimation = null;
                 }
-                animationRunning = false;
                 deleteAllMeshes();
-                //simulationButton.onPointerUpObservable.notifyObservers();
+                meshess = scene.meshes;
+                animationBreak = false;
+                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                runAnimation(meshToMove, steps, targetMesh, scene);
             }
             if (meshToMove) {
                 meshToMove.dispose();
@@ -126,7 +128,7 @@ var createScene = async function () {
     endPoint.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             targetMesh = scene.getMeshByName('endPoint');
-            if (animationRunning) {
+            if (animationRunning == true) {
                 if (rotateAnimation){
                     rotateAnimation.stop();
                     rotateAnimation = null;
@@ -135,9 +137,11 @@ var createScene = async function () {
                     moveAnimation.stop();
                     moveAnimation = null;
                 }
-                animationRunning = false;
                 deleteAllMeshes();
-                //simulationButton.onPointerUpObservable.notifyObservers();
+                meshess = scene.meshes;
+                animationBreak = false;
+                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                runAnimation(meshToMove, steps, targetMesh, scene);
             }
             if (targetMesh) {
                 targetMesh.dispose();
