@@ -10,56 +10,67 @@ function disableDragTemporarily() {
     }, 1000); // Re-enable drag after 1 second
 }
 
-//Function to create a button to turn on or off a functionality
+// Function to create a button to turn on or off a functionality
 // we will use it here for the debug mode
-function createSwitchButton() {
-    var switchButton = new BABYLON.GUI.Rectangle();
-    switchButton.width = "150px";
-    switchButton.height = "50px";
-    switchButton.cornerRadius = 20;
-    switchButton.color = "blue";
-    switchButton.thickness = 4;
-    switchButton.background = "white";
-    switchButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    switchButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-    switchButton.isPointerBlocker = true;
+function createDebugButton() {
+    var debugButton = new BABYLON.GUI.Rectangle();
+    debugButton.width = "300px";
+    debugButton.height = "100px";
+    debugButton.zIndex = 10;
+    debugButton.cornerRadius = 10;
+    debugButton.color = "white"; 
+    debugButton.alpha = 1;
+    debugButton.thickness = 4;
+    debugButton.background = "white";
+    debugButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    debugButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    debugButton.top = "90%";
+    debugButton.isPointerBlocker = true;
 
     var switchText = new BABYLON.GUI.TextBlock();
-    switchText.text = "OFF";
-    switchText.color = "blue";
+    switchText.text = "DEBUG MODE";
+    switchText.color = "black";
+    switchText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    switchText.left = "0%";
     switchText.fontSize = 24;
-    switchButton.addControl(switchText);
+    debugButton.addControl(switchText);
 
-    var switchCircle = new BABYLON.GUI.Ellipse();
-    switchCircle.width = "40px";
-    switchCircle.height = "40px";
-    switchCircle.color = "blue";
-    switchCircle.thickness = 4;
-    switchCircle.background = "blue";
-    switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-    switchCircle.left = "-40px";
-    switchButton.addControl(switchCircle);
+    var switchRect = new BABYLON.GUI.Rectangle();
+    switchRect.width = "60px";
+    switchRect.height = "100px";
+    switchRect.color = "white";
+    switchRect.alpha = 1;
+    switchRect.thickness = 4;
+    switchRect.background = "white";
+    switchRect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    switchRect.left = "0%";
+    debugButton.addControl(switchRect);
 
     var isOn = false;
 
-    switchButton.onPointerUpObservable.add(function() {
+    debugButton.onPointerUpObservable.add(function() {
         isOn = !isOn;
+        debug = isOn; 
         if (isOn) {
             switchText.text = "ON";
-            switchText.color = "white";
-            switchButton.background = "blue";
-            switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            switchCircle.left = "40px";
+            switchText.color = "black";
+            debugButton.background = "#b1ff91";
+            switchRect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            switchRect.left = "0%";
+            debugButton.color = "white"; 
+            switchRect.color = "white"; 
         } else {
             switchText.text = "OFF";
-            switchText.color = "blue";
-            switchButton.background = "white";
-            switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            switchCircle.left = "-40px";
+            switchText.color = "white";
+            debugButton.background = "#f44336";
+            switchRect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            switchRect.left = "0%";
+            debugButton.color = "white"; 
+            switchRect.color = "white"; 
         }
     });
 
-    return switchButton;
+    return debugButton;
 }
 
 // Function to create GUI rectangles
@@ -340,6 +351,10 @@ function startPage() {
     // Ensure the home button remains visible and enabled
     homeButton.isVisible = true;
     homeButton.isEnabled = true;
+
+    // Show the debug button
+    debugButton.isVisible = true;
+    debugButton.isEnabled = true;
 
     isDragEnabled = false; // Disable drag on startPage
 
