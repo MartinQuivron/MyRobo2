@@ -10,6 +10,58 @@ function disableDragTemporarily() {
     }, 1000); // Re-enable drag after 1 second
 }
 
+//Function to create a button to turn on or off a functionality
+// we will use it here for the debug mode
+function createSwitchButton() {
+    var switchButton = new BABYLON.GUI.Rectangle();
+    switchButton.width = "150px";
+    switchButton.height = "50px";
+    switchButton.cornerRadius = 20;
+    switchButton.color = "blue";
+    switchButton.thickness = 4;
+    switchButton.background = "white";
+    switchButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    switchButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    switchButton.isPointerBlocker = true;
+
+    var switchText = new BABYLON.GUI.TextBlock();
+    switchText.text = "OFF";
+    switchText.color = "blue";
+    switchText.fontSize = 24;
+    switchButton.addControl(switchText);
+
+    var switchCircle = new BABYLON.GUI.Ellipse();
+    switchCircle.width = "40px";
+    switchCircle.height = "40px";
+    switchCircle.color = "blue";
+    switchCircle.thickness = 4;
+    switchCircle.background = "blue";
+    switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    switchCircle.left = "-40px";
+    switchButton.addControl(switchCircle);
+
+    var isOn = false;
+
+    switchButton.onPointerUpObservable.add(function() {
+        isOn = !isOn;
+        if (isOn) {
+            switchText.text = "ON";
+            switchText.color = "white";
+            switchButton.background = "blue";
+            switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            switchCircle.left = "40px";
+        } else {
+            switchText.text = "OFF";
+            switchText.color = "blue";
+            switchButton.background = "white";
+            switchCircle.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            switchCircle.left = "-40px";
+        }
+    });
+
+    return switchButton;
+}
+
 // Function to create GUI rectangles
 function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px") {
     const rectangle = new BABYLON.GUI.Rectangle(name);
@@ -219,7 +271,7 @@ function createSlider() {
     panel.top = "30%"; 
 
     var header = new BABYLON.GUI.TextBlock();
-    header.text = "Speed: " + "1";
+    header.text = "Speed: " + actualSpeed;
     header.fontSize = "60px"; 
     header.height = "70px"; 
     header.color = "white";
