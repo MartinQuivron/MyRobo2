@@ -188,6 +188,7 @@ var createScene = async function () {
                 collider1.material.alpha = 0;
             }
             collider1.position.y += 0.06;
+            collider1.isPickable = false;
             colliderMeshBlocks.push(collider1);
         }
     });
