@@ -23,13 +23,37 @@ Therefore, the following steps are performed.
 <img align="left" src="./assetsReadMe/debugTrue.png" width="25%" height="25%"/>
 <img align="right" src="./assetsReadMe/debugFalse.png" width="25%" height="25%"/>
 <br clear="left"/>
+</br>
 5. Now the user can target the floor to make appeared a ring-shaped object that defines the surface
+<p align="center">
+    <img src="./assetsReadMe/mainPage.png" width="25%" height="25%"/>
+</p>
 6. We can see now 2 buttons at the bottom, one is a menu for objects and the other one is for start the simulation.
+<p align="center">
+    <img src="./assetsReadMe/mainPage2.png" width="25%" height="25%"/>
+</p>
 7. In the top right corner, there is the option buttons where you can change speed of the robot, create excel file and also reset the simulation.
+<p align="center">
+    <img src="./assetsReadMe/optionsMenu.png" width="25%" height="25%"/>
+</p>
 8. With the objects menu you can put the robot, obstacles and also a flag (target point)
+<p align="center">
+    <img src="./assetsReadMe/objectPage.png" width="25%" height="25%"/>
+</p>
 9. The user can move objects objects by dragging them with finger
 10. When we drag an object, we can move it to the top right corner to delete it.
+<p align="center">
+    <img src="./assetsReadMe/deleteObject.gif" width="25%" height="25%"/>
+</p>
 11. With the simulation button you can start simulation if the robot and the flag (target point) are display in the scene and also you can end simulation if you press another time the button.
+<p align="center">
+    <img src="./assetsReadMe/allObjects.png" width="25%" height="25%"/>
+</p>
+
+## Full simulation demonstration
+1. With debug
+
+2. Without debug
 
 ## How to run locally
 If you want to develop for the long term, we recommend using Apache.
