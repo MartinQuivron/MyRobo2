@@ -8,10 +8,20 @@ The service here is the movement of the robot body or end effector to the target
 Therefore, the following steps are performed.
 
 1. At the start the user arrive on the website and launch babylonJS
-<img src="./assetsReadMe/website.png" width="25%" height="25%"/>
+<p align="center">
+    <img style="text-align: center;" src="./assetsReadMe/website.png" width="25%" height="25%"/>
+</p>
 2. After, the user need to start AR (webXR) with the button in right bottom corner
+<p align="center">
+    <img style="text-align: center;" src="./assetsReadMe/menu.png" width="25%" height="25%"/>
+</p>
 3. The user can now choose between different meshs (Vacuum cleaner, Arm robot, Drone and Mower)
+<p align="center">
+    <img src="./assetsReadMe/ARstart.png" width="25%" height="25%"/>
+</p>
 4. Also you can display or not the debug mode with the button at the bottom, to see every trajectory and understand how the simulation works.
+<img align="left" src="./assetsReadMe/debugTrue.png" width="25%" height="25%"/>
+<img align="right" src="./assetsReadMe/debugFalse.png" width="25%" height="25%"/>
 5. Now the user can target the floor to make appeared a ring-shaped object that defines the surface
 6. We can see now 2 buttons at the bottom, one is a menu for objects and the other one is for start the simulation.
 7. In the top right corner, there is the option buttons where you can change speed of the robot, create excel file and also reset the simulation.
