@@ -1,30 +1,24 @@
 # MyRobo
 ## Overview
-MyRobo is a web application for robot simulation using OimoJS physic engine
+MyRobo is a web application for robot simulation using OimoJS physic engine, BabylonJS and WebXR
 
 ### Running the service
 MyRobo allows the user to see the simulation robot (AR) executing a service set by the user.
 The service here is the movement of the robot body or end effector to the target point.
-Therefore, the following steps are performed. 1.
+Therefore, the following steps are performed.
 
-1. The user sets the target location.
-2. The controller determines the angular velocity of each joint so that the robot can reach the target point.
-3. The simulation time is updated
-4. The robot's state (Link) is updated
-5. 
-
-## Operation
-(Notes)
-
-In the website choose between PC and mobile device.
-
-When you start the application, click the button for AR function in the lower right corner.
-
-- First, a ring-shaped object is displayed.
-- You can move the object by tilting and rotating the device.
-- You can make the vacuum cleaner, the arrival point and cubes appear using the buttons.
-- Move objects by dragging them. 
-- Click `[Move]` button to move the vacuum cleaner to the arrival point.
+1. At the start the user arrive on the website and launch babylonJS
+![1. At the start the user arrive on the website and launch babylonJS](./assetsReadMe/website.png)
+2. After, the user need to start AR (webXR) with the button in right bottom corner
+3. The user can now choose between different meshs (Vacuum cleaner, Arm robot, Drone and Mower)
+4. Also you can display or not the debug mode with the button at the bottom, to see every trajectory and understand how the simulation works.
+5. Now the user can target the floor to make appeared a ring-shaped object that defines the surface
+6. We can see now 2 buttons at the bottom, one is a menu for objects and the other one is for start the simulation.
+7. In the top right corner, there is the option buttons where you can change speed of the robot, create excel file and also reset the simulation.
+8. With the objects menu you can put the robot, obstacles and also a flag (target point)
+9. The user can move objects objects by dragging them with finger
+10. When we drag an object, we can move it to the top right corner to delete it.
+11. With the simulation button you can start simulation if the robot and the flag (target point) are display in the scene and also you can end simulation if you press another time the button.
 
 ## How to run locally
 If you want to develop for the long term, we recommend using Apache.
