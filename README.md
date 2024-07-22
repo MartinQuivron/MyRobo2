@@ -8,7 +8,7 @@ The service here is the movement of the robot body or end effector to the target
 Therefore, the following steps are performed.
 
 1. At the start the user arrive on the website and launch babylonJS
-![1. At the start the user arrive on the website and launch babylonJS](./assetsReadMe/website.png)
+<img src="./assetsReadMe/website.png" width="25%" height="25%"/>
 2. After, the user need to start AR (webXR) with the button in right bottom corner
 3. The user can now choose between different meshs (Vacuum cleaner, Arm robot, Drone and Mower)
 4. Also you can display or not the debug mode with the button at the bottom, to see every trajectory and understand how the simulation works.
