@@ -116,7 +116,10 @@ function createHomeButton() {
     homeButton.thickness = 0;
 
     homeButton.onPointerUpObservable.add(function() {
-        resetScene();
+        // Redirect to the URL without /mobile.html
+        let currentUrl = window.location.href;
+        let newUrl = currentUrl.replace("/mobile.html", "");
+        window.location.href = newUrl;
     });
 
     advancedTexture.addControl(homeButton);
