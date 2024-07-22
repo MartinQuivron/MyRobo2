@@ -147,7 +147,20 @@ var createScene = async function () {
                 meshess = scene.meshes;
                 animationBreak = false;
                 var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-                runAnimation(meshToMove, steps, targetMesh, scene);
+                if (steps != null) {
+                    runAnimation(meshToMove, steps, targetMesh, scene);
+                }else{
+                    if (rotateAnimation){
+                        rotateAnimation.stop();
+                        rotateAnimation = null;
+                    }
+                    if (moveAnimation){
+                        moveAnimation.stop();
+                        moveAnimation = null;
+                    }
+                    animationRunning = false;
+                    deleteAllMeshes();
+                }
             }
             obstacle.isVisible = true;
             clonedMesh1 = obstacle.clone('block2');
@@ -254,7 +267,20 @@ var createScene = async function () {
                     animationBreak = false;
                     animationRunning = false;
                     var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-                    runAnimation(meshToMove, steps, targetMesh, scene);
+                    if (steps != null) {
+                        runAnimation(meshToMove, steps, targetMesh, scene);
+                    }else{
+                        if (rotateAnimation){
+                            rotateAnimation.stop();
+                            rotateAnimation = null;
+                        }
+                        if (moveAnimation){
+                            moveAnimation.stop();
+                            moveAnimation = null;
+                        }
+                        animationRunning = false;
+                        deleteAllMeshes();
+                    }
                 }
     
                 hideAndDisableAllButtons();
@@ -286,7 +312,20 @@ var createScene = async function () {
             meshess = scene.meshes;
             console.log("test avant", meshess);
             var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-            runAnimation(meshToMove, steps, targetMesh, scene);
+            if (steps != null) {
+                runAnimation(meshToMove, steps, targetMesh, scene);
+            }else{
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                animationRunning = false;
+                deleteAllMeshes();
+            }
 
         }
     });
