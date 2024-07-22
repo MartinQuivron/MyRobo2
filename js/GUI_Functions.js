@@ -344,7 +344,7 @@ function createResetButton() {
     resetButtonContainer.addControl(grid);
 
     resetButtonContainer.onPointerUpObservable.add(() => {
-        
+        resetScene();
         console.log("Reset button clicked");
     });
 

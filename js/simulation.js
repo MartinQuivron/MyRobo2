@@ -342,12 +342,18 @@ async function resetScene() {
     deleteAllMeshes(); // Delete all meshes
     animationRunning = false; // Stop the animation
     animationBreak = false; // Reset the animation break flag
-    meshToMove.dispose(); // Dispose the mesh to move
-    meshToMove = null; // Reset the mesh to move
-    colliderMeshToMove.dispose(); // Dispose the collider
-    colliderMeshToMove = null; // Reset the collider mesh to move
-    targetMesh.dispose(); // Dispose the target mesh
-    targetMesh = null; // Reset the target mesh
+    if (meshToMove) {
+        meshToMove.dispose(); // Dispose the mesh to move
+        meshToMove = null; // Reset the mesh to move
+    }
+    if (colliderMeshToMove) {
+        colliderMeshToMove.dispose(); // Dispose the collider
+        colliderMeshToMove = null; // Reset the collider mesh to move
+    }
+    if (targetMesh) {
+        targetMesh.dispose(); // Dispose the target mesh
+        targetMesh = null; // Reset the target mesh
+    }
 
     // Delete all meshes named "line"
     meshBlocks.forEach(function(meshBlock) {
