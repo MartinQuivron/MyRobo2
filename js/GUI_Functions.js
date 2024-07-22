@@ -10,6 +10,21 @@ function disableDragTemporarily() {
     }, 1000); // Re-enable drag after 1 second
 }
 
+function createDragDisableArea() {
+    var dragDisableArea = new BABYLON.GUI.Rectangle();
+    dragDisableArea.width = "95%";
+    dragDisableArea.height = "20%";
+    dragDisableArea.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    dragDisableArea.top = "75%";
+    dragDisableArea.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    dragDisableArea.background = "transparent";
+    dragDisableArea.isPointerBlocker = true; 
+    dragDisableArea.isVisible = false; 
+    dragDisableArea.isEnabled = false;
+
+    return dragDisableArea;
+}
+
 // Function to create a button to turn on or off a functionality
 // we will use it here for the debug mode
 function createDebugButton() {
@@ -216,7 +231,8 @@ function createButton(name, text, width, height, color, cornerRadius, background
 }
 
 // Function to create image buttons and add them to the global array
-function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color) {
+// Function to create image buttons and add them to the global array
+function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color, disableDrag = false) {
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
     buttonContainer.height = height;
@@ -225,7 +241,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0;
-    buttonContainer.zIndex = 10; 
+    buttonContainer.zIndex = 10;
     buttonContainer.background = background;
     buttonContainer.thickness = 2;
     buttonContainer.color = color;
@@ -237,11 +253,26 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.addControl(image);
     advancedTexture.addControl(buttonContainer);
 
+    if (disableDrag) {
+        buttonContainer.onPointerEnterObservable.add(function () {
+            isDragEnabled = false;
+        });
+
+        buttonContainer.onPointerOutObservable.add(function () {
+            isDragEnabled = true;
+        });
+
+        buttonContainer.onPointerUpObservable.add(function () {
+            isDragEnabled = true;
+        });
+    }
+
     // Add the button to the global array
     allButtons.push(buttonContainer);
 
     return buttonContainer;
 }
+
 
 var excelButtonContainer;
 
@@ -458,13 +489,24 @@ function mainPage() {
     optionsButton.isEnabled = true;
     blackBgMainPage.isVisible = true;
 
-    isDragEnabled = true; // Enable drag on mainPage
+    // Sync dragDisableArea with blackBgMainPage
+    dragDisableArea.width = blackBgMainPage.width;
+    dragDisableArea.height = blackBgMainPage.height;
+    dragDisableArea.top = blackBgMainPage.top;
+    dragDisableArea.left = blackBgMainPage.left;
+    dragDisableArea.horizontalAlignment = blackBgMainPage.horizontalAlignment;
+    dragDisableArea.verticalAlignment = blackBgMainPage.verticalAlignment;
+
+    // Show the drag disable area for the lower half of the page
+    dragDisableArea.isVisible = true;
+    dragDisableArea.isEnabled = true;
 
     currentPage = "mainPage";
 }
 
 // Function to show interaction buttons and hide all image buttons
 function vaccumObjects() {
+    saveButtonState();  // Save the current state before changing
     hideAndDisableAllButtons();
     placeBtn.isVisible = true;
     placeBtn.isEnabled = true;
@@ -476,15 +518,23 @@ function vaccumObjects() {
     simulationButton.isEnabled = true;
     objectBtn.isVisible = true;
     objectBtn.isEnabled = true;
-    backButton.isVisible = true;  
+    backButton.isVisible = true;
     backButton.isEnabled = true;
     optionsButton.isVisible = true;
     optionsButton.isEnabled = true;
-    trashButton.isVisible = false;
-    trashButton.isEnabled = false;
     blackBgVaccumObjects.isVisible = true;
 
-    isDragEnabled = true;
+    // Sync dragDisableArea with blackBgVaccumObjects
+    dragDisableArea.width = blackBgVaccumObjects.width;
+    dragDisableArea.height = blackBgVaccumObjects.height;
+    dragDisableArea.top = blackBgVaccumObjects.top;
+    dragDisableArea.left = blackBgVaccumObjects.left;
+    dragDisableArea.horizontalAlignment = blackBgVaccumObjects.horizontalAlignment;
+    dragDisableArea.verticalAlignment = blackBgVaccumObjects.verticalAlignment;
+
+    // Show the drag disable area for the lower half of the page
+    dragDisableArea.isVisible = true;
+    dragDisableArea.isEnabled = true;
 
     currentPage = "vaccumObjects";
 }
@@ -530,6 +580,12 @@ function hideAndDisableAllButtons() {
         }
         blackBlock.isVisible = false;
     });
+
+    // Disable and hide dragDisableArea when hiding and disabling all buttons
+    if (dragDisableArea) {
+        dragDisableArea.isVisible = false;
+        dragDisableArea.isEnabled = false;
+    }
 }
 
 // Function to save the current state of all buttons
