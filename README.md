@@ -22,6 +22,7 @@ Therefore, the following steps are performed.
 4. Also you can display or not the debug mode with the button at the bottom, to see every trajectory and understand how the simulation works.
 <img align="left" src="./assetsReadMe/debugTrue.png" width="25%" height="25%"/>
 <img align="right" src="./assetsReadMe/debugFalse.png" width="25%" height="25%"/>
+<br clear="left"/>
 5. Now the user can target the floor to make appeared a ring-shaped object that defines the surface
 6. We can see now 2 buttons at the bottom, one is a menu for objects and the other one is for start the simulation.
 7. In the top right corner, there is the option buttons where you can change speed of the robot, create excel file and also reset the simulation.
