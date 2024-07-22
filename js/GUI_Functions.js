@@ -554,6 +554,9 @@ function optionPage() {
 
     resetButtonContainer.isVisible = true;
     resetButtonContainer.isEnabled = true;
+    
+    squareObstacle.isVisible = true;
+    squareObstacle.isEnabled = true;
 
     isDragEnabled = false; // Disable drag on optionPage
 

@@ -68,6 +68,12 @@ var createGUI = async function (scene) {
     block = createButtonImaged("block", "./assets/img/obstacle.png", "25%", "12%", "20%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black", true);
     block.zIndex = 10; // Assurer un zIndex élevé
     
+    // Create obstacle Buttons
+    squareObstacle = createButtonImaged("squareObstacle", "./assets/img/square.png", "35%", "12%", "20%", "5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
+    squareObstacle.zIndex = 10;
+    squareObstacle.isVisible = false;
+    squareObstacle.isEnabled = false;
+
     // Initially hide and disable the buttons
     placeBtn.isVisible = false;
     placeBtn.isEnabled = false;
