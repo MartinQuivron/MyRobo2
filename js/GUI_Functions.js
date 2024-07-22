@@ -240,22 +240,48 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
+var excelButtonContainer;
+
 function createExcelButton() {
-    const excelButton = BABYLON.GUI.Button.CreateSimpleButton("excelButton", "Generate Excel");
-    excelButton.width = "150px";
-    excelButton.height = "40px";
-    excelButton.color = "white";
-    excelButton.cornerRadius = 20;
-    excelButton.background = "green";
-    excelButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    excelButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    excelButton.left = "0px";
-    excelButton.top = "10%";
-    excelButton.isVisible = false;
-    excelButton.isEnabled = false;
-    excelButton.zIndex = 10; 
-    
-    excelButton.onPointerUpObservable.add(() => {
+    excelButtonContainer = new BABYLON.GUI.Rectangle();
+    excelButtonContainer.width = "350px";
+    excelButtonContainer.height = "120px";
+    excelButtonContainer.cornerRadius = 10;
+    excelButtonContainer.color = "black";
+    excelButtonContainer.thickness = 4;
+    excelButtonContainer.background = "white";
+    excelButtonContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    excelButtonContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    excelButtonContainer.left = "15%";
+    excelButtonContainer.top = "50%";
+    excelButtonContainer.zIndex = 10;
+    excelButtonContainer.isPointerBlocker = true;
+    excelButtonContainer.isVisible = false;
+    excelButtonContainer.isEnabled = false;
+
+    // Create a grid to hold the image and text
+    var grid = new BABYLON.GUI.Grid();
+    grid.addColumnDefinition(0.3); // 30% for the image
+    grid.addColumnDefinition(0.7); // 70% for the text
+
+    // Create the image for the button
+    var logoImage = new BABYLON.GUI.Image("excelLogo", "./assets/img/Excel.png");
+    logoImage.width = "80px"; 
+    logoImage.height = "65px"; 
+    logoImage.paddingRight = "10px";
+    grid.addControl(logoImage, 0, 0); 
+
+    // Create the text block for the button
+    var textBlock = new BABYLON.GUI.TextBlock();
+    textBlock.text = "Generate Excel";
+    textBlock.color = "black";
+    textBlock.fontSize = 30;
+    textBlock.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    grid.addControl(textBlock, 0, 1); // Add text to the second column
+
+    excelButtonContainer.addControl(grid);
+
+    excelButtonContainer.onPointerUpObservable.add(() => {
         // Example of simulation data
         const simulationData = [
             { "Time": "0s", "Value": 10 },
@@ -266,10 +292,64 @@ function createExcelButton() {
         generateExcel(simulationData);
     });
 
-    advancedTexture.addControl(excelButton);
-    allButtons.push(excelButton);
+    // Add the button container to the advanced texture
+    advancedTexture.addControl(excelButtonContainer);
+    allButtons.push(excelButtonContainer);
 
-    return excelButton;
+    return excelButtonContainer;
+}
+
+var resetButtonContainer;
+
+function createResetButton() {
+    resetButtonContainer = new BABYLON.GUI.Rectangle();
+    resetButtonContainer.width = "350px";
+    resetButtonContainer.height = "120px";
+    resetButtonContainer.cornerRadius = 10;
+    resetButtonContainer.color = "black";
+    resetButtonContainer.thickness = 4;
+    resetButtonContainer.background = "white";
+    resetButtonContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    resetButtonContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    resetButtonContainer.left = "55%"; 
+    resetButtonContainer.top = "50%";
+    resetButtonContainer.zIndex = 10;
+    resetButtonContainer.isPointerBlocker = true;
+    resetButtonContainer.isVisible = false;
+    resetButtonContainer.isEnabled = false;
+
+    // Create a grid to hold the image and text
+    var grid = new BABYLON.GUI.Grid();
+    grid.addColumnDefinition(0.3);
+    grid.addColumnDefinition(0.7); 
+
+    // Create the image for the button
+    var logoImage = new BABYLON.GUI.Image("resetLogo", "./assets/img/reset.png");
+    logoImage.width = "100px"; 
+    logoImage.height = "100px"; 
+    logoImage.paddingRight = "10px";
+    grid.addControl(logoImage, 0, 0); 
+
+    // Create the text block for the button
+    var textBlock = new BABYLON.GUI.TextBlock();
+    textBlock.text = "Reset";
+    textBlock.color = "black";
+    textBlock.fontSize = 30;
+    textBlock.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    grid.addControl(textBlock, 0, 1); 
+
+    resetButtonContainer.addControl(grid);
+
+    resetButtonContainer.onPointerUpObservable.add(() => {
+        
+        console.log("Reset button clicked");
+    });
+
+    
+    advancedTexture.addControl(resetButtonContainer);
+    allButtons.push(resetButtonContainer);
+
+    return resetButtonContainer;
 }
 
 function createSlider() {
@@ -416,10 +496,11 @@ function optionPage() {
     sliderPanel.isVisible = true;
     sliderPanel.isEnabled = true;
 
-    // Create and make visible the Excel button
-    const excelButton = createExcelButton();
-    excelButton.isVisible = true;
-    excelButton.isEnabled = true;
+    excelButtonContainer.isVisible = true;
+    excelButtonContainer.isEnabled = true;
+
+    resetButtonContainer.isVisible = true;
+    resetButtonContainer.isEnabled = true;
 
     isDragEnabled = false; // Disable drag on optionPage
 
