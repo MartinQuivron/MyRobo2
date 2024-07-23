@@ -178,6 +178,7 @@ function getTrajectory(meshToMove, targetMesh, scene){
 
     // Check if there was no intersection
     if (pickInfo == null || pickInfo == undefined) {
+        steps = [meshToMove.position, targetMesh.position];
         console.log("No intersection");
     }
 
