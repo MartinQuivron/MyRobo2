@@ -1,6 +1,17 @@
 // Get the canvas element
 var canvas = document.getElementById("renderCanvas");
 
+// Variables to store simulation data
+let simulationData = {
+    robotName: '',
+    startPosition: '',
+    endPosition: '',
+    startTime: '',
+    endTime: '',
+    obstacles: [],
+    speed: 0
+};
+
 // Function to start the render loop
 const startRenderLoop = (engine, scene) => {
     engine.runRenderLoop(() => {
@@ -8,16 +19,13 @@ const startRenderLoop = (engine, scene) => {
             sceneToRender.render();
         }
     });
-}
+};
 
 // Function to create the default engine
 const createDefaultEngine = () => new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
 
 // Function to create the scene
 var createScene = async function () {
-
-/* Configuration of the scene BabylonJS ---------------------------------------------------------------- */
-
     // Create the scene space
     var scene = new BABYLON.Scene(engine);
 
@@ -31,15 +39,14 @@ var createScene = async function () {
     // Enable physics engine
     scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), new BABYLON.OimoJSPlugin());
     
-/* Import objects in the scene ---------------------------------------------------------------- */
-
     // Create a box mesh
-    obstacle = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
+    obstacle = BABYLON.MeshBuilder.CreateBox("box", { size: 0.2 }, scene);
     obstacle.isVisible = false;
     
     // Import meshes
     importMeshes("kobuki.rdtf.glb", scene, function (robotMesh) {
         robot = robotMesh;
+        simulationData.robotName = 'Vaccum Cleaner'; // Set the robot name
     });
     importMeshes("flag_in_the_wind.glb", scene, function (flagMesh) {
         endPointFlag = flagMesh;
@@ -49,13 +56,9 @@ var createScene = async function () {
     const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05, updatable: true }, scene);
     marker.isVisible = false;
 
-/* GUI creation ---------------------------------------------------------------- */
-
     // Create advanced texture for GUI
     createGUI(scene);
 
-/* Enable AR experience ---------------------------------------------------------------- */
-    
     // Create AR experience
     const ar = await scene.createDefaultXRExperienceAsync({
         uiOptions: {
@@ -66,8 +69,6 @@ var createScene = async function () {
 
     const fm = ar.baseExperience.featuresManager;
     const arTest = fm.enableFeature(BABYLON.WebXRHitTest, "latest");
-
-/* Add action to buttons in GUI ---------------------------------------------------------------- */
 
     // Handle hit test results
     let hitTest;
@@ -103,11 +104,16 @@ var createScene = async function () {
                 meshToMove = clonedMesh;
                 colliderMeshToMove = BABYLON.Mesh.CreateBox("collider_box", 0, scene, false);		
                 var robote = clonedMesh.getBoundingInfo();
-                colliderMeshToMove.scaling = new BABYLON.Vector3(clonedMesh.scaling.x/3, clonedMesh.scaling.y/8, clonedMesh.scaling.z/3);
+                colliderMeshToMove.scaling = new BABYLON.Vector3(clonedMesh.scaling.x / 3, clonedMesh.scaling.y / 8, clonedMesh.scaling.z / 3);
                 colliderMeshToMove.parent = clonedMesh;
                 colliderMeshToMove.material = new BABYLON.StandardMaterial("collidermat", scene);
                 colliderMeshToMove.material.alpha = 0;
                 colliderMeshToMove.position.y += 0.06;
+
+                // Collect start position
+                simulationData.startPosition = clonedMesh.position;
+                simulationData.speed = actualSpeed;
+                simulationData.startTime = new Date().toISOString();
             }
         }
     });
@@ -128,6 +134,10 @@ var createScene = async function () {
                 hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
                 attachOwnPointerDragBehavior(clonedMesh); // Attach drag behavior
                 targetMesh = clonedMesh;
+
+                // Collect end position
+                simulationData.endPosition = clonedMesh.position;
+                simulationData.endTime = new Date().toISOString();
             }
         }
     });
@@ -170,17 +180,20 @@ var createScene = async function () {
             meshBlocks.push(clonedMesh1);
             const collider1 = BABYLON.Mesh.CreateBox("collider_box_block", 0, scene, false);		
             var robote = clonedMesh1.getBoundingInfo();
-            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x/1.5, clonedMesh1.scaling.y/4, clonedMesh1.scaling.z/1.5);
+            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x / 1.5, clonedMesh1.scaling.y / 4, clonedMesh1.scaling.z / 1.5);
             collider1.parent = clonedMesh1;
             collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
             if (debug) {
                 collider1.material.alpha = 0.6;
-            }else{
+            } else {
                 collider1.material.alpha = 0;
             }
             collider1.position.y += 0.06;
             collider1.isPickable = false;
             colliderMeshBlocks.push(collider1);
+
+            // Collect obstacle position
+            simulationData.obstacles.push(clonedMesh1.position);
         }
     });
 
@@ -306,8 +319,7 @@ var createScene = async function () {
 
         mesh.addBehavior(pointerDragBehavior);
     }
-    
-    
+
     // Handle button click events
     simulationButton.onPointerUpObservable.add(async function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
@@ -317,7 +329,7 @@ var createScene = async function () {
                 var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
                 if (steps != null) {
                     runAnimation(meshToMove, steps, targetMesh, scene);
-                }else{
+                } else {
                     if (rotateAnimation){
                         rotateAnimation.stop();
                         rotateAnimation = null;
@@ -329,8 +341,7 @@ var createScene = async function () {
                     animationRunning = false;
                     deleteAllMeshes();
                 }
-            }
-            else {
+            } else {
                 if (rotateAnimation){
                     rotateAnimation.stop();
                     rotateAnimation = null;
@@ -344,15 +355,12 @@ var createScene = async function () {
             }
         }
     });
-    
+
     return scene;
 };
 
-/* Configuration ---------------------------------------------------------------- */
-
-/* --- Function to reset the scene --- */
+// Function to reset the scene
 async function resetScene() {
-
     // Reset the scene
     deleteAllMeshes(); // Delete all meshes
     animationRunning = false; // Stop the animation
@@ -391,7 +399,6 @@ async function resetScene() {
 
     // Hide interaction buttons
     startPage(); // Display the start page
-  
 }
 
 // Initialize the scene and engine
@@ -399,7 +406,7 @@ window.initFunction = async function() {
     var asyncEngineCreation = async function() {
         try {
             return createDefaultEngine();
-        } catch(e) {
+        } catch (e) {
             console.log("the available createEngine function failed. Creating the default engine instead");
             return createDefaultEngine();
         }

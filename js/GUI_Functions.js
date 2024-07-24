@@ -287,19 +287,38 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
-function generateEmptyExcel() {
+function generateExcel(data) {
     // Create a new workbook
     const workbook = XLSX.utils.book_new();
 
-    // Append an empty worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([]), "Sheet1");
+    // Prepare data for the worksheet
+    const worksheetData = [
+        { "Key": "Robot Name", "Value": data.robotName },
+        { "Key": "Start Position", "Value": `(${data.startPosition.x}, ${data.startPosition.y}, ${data.startPosition.z})` },
+        { "Key": "End Position", "Value": `(${data.endPosition.x}, ${data.endPosition.y}, ${data.endPosition.z})` },
+        { "Key": "Start Time", "Value": data.startTime },
+        { "Key": "End Time", "Value": data.endTime },
+        { "Key": "Speed", "Value": data.speed },
+        { "Key": "Number of Obstacles", "Value": data.obstacles.length },
+        ...data.obstacles.map((obstacle, index) => ({
+            "Key": `Obstacle ${index + 1} Position`,
+            "Value": `(${obstacle.x}, ${obstacle.y}, ${obstacle.z})`
+        }))
+    ];
+
+    // Convert the data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Simulation Data");
 
     // Generate and download the Excel file
-    XLSX.writeFile(workbook, "empty_file.xlsx");
+    XLSX.writeFile(workbook, "simulation_data.xlsx");
 }
 
 var excelButtonContainer;
 
+// Modify createExcelButton function to use generateExcel with sample data
 function createExcelButton() {
     excelButtonContainer = new BABYLON.GUI.Rectangle();
     excelButtonContainer.width = "350px";
@@ -340,7 +359,7 @@ function createExcelButton() {
     excelButtonContainer.addControl(grid);
 
     excelButtonContainer.onPointerUpObservable.add(() => {
-        generateEmptyExcel();
+        generateExcel(simulationData);
     });
 
     // Add the button container to the advanced texture
@@ -349,7 +368,6 @@ function createExcelButton() {
 
     return excelButtonContainer;
 }
-
 
 
 var resetButtonContainer;
