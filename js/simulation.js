@@ -308,13 +308,26 @@ var createScene = async function () {
     // Handle button click events
     simulationButton.onPointerUpObservable.add(async function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-
-            meshess = scene.meshes;
-            console.log("test avant", meshess);
-            var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
-            if (steps != null) {
-                runAnimation(meshToMove, steps, targetMesh, scene);
-            }else{
+            if (animationRunning == false) {
+                meshess = scene.meshes;
+                console.log("test avant", meshess);
+                var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                if (steps != null) {
+                    runAnimation(meshToMove, steps, targetMesh, scene);
+                }else{
+                    if (rotateAnimation){
+                        rotateAnimation.stop();
+                        rotateAnimation = null;
+                    }
+                    if (moveAnimation){
+                        moveAnimation.stop();
+                        moveAnimation = null;
+                    }
+                    animationRunning = false;
+                    deleteAllMeshes();
+                }
+            }
+            else {
                 if (rotateAnimation){
                     rotateAnimation.stop();
                     rotateAnimation = null;
@@ -326,7 +339,6 @@ var createScene = async function () {
                 animationRunning = false;
                 deleteAllMeshes();
             }
-
         }
     });
     

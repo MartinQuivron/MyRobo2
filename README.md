@@ -64,6 +64,7 @@ and put the two files you created into the directory `MyRobo/cert`.
     <img src="./assetsReadMe/objectPage.png" width="25%" height="25%"/>
 </p>
 9. The user can move objects objects by dragging them with finger
+</br>
 10. When we drag an object, we can move it to the top right corner to delete it.
 <p align="center">
     <img src="./assetsReadMe/deleteObject.gif" width="25%" height="25%"/>
