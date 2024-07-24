@@ -512,6 +512,7 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
     async function runStraightAnimation(meshToMove, targetMesh, step) {
         animationRunning = true;
         console.log("Animation start");
+
         function startRotateAnimationStraight(){
             return new Promise((resolve, reject) => {
                 const directionToTarget = targetMesh.position.subtract(meshToMove.position);
@@ -529,9 +530,13 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
                 moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", (speed*actualSpeed)/2, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
             });
         }
-
-        await startRotateAnimationStraight()
-        await startMoveAnimationStraight()
+        
+        if (animationRunning == true) {
+            await startRotateAnimationStraight()
+            if (animationRunning == true) {
+                await startMoveAnimationStraight()
+            }
+        }
 
         console.log("All animations finished!");
     
@@ -580,8 +585,10 @@ function verificationAndTrajectory(meshToMove, targetMesh, scene, meshess){
                 collider_box_blocks.push(mesh);
             }
         });
+        
+        var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
 
-        if (collider_box_blocks.length == 0) {
+        if (pickInfo == null) {
             var steps = getTrajectory(meshToMove, targetMesh, scene);
             console.log("Steps:", steps);
         }
@@ -593,6 +600,7 @@ function verificationAndTrajectory(meshToMove, targetMesh, scene, meshess){
             var steps = getTrajectory(meshToMove, targetMesh, scene);
             console.log("Steps:", steps);
         }
+        
     }
     return steps;
 }
