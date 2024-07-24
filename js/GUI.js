@@ -87,7 +87,7 @@ var createGUI = async function (scene) {
     cilinderObstacle.isEnabled = false;
     addDragDisableBehavior(cilinderObstacle);  // Add drag disable behavior
 
-    backToVaccumObjects = createButtonImaged("backToVaccumObjects", "assets/img/obstacle.png", "25%", "12%", "35%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black", true);
+    backToVaccumObjects = createButtonImaged("backToVaccumObjects", "assets/img/backSimulation.png", "25%", "12%", "35%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black", true);
     backToVaccumObjects.zIndex = 10; // Assurer un zIndex élevé
     backToVaccumObjects.isVisible = false;  // Initially hide and disable the button
     backToVaccumObjects.isEnabled = false;

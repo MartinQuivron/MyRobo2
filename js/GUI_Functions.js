@@ -287,6 +287,16 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
+function generateEmptyExcel() {
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+
+    // Append an empty worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([]), "Sheet1");
+
+    // Generate and download the Excel file
+    XLSX.writeFile(workbook, "empty_file.xlsx");
+}
 
 var excelButtonContainer;
 
@@ -330,14 +340,7 @@ function createExcelButton() {
     excelButtonContainer.addControl(grid);
 
     excelButtonContainer.onPointerUpObservable.add(() => {
-        // Example of simulation data
-        const simulationData = [
-            { "Time": "0s", "Value": 10 },
-            { "Time": "1s", "Value": 20 },
-            { "Time": "2s", "Value": 30 }
-        ];
-
-        generateExcel(simulationData);
+        generateEmptyExcel();
     });
 
     // Add the button container to the advanced texture
@@ -346,6 +349,8 @@ function createExcelButton() {
 
     return excelButtonContainer;
 }
+
+
 
 var resetButtonContainer;
 
@@ -721,17 +726,3 @@ function adjustDragDisableArea() {
     }
 }
 
-
-function generateExcel(data) {
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
-
-    // Convert the data to a worksheet
-    const worksheet = XLSX.utils.json_to_sheet(data);
-
-    // Append the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Simulation Data");
-
-    // Generate and download the Excel file
-    XLSX.writeFile(workbook, "simulation_data.xlsx");
-}
