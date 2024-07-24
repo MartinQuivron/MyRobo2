@@ -245,7 +245,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
 }
 
 // Function to create image buttons and add them to the global array
-function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color, disableDrag = false) {
+function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color, disableDrag = false, zIndex = 10, alpha = 1) {
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
     buttonContainer.height = height;
@@ -254,10 +254,11 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0;
-    buttonContainer.zIndex = 10;
+    buttonContainer.zIndex = zIndex;
     buttonContainer.background = background;
     buttonContainer.thickness = 2;
     buttonContainer.color = color;
+    buttonContainer.alpha = alpha;
 
     var image = new BABYLON.GUI.Image(name + "_image", imageUrl);
     image.width = "100%";
