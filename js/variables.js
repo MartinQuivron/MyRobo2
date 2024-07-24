@@ -32,6 +32,7 @@ var rotateAnimation = null;
 var moveAnimation = null;
 var animationRunning = false;
 var animationBreak = false;
+var moreBlock = false;
 
 /* --- GUI --- */
 // Global array to store all buttons
