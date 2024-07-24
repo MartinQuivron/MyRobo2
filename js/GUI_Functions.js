@@ -89,7 +89,7 @@ function createDebugButton() {
 }
 
 // Function to create GUI rectangles
-function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px") {
+function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px", textColor = "white") {
     const rectangle = new BABYLON.GUI.Rectangle(name);
     rectangle.width = width;
     rectangle.height = height;
@@ -106,7 +106,7 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     // Create a text block
     const textBlock = new BABYLON.GUI.TextBlock();
     textBlock.text = text;
-    textBlock.color = "White";
+    textBlock.color = textColor;
     textBlock.fontSize = fontSize;
     textBlock.fontFamily = "Monaco";
     textBlock.fontWeight = "bold";
@@ -241,7 +241,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0;
-    buttonContainer.zIndex = 10;
+    buttonContainer.zIndex = 12;
     buttonContainer.background = background;
     buttonContainer.thickness = 2;
     buttonContainer.color = color;
@@ -543,6 +543,7 @@ function optionPage() {
     saveButtonState();
     hideAndDisableAllButtons();
     blackBgOptionsPage.isVisible = true;
+    whiteBgOptionsPage.isVisible = true; // correction ici
     optionsButton.isVisible = true;
     optionsButton.isEnabled = true;
 
@@ -555,8 +556,12 @@ function optionPage() {
     resetButtonContainer.isVisible = true;
     resetButtonContainer.isEnabled = true;
     
-    squareObstacle.isVisible = true;
-    squareObstacle.isEnabled = true;
+    cubicObstacle.isVisible = true;
+    cubicObstacle.isEnabled = true;
+    sphereObstacle.isVisible = true;
+    sphereObstacle.isEnabled = true;
+    cilinderObstacle.isVisible = true;
+    cilinderObstacle.isEnabled = true;
 
     isDragEnabled = false; // Disable drag on optionPage
 

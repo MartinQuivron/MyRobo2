@@ -8,7 +8,9 @@ var createGUI = async function (scene) {
     blackBgMainPage = createGuiRectangle("blackBgMainPage", "black", "95%", "20%", .6, 20, "", "0px", "35%"); // Adjust the top value as needed
     blackBgVaccumObjects = createGuiRectangle("blackBgVaccumObjects", "black", "95%", "35%", .6, 20, "", "0px", "27%"); // Adjust the top value as needed
     blackBgOptionsPage = createGuiRectangle("blackBgOptionsPage", "black", "95%", "97%", .8, 20, "Options", "80px");
+    whiteBgOptionsPage = createGuiRectangle("whiteBgOptionsPage", "white", "90%", "35%", 1, 20, "Obstacle Type", "60px", "30%", "black");
     blackBgOptionsPage.isVisible = false;
+    whiteBgOptionsPage.isVisible = false;
 
     createHomeButton();
     createBackButton();
@@ -34,6 +36,8 @@ var createGUI = async function (scene) {
     allButtons.push(blackBgVaccumObjects);
     advancedTexture.addControl(blackBgOptionsPage);
     allButtons.push(blackBgOptionsPage);
+    advancedTexture.addControl(whiteBgOptionsPage);
+    allButtons.push(whiteBgOptionsPage);
     advancedTexture.addControl(debugButton);
     allButtons.push(debugButton);
     advancedTexture.addControl(resetButtonContainer);
@@ -69,10 +73,18 @@ var createGUI = async function (scene) {
     block.zIndex = 10; // Assurer un zIndex élevé
     
     // Create obstacle Buttons
-    squareObstacle = createButtonImaged("squareObstacle", "./assets/img/square.png", "35%", "12%", "20%", "5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black");
-    squareObstacle.zIndex = 10;
-    squareObstacle.isVisible = false;
-    squareObstacle.isEnabled = false;
+    cubicObstacle = createButtonImaged("cubicObstacle", "./assets/img/cube.png", "22%", "10%", "30%", "7.5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    cubicObstacle.zIndex = 10;
+    cubicObstacle.isVisible = false;
+    cubicObstacle.isEnabled = false;
+    sphereObstacle = createButtonImaged("sphereObstacle", "./assets/img/sphere.png", "22%", "10%", "30%", "38%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    sphereObstacle.zIndex = 10;
+    sphereObstacle.isVisible = false;
+    sphereObstacle.isEnabled = false;
+    cilinderObstacle = createButtonImaged("cilinderObstacle", "./assets/img/cilinder.png", "22%", "10%", "30%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    cilinderObstacle.zIndex = 10;
+    cilinderObstacle.isVisible = false;
+    cilinderObstacle.isEnabled = false;
 
     // Initially hide and disable the buttons
     placeBtn.isVisible = false;
@@ -88,6 +100,9 @@ var createGUI = async function (scene) {
     advancedTexture.addControl(block);
     advancedTexture.addControl(simulationButton);  // Add the simulation button to the advanced texture
     advancedTexture.addControl(objectBtn);  // Add the object button to the advanced texture
+    advancedTexture.addControl(cubicObstacle);  // Add the square obstacle to the advanced texture
+    advancedTexture.addControl(sphereObstacle);  // Add the circle obstacle to the advanced texture
+    advancedTexture.addControl(cilinderObstacle);  // Add the cylinder obstacle to the advanced texture
 
     // Attach event handlers
     objectBtn.onPointerUpObservable.add(function() {
