@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <title>MyRobo2</title>
+
+    <!-- Include necessary libraries for Excel generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- custom scripts -->
     <script src="./js/GUI_Functions.js"></script>
     <script src="./js/simulation_Functions.js"></script>
     <script src="./js/variables.js"></script>
@@ -14,7 +19,6 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     
-
     <style>
         body, html {
             margin: 0;
@@ -42,6 +46,5 @@
 <body>
     <div id="canvasZone"><canvas id="renderCanvas"></canvas></div>
     <script src="./js/simulation.js"></script>
-
 </body>
 </html>
