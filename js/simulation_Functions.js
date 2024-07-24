@@ -175,15 +175,16 @@ function getTrajectory(meshToMove, targetMesh, scene){
     var steps = [meshToMove.position, targetMesh.position];
     var pickInfo = frontDetector(meshToMove.position, targetMesh.position, scene);
     console.log("PickInfo:", pickInfo);
+    var crashCounter = 0;
 
     // Check if there was no intersection
     if (pickInfo == null || pickInfo == undefined) {
         steps = [meshToMove.position, targetMesh.position];
-        console.log("No intersection");
+        console.log("No intersection", steps);
     }
 
     // Check if there was an intersection
-    if (pickInfo != undefined){
+    if (pickInfo != undefined && pickInfo != null) {
 
         if (pickInfo.hit) {
 
@@ -194,7 +195,6 @@ function getTrajectory(meshToMove, targetMesh, scene){
             steps.splice(steps.length - 1, 0, intersectionPoint);
 
             var allBlock = 0;
-            var crashCounter = 0;
             while (pickInfo.pickedMesh.name == 'collider_box_block') {
                 crashCounter += 1;
                 console.log("CrashCounter:", crashCounter);
@@ -486,33 +486,10 @@ function startMoveAnimation(meshToMove, targetMeshPosition, step) {
     });
 }
 
-function runStraightAnimation(meshToMove, targetMesh, step) {
-    animationRunning = true;
-    new Promise((resolve, reject) => {
-        const directionToTarget = targetMesh.position.subtract(meshToMove.position);
-        const angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
-        rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
-    });
-    new Promise((resolve, reject) => {
-
-        // Calculate the maximum distance
-        const distanceMax = BABYLON.Vector3.Distance(step[0], step[step.length - 1]);
-
-        const distance = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
-        const speed = speedMin + ((distanceMax - distance) * (speedMax - speedMin) / distanceMax);
-        moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", (speed*actualSpeed)/2, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
-    });
-    deleteAllMeshes();
-    if (meshToMove.position == targetMesh.position) {
-        animationRunning = false;
-    }
-}
-
 function runAnimation(meshToMove, steps, targetMesh, scene) {
 
     async function animateMesh(mesh, step, scene) {
         animationRunning = true;
-        // Assuming meshToMove and targetMesh are defined elsewhere
         console.log("Animation start");
 
         for (let i = 1; i < step.length; i++) {
@@ -531,10 +508,51 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
         deleteAllMeshes();
 
     }
+
+    async function runStraightAnimation(meshToMove, targetMesh, step) {
+        animationRunning = true;
+        console.log("Animation start");
+        function startRotateAnimationStraight(){
+            return new Promise((resolve, reject) => {
+                const directionToTarget = targetMesh.position.subtract(meshToMove.position);
+                const angleToRotate = Math.atan2(directionToTarget.x, directionToTarget.z);
+                rotateAnimation  = BABYLON.Animation.CreateAndStartAnimation("rotateAnimation", meshToMove, "rotationQuaternion", 60, 60, meshToMove.rotationQuaternion, BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angleToRotate), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+            });
+        }
+        function startMoveAnimationStraight(){
+            return new Promise((resolve, reject) => {
+                // Calculate the maximum distance
+                const distanceMax = BABYLON.Vector3.Distance(step[0], step[step.length - 1]);
+    
+                const distance = BABYLON.Vector3.Distance(meshToMove.position, targetMesh.position);
+                const speed = speedMin + ((distanceMax - distance) * (speedMax - speedMin) / distanceMax);
+                moveAnimation = BABYLON.Animation.CreateAndStartAnimation("moveAnimation", meshToMove, "position", (speed*actualSpeed)/2, 60, meshToMove.position, targetMesh.position, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, null, () => { resolve();});
+            });
+        }
+
+        await startRotateAnimationStraight()
+        await startMoveAnimationStraight()
+
+        console.log("All animations finished!");
+    
+        deleteAllMeshes();
+    }
+
+
     
     if (steps.length == 2) {
-        runStraightAnimation(meshToMove, targetMesh, steps);
-        return;
+        runStraightAnimation(meshToMove, targetMesh, steps)
+        .then(() => {
+
+            console.log("Entire animation sequence completed.");
+            if (meshToMove.position == targetMesh.position) {
+                animationRunning = false;
+            }
+
+        })
+        .catch((error) => {
+            console.error("An error occurred during animation:", error);
+        });
     }
     else{
         animateMesh(meshToMove, steps, scene)
@@ -555,8 +573,6 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
 function verificationAndTrajectory(meshToMove, targetMesh, scene, meshess){
 
     if (meshToMove && targetMesh) {
-        
-        console.log("test après", meshess);
 
         var collider_box_blocks = [];
         scene.meshes.forEach(function(mesh) {
@@ -565,13 +581,17 @@ function verificationAndTrajectory(meshToMove, targetMesh, scene, meshess){
             }
         });
 
+        if (collider_box_blocks.length == 0) {
+            var steps = getTrajectory(meshToMove, targetMesh, scene);
+            console.log("Steps:", steps);
+        }
+
         const isTouchingTargetMesh = isTouching(targetMesh, collider_box_blocks);
         const isTouchingMeshToMove = isTouching(meshToMove, collider_box_blocks);
 
         if (isTouchingTargetMesh == false && isTouchingMeshToMove == false) {
-            
             var steps = getTrajectory(meshToMove, targetMesh, scene);
-
+            console.log("Steps:", steps);
         }
     }
     return steps;
