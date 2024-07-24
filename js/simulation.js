@@ -132,7 +132,7 @@ var createScene = async function () {
         }
     });
     
-    block.onPointerUpObservable.add(function() {
+    cubicObstacle.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
             if (animationRunning == true) {
                 if (rotateAnimation){
@@ -203,11 +203,11 @@ var createScene = async function () {
         var pointerDragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: new BABYLON.Vector3(0, 1, 0) });
         pointerDragBehavior.moveAttached = false;
         pointerDragBehavior.useObjectOrienationForDragging = false;
-    
+
         pointerDragBehavior.onDragStartObservable.add((event) => {
             if (!isDragEnabled) return; // Check if drag is enabled
             console.log("startDrag");
-            if (lines[0] == null){
+            if (lines[0] == null) {
                 animationRunning = false;
             }
             if (animationRunning == true) {
@@ -219,17 +219,17 @@ var createScene = async function () {
             trashButton.isVisible = true;
             trashButton.isEnabled = true;
         });
-    
+
         pointerDragBehavior.onDragObservable.add((event) => {
             if (!isDragEnabled) return; // Check if drag is enabled
             if (draggedMesh === mesh) {  // Ensure only the selected mesh is moved
                 console.log("drag");
                 if (animationRunning == true) {
-                    if (rotateAnimation){
+                    if (rotateAnimation) {
                         rotateAnimation.stop();
                         rotateAnimation = null;
                     }
-                    if (moveAnimation){
+                    if (moveAnimation) {
                         moveAnimation.stop();
                         moveAnimation = null;
                     }
@@ -237,16 +237,16 @@ var createScene = async function () {
                     meshess = scene.meshes;
                     verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
                 }
-    
+
                 hideAndDisableAllButtons();
                 trashButton.isVisible = true;
                 trashButton.isEnabled = true;
-    
+
                 pointerDragBehavior.attachedNode.position.x += event.delta.x;
                 pointerDragBehavior.attachedNode.position.z += event.delta.z;
             }
         });
-    
+
         pointerDragBehavior.onDragEndObservable.add((event) => {
             if (!isDragEnabled) return; // Check if drag is enabled
             if (draggedMesh === mesh) {  // Ensure only the selected mesh triggers end drag
@@ -269,12 +269,12 @@ var createScene = async function () {
                     var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
                     if (steps != null) {
                         runAnimation(meshToMove, steps, targetMesh, scene);
-                    }else{
-                        if (rotateAnimation){
+                    } else {
+                        if (rotateAnimation) {
                             rotateAnimation.stop();
                             rotateAnimation = null;
                         }
-                        if (moveAnimation){
+                        if (moveAnimation) {
                             moveAnimation.stop();
                             moveAnimation = null;
                         }
@@ -282,7 +282,7 @@ var createScene = async function () {
                         deleteAllMeshes();
                     }
                 }
-    
+
                 hideAndDisableAllButtons();
                 if (currentPage === "vaccumObjects") {
                     vaccumObjects();
@@ -290,17 +290,20 @@ var createScene = async function () {
                 if (currentPage === "mainPage") {
                     mainPage();
                 }
-    
+                if (currentPage === "obstacleChoice") {
+                    obstacleChoice();  // Réafficher la page obstacleChoice
+                }
+
                 console.log("isPointerOverTrashButton:", isPointerOverTrashButton);
-    
+
                 if (!isPointerOverTrashButton) {
                     console.log("Mesh not disposed, isPointerOverTrashButton:", isPointerOverTrashButton);
                 }
-    
+
                 draggedMesh = null; // Reset the variable
             }
         });
-    
+
         mesh.addBehavior(pointerDragBehavior);
     }
     

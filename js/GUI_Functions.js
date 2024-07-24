@@ -18,6 +18,7 @@ function createDragDisableArea() {
     dragDisableArea.top = "75%";
     dragDisableArea.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     dragDisableArea.background = "transparent";
+    dragDisableArea.thickness = 0;
     dragDisableArea.isPointerBlocker = true; 
     dragDisableArea.isVisible = false; 
     dragDisableArea.isEnabled = false;
@@ -25,6 +26,19 @@ function createDragDisableArea() {
     return dragDisableArea;
 }
 
+function addDragDisableBehavior(button) {
+    button.onPointerEnterObservable.add(function () {
+        isDragEnabled = false;
+    });
+
+    button.onPointerOutObservable.add(function () {
+        isDragEnabled = true;
+    });
+
+    button.onPointerUpObservable.add(function () {
+        isDragEnabled = true;
+    });
+}
 // Function to create a button to turn on or off a functionality
 // we will use it here for the debug mode
 function createDebugButton() {
@@ -231,7 +245,6 @@ function createButton(name, text, width, height, color, cornerRadius, background
 }
 
 // Function to create image buttons and add them to the global array
-// Function to create image buttons and add them to the global array
 function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color, disableDrag = false) {
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
@@ -241,7 +254,7 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     buttonContainer.horizontalAlignment = horizontalAlignment;
     buttonContainer.cornerRadius = cornerRadius;
     buttonContainer.thickness = 0;
-    buttonContainer.zIndex = 12;
+    buttonContainer.zIndex = 10;
     buttonContainer.background = background;
     buttonContainer.thickness = 2;
     buttonContainer.color = color;
@@ -539,11 +552,45 @@ function vaccumObjects() {
     currentPage = "vaccumObjects";
 }
 
+function obstacleChoice() {
+    saveButtonState();  
+    hideAndDisableAllButtons();
+    cubicObstacle.isVisible = true;
+    cubicObstacle.isEnabled = true;
+    sphereObstacle.isVisible = true;
+    sphereObstacle.isEnabled = true;
+    cilinderObstacle.isVisible = true;
+    cilinderObstacle.isEnabled = true;
+    simulationButton.isVisible = true;
+    simulationButton.isEnabled = true;
+    backToVaccumObjects.isVisible = true;
+    backToVaccumObjects.isEnabled = true;
+    backButton.isVisible = true;
+    backButton.isEnabled = true;
+    optionsButton.isVisible = true;
+    optionsButton.isEnabled = true;
+    blackBgVaccumObjects.isVisible = true;
+
+    // Sync dragDisableArea with blackBgVaccumObjects
+    dragDisableArea.width = blackBgVaccumObjects.width;
+    dragDisableArea.height = blackBgVaccumObjects.height;
+    dragDisableArea.top = blackBgVaccumObjects.top;
+    dragDisableArea.left = blackBgVaccumObjects.left;
+    dragDisableArea.horizontalAlignment = blackBgVaccumObjects.horizontalAlignment;
+    dragDisableArea.verticalAlignment = blackBgVaccumObjects.verticalAlignment;
+
+    // Show the drag disable area for the lower half of the page
+    dragDisableArea.isVisible = true;
+    dragDisableArea.isEnabled = true;
+
+    currentPage = "obstacleChoice";
+}
+
+
 function optionPage() {
     saveButtonState();
     hideAndDisableAllButtons();
     blackBgOptionsPage.isVisible = true;
-    whiteBgOptionsPage.isVisible = true; // correction ici
     optionsButton.isVisible = true;
     optionsButton.isEnabled = true;
 
@@ -556,12 +603,7 @@ function optionPage() {
     resetButtonContainer.isVisible = true;
     resetButtonContainer.isEnabled = true;
     
-    cubicObstacle.isVisible = true;
-    cubicObstacle.isEnabled = true;
-    sphereObstacle.isVisible = true;
-    sphereObstacle.isEnabled = true;
-    cilinderObstacle.isVisible = true;
-    cilinderObstacle.isEnabled = true;
+    
 
     isDragEnabled = false; // Disable drag on optionPage
 
@@ -611,9 +653,14 @@ function saveButtonState() {
 
 // Function to restore the previous state of all buttons
 function restorePreviousButtonState() {
+    if (currentPage === "obstacleChoice") {
+        vaccumObjects();
+        return;
+    }
+
     if (currentPage === "optionPage" && buttonStateHistory.length > 0) {
         const previousState = buttonStateHistory.pop();
-        currentPage = previousState.page;  // Set the current page to the previous one
+        currentPage = previousState.page;
         previousState.state.forEach(state => {
             state.button.isVisible = state.isVisible;
             state.button.isEnabled = state.isEnabled;
@@ -621,6 +668,7 @@ function restorePreviousButtonState() {
         if (previousState.page === "mainPage" || previousState.page === "vaccumObjects") {
             isDragEnabled = true; // Re-enable drag if returning to mainPage or vaccumObjects
         }
+        adjustDragDisableArea();
     } else if (currentPage === "mainPage") {
         startPage();
     } else if (currentPage === "vaccumObjects" && buttonStateHistory.length > 0) {
@@ -637,6 +685,7 @@ function restorePreviousButtonState() {
                 state.button.isEnabled = state.isEnabled;
             });
             isDragEnabled = true; // Re-enable drag when restoring to mainPage
+            adjustDragDisableArea();
         }
     } else if (buttonStateHistory.length > 0) {
         const previousState = buttonStateHistory.pop();
@@ -647,8 +696,30 @@ function restorePreviousButtonState() {
         if (previousState.page === "mainPage" || previousState.page === "vaccumObjects") {
             isDragEnabled = true; // Re-enable drag if restoring to mainPage or vaccumObjects
         }
+        adjustDragDisableArea();
     }
 }
+
+
+// Adjust dragDisableArea based on the current page
+function adjustDragDisableArea() {
+    if (currentPage === "mainPage") {
+        dragDisableArea.width = blackBgMainPage.width;
+        dragDisableArea.height = blackBgMainPage.height;
+        dragDisableArea.top = blackBgMainPage.top;
+        dragDisableArea.left = blackBgMainPage.left;
+        dragDisableArea.horizontalAlignment = blackBgMainPage.horizontalAlignment;
+        dragDisableArea.verticalAlignment = blackBgMainPage.verticalAlignment;
+    } else if (currentPage === "vaccumObjects") {
+        dragDisableArea.width = blackBgVaccumObjects.width;
+        dragDisableArea.height = blackBgVaccumObjects.height;
+        dragDisableArea.top = blackBgVaccumObjects.top;
+        dragDisableArea.left = blackBgVaccumObjects.left;
+        dragDisableArea.horizontalAlignment = blackBgVaccumObjects.horizontalAlignment;
+        dragDisableArea.verticalAlignment = blackBgVaccumObjects.verticalAlignment;
+    }
+}
+
 
 function generateExcel(data) {
     // Create a new workbook

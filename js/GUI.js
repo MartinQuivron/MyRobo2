@@ -1,5 +1,4 @@
 var createGUI = async function (scene) {
-
     // Create an advanced texture for GUI
     advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
@@ -8,9 +7,7 @@ var createGUI = async function (scene) {
     blackBgMainPage = createGuiRectangle("blackBgMainPage", "black", "95%", "20%", .6, 20, "", "0px", "35%"); // Adjust the top value as needed
     blackBgVaccumObjects = createGuiRectangle("blackBgVaccumObjects", "black", "95%", "35%", .6, 20, "", "0px", "27%"); // Adjust the top value as needed
     blackBgOptionsPage = createGuiRectangle("blackBgOptionsPage", "black", "95%", "97%", .8, 20, "Options", "80px");
-    whiteBgOptionsPage = createGuiRectangle("whiteBgOptionsPage", "white", "90%", "35%", 1, 20, "Obstacle Type", "60px", "30%", "black");
     blackBgOptionsPage.isVisible = false;
-    whiteBgOptionsPage.isVisible = false;
 
     createHomeButton();
     createBackButton();
@@ -23,6 +20,7 @@ var createGUI = async function (scene) {
 
     dragDisableArea = createDragDisableArea();
     advancedTexture.addControl(dragDisableArea);
+    allButtons.push(dragDisableArea);
 
     advancedTexture.addControl(homeButton); // Call the function to create and add the home button
     advancedTexture.addControl(backButton); // Call the function to create and add the back button
@@ -36,8 +34,6 @@ var createGUI = async function (scene) {
     allButtons.push(blackBgVaccumObjects);
     advancedTexture.addControl(blackBgOptionsPage);
     allButtons.push(blackBgOptionsPage);
-    advancedTexture.addControl(whiteBgOptionsPage);
-    allButtons.push(whiteBgOptionsPage);
     advancedTexture.addControl(debugButton);
     allButtons.push(debugButton);
     advancedTexture.addControl(resetButtonContainer);
@@ -73,18 +69,30 @@ var createGUI = async function (scene) {
     block.zIndex = 10; // Assurer un zIndex élevé
     
     // Create obstacle Buttons
-    cubicObstacle = createButtonImaged("cubicObstacle", "./assets/img/cube.png", "22%", "10%", "30%", "7.5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    cubicObstacle = createButtonImaged("cubicObstacle", "./assets/img/cube.png", "25%", "12%", "20%", "5%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "", "", true);
     cubicObstacle.zIndex = 10;
     cubicObstacle.isVisible = false;
     cubicObstacle.isEnabled = false;
-    sphereObstacle = createButtonImaged("sphereObstacle", "./assets/img/sphere.png", "22%", "10%", "30%", "38%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    addDragDisableBehavior(cubicObstacle);  // Add drag disable behavior
+
+    sphereObstacle = createButtonImaged("sphereObstacle", "./assets/img/sphere2.png", "25%", "12%", "20%", "38%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "", "", true);
     sphereObstacle.zIndex = 10;
     sphereObstacle.isVisible = false;
     sphereObstacle.isEnabled = false;
-    cilinderObstacle = createButtonImaged("cilinderObstacle", "./assets/img/cilinder.png", "22%", "10%", "30%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20);
+    addDragDisableBehavior(sphereObstacle);  // Add drag disable behavior
+
+    cilinderObstacle = createButtonImaged("cilinderObstacle", "./assets/img/cilinder.png", "25%", "12%", "20%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "", "", true);
     cilinderObstacle.zIndex = 10;
     cilinderObstacle.isVisible = false;
     cilinderObstacle.isEnabled = false;
+    addDragDisableBehavior(cilinderObstacle);  // Add drag disable behavior
+
+    backToVaccumObjects = createButtonImaged("backToVaccumObjects", "assets/img/obstacle.png", "25%", "12%", "35%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black", true);
+    backToVaccumObjects.zIndex = 10; // Assurer un zIndex élevé
+    backToVaccumObjects.isVisible = false;  // Initially hide and disable the button
+    backToVaccumObjects.isEnabled = false;
+    addDragDisableBehavior(backToVaccumObjects);  
+
 
     // Initially hide and disable the buttons
     placeBtn.isVisible = false;
@@ -103,6 +111,7 @@ var createGUI = async function (scene) {
     advancedTexture.addControl(cubicObstacle);  // Add the square obstacle to the advanced texture
     advancedTexture.addControl(sphereObstacle);  // Add the circle obstacle to the advanced texture
     advancedTexture.addControl(cilinderObstacle);  // Add the cylinder obstacle to the advanced texture
+    advancedTexture.addControl(backToVaccumObjects);  // Add the back button to the advanced texture
 
     // Attach event handlers
     objectBtn.onPointerUpObservable.add(function() {
@@ -116,7 +125,10 @@ var createGUI = async function (scene) {
     });
 
     vacumBtn.onPointerUpObservable.add(mainPage);
-    roboticArmBtn.onPointerUpObservable.add(mainPage);
-    droneBtn.onPointerUpObservable.add(mainPage);
-    mowerBtn.onPointerUpObservable.add(mainPage);
+    roboticArmBtn.onPointerUpObservable.add(); // for future use
+    droneBtn.onPointerUpObservable.add(); // for future use
+    mowerBtn.onPointerUpObservable.add(); // for future use
+
+    block.onPointerUpObservable.add(obstacleChoice); 
+    backToVaccumObjects.onPointerUpObservable.add(vaccumObjects);
 };
