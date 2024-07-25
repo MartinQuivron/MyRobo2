@@ -1,3 +1,24 @@
+/**
+ * simulation.js
+ *
+ * This file initializes and manages the main simulation environment for the MyRobo project. 
+ * It sets up the Babylon.js engine, creates the scene, and handles user interactions through the GUI.
+ *
+ * Functions:
+ * 1. startRenderLoop: Starts the render loop for the Babylon.js engine.
+ * 2. createDefaultEngine: Creates the default Babylon.js engine with specified options.
+ * 3. createScene: Sets up the 3D scene, including the camera, lights, and imported meshes.
+ * 4. resetScene: Resets the scene by disposing of all meshes and resetting variables.
+ * 5. initFunction: Initializes the Babylon.js engine and scene.
+ * 
+ * Variables:
+ * - canvas: The HTML canvas element for rendering the scene.
+ * - engine: The Babylon.js engine.
+ * - sceneToRender: The scene to be rendered.
+ * - robot, obstacle, endPointFlag, etc.: Meshes used in the scene.
+ * - meshToMove, colliderMeshToMove, targetMesh, etc.: Variables for managing the main robot and its interactions.
+ */
+
 // Get the canvas element
 var canvas = document.getElementById("renderCanvas");
 
