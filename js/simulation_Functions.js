@@ -1,3 +1,25 @@
+/**
+ * @file simulation_functions.js
+ * @description This file contains various utility functions used in the MyRobo2 project. These functions are crucial for handling 3D mesh operations,
+ *              detecting obstacles, calculating trajectories, and managing animations within the Babylon.js environment.
+ * 
+ * Functions and their roles:
+ * 1. lerp: Performs linear interpolation between two values.
+ * 2. importMeshes: Imports 3D meshes from external files into the scene.
+ * 3. makeSphere: Creates a sphere at a given position and with a specified color.
+ * 4. frontDetector: Detects obstacles in front of the robot using raycasting.
+ * 5. simpleDetector: A simplified version of frontDetector for obstacle detection.
+ * 6. getDistanceBetweenPoints: Calculates the shortest distance between two points.
+ * 7. isTouching: Checks if two meshes are intersecting.
+ * 8. deleteAllMeshes: Deletes all simulation meshes.
+ * 9. getTrajectory: Calculates the trajectory of the robot avoiding obstacles.
+ * 10. startRotationAnimation: Initiates a rotation animation for the robot.
+ * 11. startMoveAnimation: Initiates a movement animation for the robot.
+ * 12. runAnimation: Manages the execution of animations based on the calculated steps.
+ * 13. verificationAndTrajectory: Verifies the trajectory for the robot ensuring no collisions with obstacles.
+ */
+
+
 // Linear interpolation function
 function lerp(start, end, t) {
     return start+(end-start)*t;
