@@ -1,4 +1,39 @@
-// -------------------------------------- Functions -------------------------------------- //
+/**
+ * GUI_Functions.js
+ * 
+ * This file contains various functions to create and manage the graphical user interface (GUI) elements
+ * used in the simulation project. It includes functions for creating buttons, rectangles, sliders, and
+ * handling interactions with these elements. The purpose is to facilitate user interaction with the simulation
+ * through a graphical interface.
+ * 
+ * Functions:
+ * - disableDragTemporarily: Temporarily disables the drag functionality for 1 second.
+ * - createDragDisableArea: Creates an invisible area to block drag actions.
+ * - addDragDisableBehavior: Adds behavior to disable drag when interacting with a button.
+ * - createDebugButton: Creates a button to toggle debug mode on and off.
+ * - createGuiRectangle: Creates a customizable GUI rectangle with text.
+ * - createHomeButton: Creates a button that redirects to the home page.
+ * - createBackButton: Creates a back button to restore the previous button state.
+ * - createTrashButton: Creates a trash button to dispose of dragged meshes.
+ * - createOptionsButton: Creates a button to display the options page.
+ * - createButton: Creates a simple button with text.
+ * - createButtonImaged: Creates a button with an image.
+ * - generateExcel: Generates an Excel file with simulation data.
+ * - createExcelButton: Creates a button to generate and download an Excel file.
+ * - createResetButton: Creates a reset button to reset the simulation.
+ * - createSlider: Creates a slider to adjust the robot speed.
+ * - startPage: Displays the start page with initial buttons.
+ * - mainPage: Displays the main interaction page.
+ * - vaccumObjects: Displays the page for interacting with vacuum objects.
+ * - obstacleChoice: Displays the obstacle choice page.
+ * - optionPage: Displays the options page.
+ * - handleObjectButtonClick: Handles the object button click to show vacuum objects.
+ * - handleObjectButtonClickDisabled: Restores the previous state from main page.
+ * - hideAndDisableAllButtons: Hides and disables all buttons.
+ * - saveButtonState: Saves the current state of all buttons.
+ * - restorePreviousButtonState: Restores the previous state of all buttons.
+ * - adjustDragDisableArea: Adjusts the drag disable area based on the current page.
+ */
 
 // Function to disable drag for 1 second
 function disableDragTemporarily() {
@@ -10,6 +45,7 @@ function disableDragTemporarily() {
     }, 1000); // Re-enable drag after 1 second
 }
 
+// Function to create an invisible area to block drag actions
 function createDragDisableArea() {
     var dragDisableArea = new BABYLON.GUI.Rectangle();
     dragDisableArea.width = "95%";
@@ -26,6 +62,7 @@ function createDragDisableArea() {
     return dragDisableArea;
 }
 
+// Function to add behavior to disable drag when interacting with a button
 function addDragDisableBehavior(button) {
     button.onPointerEnterObservable.add(function () {
         isDragEnabled = false;
@@ -39,8 +76,8 @@ function addDragDisableBehavior(button) {
         isDragEnabled = true;
     });
 }
-// Function to create a button to turn on or off a functionality
-// we will use it here for the debug mode
+
+// Function to create a button to turn on or off a functionality (e.g., debug mode)
 function createDebugButton() {
     var debugButton = new BABYLON.GUI.Rectangle();
     debugButton.width = "300px";
@@ -102,7 +139,7 @@ function createDebugButton() {
     return debugButton;
 }
 
-// Function to create GUI rectangles
+// Function to create GUI rectangles with customizable properties
 function createGuiRectangle(name, color, width, height, alpha, cornerRadius, text, fontSize, top = "0px", textColor = "white") {
     const rectangle = new BABYLON.GUI.Rectangle(name);
     rectangle.width = width;
@@ -132,7 +169,7 @@ function createGuiRectangle(name, color, width, height, alpha, cornerRadius, tex
     return rectangle;
 }
 
-// Add the "Home" button
+// Function to create a home button that redirects to the home page
 function createHomeButton() {
     homeButton = BABYLON.GUI.Button.CreateImageOnlyButton("homeButton", "./assets/img/home2.png");
     homeButton.width = "10%";
@@ -157,7 +194,7 @@ function createHomeButton() {
     allButtons.push(homeButton);
 }
 
-// Add the "Back" button
+// Function to create a back button that restores the previous button state
 function createBackButton() {
     backButton = BABYLON.GUI.Button.CreateImageOnlyButton("backButton", "./assets/img/return.png");
     backButton.width = "10%";
@@ -181,7 +218,7 @@ function createBackButton() {
     allButtons.push(backButton);
 }
 
-// Add the "Trash" button
+// Function to create a trash button that disposes of dragged meshes
 function createTrashButton() {
     trashButton = BABYLON.GUI.Button.CreateImageOnlyButton("trashButton", "./assets/img/trash.png");
     trashButton.width = "10%";
@@ -199,7 +236,7 @@ function createTrashButton() {
     allButtons.push(trashButton);
 }
 
-// Add the "Options" button
+// Function to create an options button that displays the options page
 function createOptionsButton() {
     optionsButton = BABYLON.GUI.Button.CreateImageOnlyButton("optionsButton", "./assets/img/options.png");
     optionsButton.width = "10%";
@@ -217,14 +254,14 @@ function createOptionsButton() {
 
     optionsButton.onPointerUpObservable.add(() => {
         if (currentPage == "optionPage") {
-            restorePreviousButtonState(); // Fonctionne comme un bouton retour si on est sur optionsPage
+            restorePreviousButtonState(); // Functions like a back button if on optionsPage
         } else {
-            optionPage(); // Sinon, affiche la page des options
+            optionPage(); // Otherwise, displays the options page
         }
     });
 }
 
-// Function to create buttons and add them to the global array
+// Function to create a simple button with text
 function createButton(name, text, width, height, color, cornerRadius, background, top, left, fontSize, horizontalAlignment) {
     var button = BABYLON.GUI.Button.CreateSimpleButton(name, text);
     button.width = width;
@@ -244,7 +281,7 @@ function createButton(name, text, width, height, color, cornerRadius, background
     return button;
 }
 
-// Function to create image buttons and add them to the global array
+// Function to create a button with an image
 function createButtonImaged(name, imageUrl, width, height, top, left, horizontalAlignment, advancedTexture, cornerRadius, background, color, disableDrag = false, zIndex = 10, alpha = 1) {
     var buttonContainer = new BABYLON.GUI.Rectangle(name);
     buttonContainer.width = width;
@@ -287,15 +324,16 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
+// Function to generate an Excel file with simulation data
 function generateExcel(data) {
     // Create a new workbook
     const workbook = XLSX.utils.book_new();
 
     // Prepare data for the worksheet
     const worksheetData = [
-        { "Key": "Robot Name", "Value": data.robotName },
-        { "Key": "Start Position", "Value": `(${data.startPosition.x}, ${data.startPosition.y}, ${data.startPosition.z})` },
-        { "Key": "End Position", "Value": `(${data.endPosition.x}, ${data.endPosition.y}, ${data.endPosition.z})` },
+        { "Key": "Robot Name", "Value": meshToMove.name },
+        { "Key": "Start Position", "Value": `(${data.startPosition.x}, ${data.startPosition.z})` },
+        { "Key": "End Position", "Value": `(${data.endPosition.x}, ${data.endPosition.z})` },
         { "Key": "Start Time", "Value": data.startTime },
         { "Key": "End Time", "Value": data.endTime },
         { "Key": "Speed", "Value": data.speed },
@@ -316,9 +354,7 @@ function generateExcel(data) {
     XLSX.writeFile(workbook, "simulation_data.xlsx");
 }
 
-var excelButtonContainer;
-
-// Modify createExcelButton function to use generateExcel with sample data
+// Function to create a button to generate and download an Excel file
 function createExcelButton() {
     excelButtonContainer = new BABYLON.GUI.Rectangle();
     excelButtonContainer.width = "350px";
@@ -369,9 +405,7 @@ function createExcelButton() {
     return excelButtonContainer;
 }
 
-
-var resetButtonContainer;
-
+// Function to create a reset button to reset the simulation
 function createResetButton() {
     resetButtonContainer = new BABYLON.GUI.Rectangle();
     resetButtonContainer.width = "350px";
@@ -423,9 +457,10 @@ function createResetButton() {
     return resetButtonContainer;
 }
 
+// Function to create a slider to adjust the robot speed
 function createSlider() {
     var panel = new BABYLON.GUI.StackPanel();
-    panel.zIndex = 10; // Assurer un zIndex élevé
+    panel.zIndex = 10; // Ensure a high zIndex
     panel.width = "80%"; 
     panel.height = "20%"; 
     panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -441,7 +476,6 @@ function createSlider() {
     header.paddingLeft = "10px"; 
     panel.addControl(header);
 
-    
     var spacer = new BABYLON.GUI.Rectangle();
     spacer.height = "20px"; 
     spacer.width = "100%";
@@ -476,7 +510,6 @@ function createSlider() {
 
     advancedTexture.addControl(panel);
 
-    
     allButtons.push(panel);
     panel.isVisible = false;
     panel.isEnabled = false;
@@ -484,6 +517,7 @@ function createSlider() {
     return panel;
 }
 
+// Function to display the start page with initial buttons
 function startPage() {
     hideAndDisableAllButtons();
     // Show the black block and image buttons
@@ -512,7 +546,7 @@ function startPage() {
     currentPage = "startPage";
 }
 
-// Function to handle interaction button clicks
+// Function to display the main interaction page
 function mainPage() {
     saveButtonState();  // Save the current state before changing
     hideAndDisableAllButtons();
@@ -541,7 +575,7 @@ function mainPage() {
     currentPage = "mainPage";
 }
 
-// Function to show interaction buttons and hide all image buttons
+// Function to display the page for interacting with vacuum objects
 function vaccumObjects() {
     saveButtonState();  // Save the current state before changing
     hideAndDisableAllButtons();
@@ -576,6 +610,7 @@ function vaccumObjects() {
     currentPage = "vaccumObjects";
 }
 
+// Function to display the obstacle choice page
 function obstacleChoice() {
     saveButtonState();  
     hideAndDisableAllButtons();
@@ -610,7 +645,7 @@ function obstacleChoice() {
     currentPage = "obstacleChoice";
 }
 
-
+// Function to display the options page
 function optionPage() {
     saveButtonState();
     hideAndDisableAllButtons();
@@ -626,20 +661,19 @@ function optionPage() {
 
     resetButtonContainer.isVisible = true;
     resetButtonContainer.isEnabled = true;
-    
-    
 
     isDragEnabled = false; // Disable drag on optionPage
 
     currentPage = "optionPage";
 }
 
-// Function to handle object button click
+// Function to handle the object button click to show vacuum objects
 function handleObjectButtonClick() {
     saveButtonState();  // Save the current state before changing
     vaccumObjects();
 }
 
+// Function to restore the previous state from main page
 function handleObjectButtonClickDisabled() {
     mainPage();  // Restore the previous state
 }
@@ -724,8 +758,7 @@ function restorePreviousButtonState() {
     }
 }
 
-
-// Adjust dragDisableArea based on the current page
+// Function to adjust dragDisableArea based on the current page
 function adjustDragDisableArea() {
     if (currentPage === "mainPage") {
         dragDisableArea.width = blackBgMainPage.width;
@@ -743,4 +776,3 @@ function adjustDragDisableArea() {
         dragDisableArea.verticalAlignment = blackBgVaccumObjects.verticalAlignment;
     }
 }
-
