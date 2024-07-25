@@ -31,6 +31,12 @@ var createScene = async function () {
     // Create a box mesh
     obstacle = BABYLON.MeshBuilder.CreateBox("box", { size: 0.2 }, scene);
     obstacle.isVisible = false;
+
+    obstacle2 = BABYLON.MeshBuilder.CreateSphere("sphereObs", { diameter: 0.2, segments: 32 }, scene);
+    obstacle2.isVisible = false;
+
+    obstacle3 = BABYLON.MeshBuilder.CreateCylinder("cylinderObs", { diameterTop: 0.2, diameterBottom: 0.2, height: 0.2, tessellation: 32 }, scene);
+    obstacle3.isVisible = false;
     
     // Import meshes
     importMeshes("kobuki.rdtf.glb", scene, function (robotMesh) {
@@ -130,6 +136,148 @@ var createScene = async function () {
             obstacle.isVisible = true;
             clonedMesh1 = obstacle.clone('block2');
             obstacle.isVisible = false;
+            hitTest.transformationMatrix.decompose(clonedMesh1.scaling, clonedMesh1.rotationQuaternion, clonedMesh1.position);
+            attachOwnPointerDragBehavior(clonedMesh1); // Attach drag behavior
+            meshBlocks.push(clonedMesh1);
+            const collider1 = BABYLON.Mesh.CreateBox("collider_box_block", 0, scene, false);		
+            var robote = clonedMesh1.getBoundingInfo();
+            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x / 1.5, clonedMesh1.scaling.y / 4, clonedMesh1.scaling.z / 1.5);
+            collider1.parent = clonedMesh1;
+            collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
+            if (debug) {
+                collider1.material.alpha = 0.6;
+            } else {
+                collider1.material.alpha = 0;
+            }
+            collider1.position.y += 0.06;
+            collider1.isPickable = false;
+            colliderMeshBlocks.push(collider1);
+
+            if (animationRunning == true) {
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                deleteAllMeshes();
+                console.log("test avant", meshess);
+                meshess = scene.meshes;
+                console.log("test après", meshess);
+                animationBreak = false;
+            
+                var isTouching = false;
+                if (collider1.intersectsMesh(targetMesh, false)) {
+                    isTouching = true;
+                    console.log("passer le istouching");
+                }
+
+                if (isTouching == false) {
+                    console.log("passer la dernière étape");
+                    //animationRunning = false;
+                    animationBreak = false;
+                    animationRunning = false;
+                    moreBlock = true;
+                    var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                    console.log("steps", steps);
+                    /*if (steps != null) {
+                        runAnimation(meshToMove, steps, targetMesh, scene);
+                        moreBlock = false;
+                    } else {
+                        if (rotateAnimation) {
+                            rotateAnimation.stop();
+                            rotateAnimation = null;
+                        }
+                        if (moveAnimation) {
+                            moveAnimation.stop();
+                            moveAnimation = null;
+                        }
+                        animationRunning = false;
+                        deleteAllMeshes();
+                    }*/
+                }
+            }
+        }
+    });
+
+    cylinderObstacle.onPointerUpObservable.add(function() {
+        if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+            obstacle3.isVisible = true;
+            clonedMesh1 = obstacle3.clone('block2');
+            obstacle3.isVisible = false;
+            hitTest.transformationMatrix.decompose(clonedMesh1.scaling, clonedMesh1.rotationQuaternion, clonedMesh1.position);
+            attachOwnPointerDragBehavior(clonedMesh1); // Attach drag behavior
+            meshBlocks.push(clonedMesh1);
+            const collider1 = BABYLON.Mesh.CreateBox("collider_box_block", 0, scene, false);		
+            var robote = clonedMesh1.getBoundingInfo();
+            collider1.scaling = new BABYLON.Vector3(clonedMesh1.scaling.x / 1.5, clonedMesh1.scaling.y / 4, clonedMesh1.scaling.z / 1.5);
+            collider1.parent = clonedMesh1;
+            collider1.material = new BABYLON.StandardMaterial("collidermat", scene);
+            if (debug) {
+                collider1.material.alpha = 0.6;
+            } else {
+                collider1.material.alpha = 0;
+            }
+            collider1.position.y += 0.06;
+            collider1.isPickable = false;
+            colliderMeshBlocks.push(collider1);
+
+            if (animationRunning == true) {
+                if (rotateAnimation){
+                    rotateAnimation.stop();
+                    rotateAnimation = null;
+                }
+                if (moveAnimation){
+                    moveAnimation.stop();
+                    moveAnimation = null;
+                }
+                deleteAllMeshes();
+                console.log("test avant", meshess);
+                meshess = scene.meshes;
+                console.log("test après", meshess);
+                animationBreak = false;
+            
+                var isTouching = false;
+                if (collider1.intersectsMesh(targetMesh, false)) {
+                    isTouching = true;
+                    console.log("passer le istouching");
+                }
+
+                if (isTouching == false) {
+                    console.log("passer la dernière étape");
+                    //animationRunning = false;
+                    animationBreak = false;
+                    animationRunning = false;
+                    moreBlock = true;
+                    var steps = verificationAndTrajectory(meshToMove, targetMesh, scene, meshess);
+                    console.log("steps", steps);
+                    /*if (steps != null) {
+                        runAnimation(meshToMove, steps, targetMesh, scene);
+                        moreBlock = false;
+                    } else {
+                        if (rotateAnimation) {
+                            rotateAnimation.stop();
+                            rotateAnimation = null;
+                        }
+                        if (moveAnimation) {
+                            moveAnimation.stop();
+                            moveAnimation = null;
+                        }
+                        animationRunning = false;
+                        deleteAllMeshes();
+                    }*/
+                }
+            }
+        }
+    });
+
+    sphereObstacle.onPointerUpObservable.add(function() {
+        if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+            obstacle2.isVisible = true;
+            clonedMesh1 = obstacle2.clone('block2');
+            obstacle2.isVisible = false;
             hitTest.transformationMatrix.decompose(clonedMesh1.scaling, clonedMesh1.rotationQuaternion, clonedMesh1.position);
             attachOwnPointerDragBehavior(clonedMesh1); // Attach drag behavior
             meshBlocks.push(clonedMesh1);

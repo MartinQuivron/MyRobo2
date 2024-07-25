@@ -18,6 +18,7 @@
  * - createOptionsButton: Creates a button to display the options page.
  * - createButton: Creates a simple button with text.
  * - createButtonImaged: Creates a button with an image.
+ * - addJSONData: Adds simulation data to the worksheet for Excel generation.
  * - generateExcel: Generates an Excel file with simulation data.
  * - createExcelButton: Creates a button to generate and download an Excel file.
  * - createResetButton: Creates a reset button to reset the simulation.
@@ -648,8 +649,8 @@ function obstacleChoice() {
     cubicObstacle.isEnabled = true;
     sphereObstacle.isVisible = true;
     sphereObstacle.isEnabled = true;
-    cilinderObstacle.isVisible = true;
-    cilinderObstacle.isEnabled = true;
+    cylinderObstacle.isVisible = true;
+    cylinderObstacle.isEnabled = true;
     simulationButton.isVisible = true;
     simulationButton.isEnabled = true;
     backToVaccumObjects.isVisible = true;
