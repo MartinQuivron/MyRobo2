@@ -488,6 +488,17 @@ function startMoveAnimation(meshToMove, targetMeshPosition, step) {
 
 function runAnimation(meshToMove, steps, targetMesh, scene) {
 
+    // Collect start position
+    simulationData.robotName = meshToMove.name;
+    simulationData.startPosition = meshToMove.position;
+    simulationData.speed = actualSpeed;
+    const currentDate = new Date();
+    const isoString = currentDate.toISOString();
+    const timePart = isoString.split('T')[1];
+    const minuteSecondPart = timePart.split(':')[1] + ':' + timePart.split(':')[2];
+    simulationData.startTime = minuteSecondPart;
+    simulationData.obstacles = meshBlocks;
+
     async function animateMesh(mesh, step, scene) {
         animationRunning = true;
         console.log("Animation start");
@@ -504,7 +515,11 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
         }
     
         console.log("All animations finished!");
-
+        const currentDate = new Date();
+        const isoString = currentDate.toISOString();
+        const timePart = isoString.split('T')[1];
+        const minuteSecondPart = timePart.split(':')[1] + ':' + timePart.split(':')[2];
+        simulationData.endTime = minuteSecondPart;
         deleteAllMeshes();
 
     }
@@ -539,7 +554,11 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
         }
 
         console.log("All animations finished!");
-    
+        const currentDate = new Date();
+        const isoString = currentDate.toISOString();
+        const timePart = isoString.split('T')[1];
+        const minuteSecondPart = timePart.split(':')[1] + ':' + timePart.split(':')[2];
+        simulationData.endTime = minuteSecondPart;
         deleteAllMeshes();
     }
 
@@ -550,6 +569,8 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
         .then(() => {
 
             console.log("Entire animation sequence completed.");
+            simulationData.simulationNumber += 1;
+            addJSONData(simulationData);
             if (meshToMove.position == targetMesh.position) {
                 animationRunning = false;
             }
@@ -564,6 +585,8 @@ function runAnimation(meshToMove, steps, targetMesh, scene) {
         .then(() => {
 
             console.log("Entire animation sequence completed.");
+            simulationData.simulationNumber += 1;
+            addJSONData(simulationData);
             if (meshToMove.position == targetMesh.position) {
                 animationRunning = false;
             }

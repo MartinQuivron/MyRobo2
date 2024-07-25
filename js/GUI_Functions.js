@@ -324,14 +324,13 @@ function createButtonImaged(name, imageUrl, width, height, top, left, horizontal
     return buttonContainer;
 }
 
-// Function to generate an Excel file with simulation data
-function generateExcel(data) {
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
-
+function addJSONData(data) {
     // Prepare data for the worksheet
     const worksheetData = [
-        { "Key": "Robot Name", "Value": meshToMove.name },
+        { "Key": "----------------", "Value": '----------------' },
+        { "Key": "Simulation number", "Value": data.simulationNumber },
+        { "Key": "Simulation finished", "Value": data.simulationFinished },
+        { "Key": "Robot Name", "Value": data.robotName },
         { "Key": "Start Position", "Value": `(${data.startPosition.x}, ${data.startPosition.z})` },
         { "Key": "End Position", "Value": `(${data.endPosition.x}, ${data.endPosition.z})` },
         { "Key": "Start Time", "Value": data.startTime },
@@ -340,12 +339,43 @@ function generateExcel(data) {
         { "Key": "Number of Obstacles", "Value": data.obstacles.length },
         ...data.obstacles.map((obstacle, index) => ({
             "Key": `Obstacle ${index + 1} Position`,
-            "Value": `(${obstacle.x}, ${obstacle.y}, ${obstacle.z})`
+            "Value": `(${obstacle.position.x}, ${obstacle.position.z})`
         }))
     ];
+    simulationDataArray.push(worksheetData);
+    console.log("Simulation data array1: ", simulationDataArray);
+}
 
-    // Convert the data to a worksheet
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+// Function to generate an Excel file with simulation data
+function generateExcel() {
+    var totalFinished = 0;
+    var totalSimulation = 0;
+    for (let i = 0; i < simulationDataArray.length; i++) {
+        totalSimulation += 1;
+        if (simulationDataArray[i].simulationFinished == true) {
+            totalFinished += 1;
+        }
+    }
+
+
+    var combinedData = [
+        { "Key": "----------------", "Value": '----------------' },
+        { "Key": "Total Simulation", "Value": totalSimulation },
+        { "Key": "Total finished", "Value": totalFinished }
+    ];
+
+    console.log("Simulation data array2: ", simulationDataArray);
+    // Combine the data into a single array
+    for (let i = 0; i < simulationDataArray.length; i++) {
+        combinedData = combinedData.concat(simulationDataArray[i]);
+        console.log("Simulation data array: ", simulationDataArray[i]);
+    }
+
+    // Convert the combined data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(combinedData);
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
 
     // Append the worksheet to the workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Simulation Data");
@@ -395,7 +425,7 @@ function createExcelButton() {
     excelButtonContainer.addControl(grid);
 
     excelButtonContainer.onPointerUpObservable.add(() => {
-        generateExcel(simulationData);
+        generateExcel();
     });
 
     // Add the button container to the advanced texture

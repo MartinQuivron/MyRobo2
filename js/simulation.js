@@ -1,17 +1,6 @@
 // Get the canvas element
 var canvas = document.getElementById("renderCanvas");
 
-// Variables to store simulation data
-let simulationData = {
-    robotName: '',
-    startPosition: '',
-    endPosition: '',
-    startTime: '',
-    endTime: '',
-    obstacles: [],
-    speed: 0
-};
-
 // Function to start the render loop
 const startRenderLoop = (engine, scene) => {
     engine.runRenderLoop(() => {
@@ -46,7 +35,6 @@ var createScene = async function () {
     // Import meshes
     importMeshes("kobuki.rdtf.glb", scene, function (robotMesh) {
         robot = robotMesh;
-        simulationData.robotName = 'Vaccum Cleaner'; // Set the robot name
     });
     importMeshes("flag_in_the_wind.glb", scene, function (flagMesh) {
         endPointFlag = flagMesh;
@@ -87,7 +75,7 @@ var createScene = async function () {
     // Handle button click events
     placeBtn.onPointerUpObservable.add(function() {
         if (hitTest && ar.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-            meshToMove = scene.getMeshByName('robot');
+            meshToMove = scene.getMeshByName('Vaccum Cleaner');
             if (meshToMove) {
                 meshToMove.dispose();
                 colliderMeshToMove.dispose();
@@ -96,7 +84,7 @@ var createScene = async function () {
             } else {  
                 robot.setEnabled(true);
                 robot.isVisible = true;
-                clonedMesh = robot.clone('robot');
+                clonedMesh = robot.clone('Vaccum Cleaner');
                 robot.isVisible = false;
                 robot.setEnabled(false);
                 hitTest.transformationMatrix.decompose(clonedMesh.scaling, clonedMesh.rotationQuaternion, clonedMesh.position);
@@ -109,11 +97,6 @@ var createScene = async function () {
                 colliderMeshToMove.material = new BABYLON.StandardMaterial("collidermat", scene);
                 colliderMeshToMove.material.alpha = 0;
                 colliderMeshToMove.position.y += 0.06;
-
-                // Collect start position
-                simulationData.startPosition = clonedMesh.position;
-                simulationData.speed = actualSpeed;
-                simulationData.startTime = new Date().toISOString();
             }
         }
     });

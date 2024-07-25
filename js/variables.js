@@ -68,6 +68,21 @@ var speedMin = 1;
 var speedMax = 10;
 var actualSpeed = 5;
 
+// Excel variables
+var simulationData = {
+    simulationNumber: 0,
+    simulationFinished: false,
+    robotName: '',
+    startPosition: '',
+    endPosition: '',
+    startTime: '',
+    endTime: '',
+    obstacles: [],
+    speed: 0
+};
+
+var simulationDataArray = [];
+
 /* --- WebXR Variables --- */
 // Variable for the WebXR helper used in AR/VR experiences
 var xrHelper = null;
