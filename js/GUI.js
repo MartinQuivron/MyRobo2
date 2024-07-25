@@ -90,11 +90,11 @@ var createGUI = async function (scene) {
     sphereObstacle.isEnabled = false;
     addDragDisableBehavior(sphereObstacle);
 
-    cilinderObstacle = createButtonImaged("cilinderObstacle", "./assets/img/cilinder.png", "25%", "12%", "20%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "", "", true);
-    cilinderObstacle.zIndex = 10;
-    cilinderObstacle.isVisible = false;
-    cilinderObstacle.isEnabled = false;
-    addDragDisableBehavior(cilinderObstacle);
+    cylinderObstacle = createButtonImaged("cylinderObstacle", "./assets/img/cilinder.png", "25%", "12%", "20%", "70%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "", "", true);
+    cylinderObstacle.zIndex = 10;
+    cylinderObstacle.isVisible = false;
+    cylinderObstacle.isEnabled = false;
+    addDragDisableBehavior(cylinderObstacle);
 
     backToVaccumObjects = createButtonImaged("backToVaccumObjects", "assets/img/backSimulation.png", "25%", "12%", "35%", "18%", BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, advancedTexture, 20, "white", "black", true);
     backToVaccumObjects.zIndex = 10; 
@@ -118,7 +118,7 @@ var createGUI = async function (scene) {
     advancedTexture.addControl(objectBtn);
     advancedTexture.addControl(cubicObstacle);
     advancedTexture.addControl(sphereObstacle);
-    advancedTexture.addControl(cilinderObstacle);
+    advancedTexture.addControl(cylinderObstacle);
     advancedTexture.addControl(backToVaccumObjects);
 
     // Attach event handlers to buttons
