@@ -9,9 +9,9 @@
  * 3. makeSphere: Creates a sphere at a given position and with a specified color.
  * 4. frontDetector: Detects obstacles in front of the robot using raycasting.
  * 5. simpleDetector: A simplified version of frontDetector for obstacle detection.
- * 6. getDistanceBetweenPoints: Calculates the shortest distance between two points.
+ * 6. getDistanceBetweenPoints: Calculates the shortest distance between two distances.
  * 7. isTouching: Checks if two meshes are intersecting.
- * 8. deleteAllMeshes: Deletes all simulation meshes.
+ * 8. deleteAllMeshes: Deletes all simulation meshes used in debug.
  * 9. getTrajectory: Calculates the trajectory of the robot avoiding obstacles.
  * 10. startRotationAnimation: Initiates a rotation animation for the robot.
  * 11. startMoveAnimation: Initiates a movement animation for the robot.
@@ -49,7 +49,7 @@ var makeSphere = (position, color) => {
 
 // Function to detect obstacle in front of the robot
 function frontDetector(start, end, scene) {
-    const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+    const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 10);
     // Perform ray intersection test with the mesh
     const pickInfo = scene.pickWithRay(ray, function (mesh) {
         // Filter by mesh name
@@ -115,8 +115,9 @@ function frontDetector(start, end, scene) {
 // Function to detect obstacle
 function simpleDetector(start, end, scene) {
 
+    const distance = BABYLON.Vector3.Distance(start, end) + 0.05;
     // Create a ray from the start point to the end point
-    const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), 2);
+    const ray = new BABYLON.Ray(start, end.subtract(start).normalize(), distance);
 
     if (debug) {
         // Display the ray
@@ -462,10 +463,11 @@ function getTrajectory(meshToMove, targetMesh, scene){
         }
     }
 
-    if (crashCounter < 25) {
+    if (crashCounter < 45) {
         // Create the trajectory line
         var line = BABYLON.MeshBuilder.CreateLines("line", { points: steps }, scene);
         lines.push(line);
+        crashCounter = 0;
         return steps;
     }else{
         crashCounter = 0;

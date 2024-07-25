@@ -71,7 +71,7 @@ var actualSpeed = 5;
 // Excel variables
 var simulationData = {
     simulationNumber: 0,
-    simulationFinished: false,
+    simulationFinished: true,
     robotName: '',
     startPosition: '',
     endPosition: '',
